@@ -79,7 +79,50 @@ class ZehnAdapter(Adapter):
                 "unknown_name": code == "E0302", "raw": json.dumps(d, ensure_ascii=False)}
 
     def tool_check(self, task: Dict[str, Any], code: str, workdir: str) -> Dict[str, Any]:
-        path = self._write(code, workdir)
+        """`zehn check --json --strict`, with layout forgiven (ADR-0014): a candidate whose only problem is
+        E0203 is canonicalized with `zehn fmt` and re-checked; E0203 is hidden from the feedback when other
+        errors remain, so the model fixes real errors against line numbers of the text it wrote."""
+        res = self._check(self._write(code, workdir))
+        diags = res["diagnostics"]
+        if res["ok"] or not any(d["code"] == "E0203" for d in diags):
+            return res
+        if any(d["code"] != "E0203" and self._severity(d) == "error" for d in diags):
+            return {"ok": False, "diagnostics": [d for d in diags if d["code"] != "E0203"],
+                    "tool_ms": res["tool_ms"]}
+        canon = self._canonical(code, workdir)
+        if canon is None:
+            return res
+        res2 = self._check(self._write_as(canon, workdir, "canonical.zehn"))
+        if not res2["ok"]:
+            return res
+        note = {"code": "W0301", "message": "auto-formatted: the only problem was non-canonical layout",
+                "line": None, "unknown_name": False, "raw": ""}
+        return {"ok": True, "diagnostics": res2["diagnostics"] + [note], "tool_ms": res["tool_ms"] + res2["tool_ms"]}
+
+    @staticmethod
+    def _severity(d: Dict[str, Any]) -> str:
+        try:
+            return str(json.loads(d["raw"]).get("severity", "error"))
+        except (ValueError, AttributeError, TypeError):
+            return "error"
+
+    def _write_as(self, code: str, workdir: str, name: str) -> str:
+        path = os.path.join(workdir, name)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(code)
+        return path
+
+    def _canonical(self, code: str, workdir: str) -> Any:
+        path = self._write_as(code, workdir, "to_format.zehn")
+        try:
+            p = subprocess.run([sys.executable, os.path.join(self.root, "zehn.py"), "fmt", path], cwd=self.root,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True,
+                               timeout=CHECK_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            return None
+        return p.stdout if p.returncode == 0 and p.stdout else None
+
+    def _check(self, path: str) -> Dict[str, Any]:
         cmd = [sys.executable, os.path.join(self.root, "zehn.py"), "check", path, "--json", "--strict"]
         cmd += self._dialect_args()
         t0 = time.time()

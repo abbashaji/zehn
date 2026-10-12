@@ -1,6 +1,6 @@
 # STATE
 Name: Zehn
-Version: 4
+Version: 5
 Return: full
 Build: python3 -m compileall -q zehn.py bench
 Test: python3 -m unittest discover -s tests && python3 -m unittest discover -s bench/tests
@@ -16,10 +16,11 @@ Baseline: red on rustc 1.97 (302 tests, 1 fails, same on the untouched v3 tree: 
 - [ ] <item> - Done when: <one observable check>
 
 ## Decisions and why
-- 13 ADRs in DECISIONS/ (all unmeasured); CONTEXT.md is the session memory (<=2800 chars, unverified as 800 tokens)
+- 14 ADRs in DECISIONS/ (all unmeasured); CONTEXT.md is the session memory (<=2800 chars, unverified as 800 tokens)
 - ADR-0010 (Int / and % use floor semantics) must be resolved in v0.4
 
 ## Known hazards / open issues
+- Pilot (6 tasks, gemma-4-31b-it) was run before ADR-0014: its zehn numbers are not comparable; python_strict/ts_strict/rust_strict layout checks were not reviewed for the same asymmetry
 - Remote models: `gemini:`/`openai:` clients and the scheduler were tested only against local fake servers; Gemini facts not on Google's own pages: finish reason MAX_TOKENS, `thought` part flag, 429 body (see bench/README.md)
 - Google limits apply per project, not per key: extra keys of one project add no quota; bench/limits.json Gemini rows come from the builder's account table
 - A run that ends with an `error` record after 6 retries is recorded, so --resume does not redo it: check `status` (errored records)
@@ -34,6 +35,7 @@ Baseline: red on rustc 1.97 (302 tests, 1 fails, same on the untouched v3 tree: 
 - Toolchains (mypy, ruff, tsc, rust, clippy, rustfmt) were all installable in the branches and in the merge; none missing
 
 ## History (newest first, last 8, one line each)
+- v005: bench zehn adapter forgives layout-only E0203 (ADR-0014) after the pilot; 2 tests
 - v004: free remote baseline: gemini/openai clients, per-key rate scheduler, resume, status, doctor, time budget, baseline.yml, limits.json
 - v003: merged a b c d e: 30 benchmark tasks (pure, text, domain, effect, edit; 6 each, refs in zehn, python, ts, rust), notes in bench/notes
 - v002: merged branches a (runner), b (report), c (context, ADRs), d (ts_strict, rust, rust_strict adapters)

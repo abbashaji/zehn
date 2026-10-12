@@ -37,6 +37,28 @@ class AdapterTests(unittest.TestCase):
         self.assertFalse(chk["ok"])
         self.assertEqual(res["passed"], 0)
 
+    def test_zehn_layout_only_error_is_forgiven(self):
+        ok_src = c.read(c.DEMO_DIR, "ref.zehn")
+        ugly = ok_src.replace("\n  ", "\n      ", 1) if "\n  " in ok_src else ok_src + "\n\n\n"
+        ad = adapters.get("zehn")
+        self.assertNotEqual(ugly, ok_src)
+        with tempfile.TemporaryDirectory() as d:
+            raw = ad._check(ad._write(ugly, d))
+            self.assertIn("E0203", [x["code"] for x in raw["diagnostics"]], raw)   # the strict tool does reject it
+            chk = ad.tool_check(TASK, ugly, d)
+            self.assertTrue(chk["ok"], chk)
+            self.assertEqual([x["code"] for x in chk["diagnostics"]], ["W0301"])
+            self.assertEqual(ad.run_hidden(TASK, ugly, TASK["_tests"], d)["passed"], 8)
+
+    def test_zehn_layout_error_hidden_when_real_error_remains(self):
+        bad = "fn sum_above(xs: List<Int>, limit: Int) -> Int\n    example sum_above([], 0) == 0\ndo\n        return nope(xs)\nend fn\n"
+        with tempfile.TemporaryDirectory() as d:
+            chk = adapters.get("zehn").tool_check(TASK, bad, d)
+        codes = [x["code"] for x in chk["diagnostics"]]
+        self.assertFalse(chk["ok"])
+        self.assertIn("E0302", codes)
+        self.assertNotIn("E0203", codes)
+
     def test_python_plain(self):
         chk, res = both("python_plain", c.read(c.DEMO_DIR, "ref.py"))
         self.assertTrue(chk["ok"], chk)

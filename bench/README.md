@@ -148,7 +148,7 @@ Tests encode values as JSON: Int/Bool/Text/List as JSON, `{"$":"some","args":[x]
 ## Adapters
 
 An adapter is a module in `bench/benchlib/adapters/` with an `Adapter` subclass that sets `name`
-(auto-registered; see `base.py` for the contract). Here: `zehn` (`zehn.py check <file> --json --strict`
+(auto-registered; see `base.py` for the contract). Here: `zehn` (`zehn.py check <file> --json --strict` (a layout-only E0203 is forgiven by running `zehn fmt`, ADR-0014)
 from the project root; hidden tests through `_zehn_runner.py`, which uses only `parse`, `Interp`,
 `to_value`, `show`), `python_plain` (byte-compile, import, run the visible examples), `python_strict`
 (plain plus `mypy --strict` and `ruff check --isolated --select E4,E7,E9,F`; the rule set is pinned so a
