@@ -1,0 +1,64 @@
+{
+  "date_utc": "2026-10-12T18:16:43Z",
+  "argv": [
+    "run",
+    "--lang",
+    "zehn,python_plain,python_strict,ts_strict,rust,rust_strict",
+    "--repeats",
+    "1",
+    "--models",
+    "gemini:gemma-4-31b",
+    "--run-id",
+    "pilot-gemini-gemma-4-31b",
+    "--resume",
+    "--yes",
+    "--time-budget-minutes",
+    "330",
+    "--only",
+    "domain_001,edit_001,effect_001,pure_001,text_004,effect_004"
+  ],
+  "python": "3.12.15",
+  "sources": {
+    "zehn.py": "0aa3eb68b92e2acd3aaa77399a70e1a569d238f44d0142ab582785d56bb16f73",
+    "zehnlib": {}
+  },
+  "tools": {
+    "mypy": "mypy 2.4.0 (compiled: yes)",
+    "ruff": "ruff 0.17.0"
+  },
+  "models": [
+    "gemini:gemma-4-31b"
+  ],
+  "langs": [
+    "zehn",
+    "python_plain",
+    "python_strict",
+    "ts_strict",
+    "rust",
+    "rust_strict"
+  ],
+  "run_id": "pilot-gemini-gemma-4-31b",
+  "variant": "default",
+  "set": "dev",
+  "repeats": 1,
+  "temperature": 1.0,
+  "max_rounds": 5,
+  "seed": 1234,
+  "tasks": [
+    "domain_001",
+    "edit_001",
+    "effect_001",
+    "effect_004",
+    "pure_001",
+    "text_004"
+  ],
+  "api_hosts": {
+    "gemini:gemma-4-31b": "generativelanguage.googleapis.com"
+  },
+  "limits_per_key": {
+    "rpm": 30,
+    "tpm": 16000,
+    "rpd": 14400
+  },
+  "max_output_tokens": 8192
+}
