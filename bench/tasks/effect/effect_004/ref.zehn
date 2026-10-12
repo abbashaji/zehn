@@ -1,0 +1,60 @@
+fn problem(name: Text) -> Option<Text>
+  intent "the first rule the name breaks: too short, too long, then has space; none when it is fine"
+  example problem("ab") == some("too short")
+  example problem("alice") == none
+  example problem("a b c") == some("has space")
+do
+  if text.len(name) < 3 then
+    return some("too short")
+  else
+    if text.len(name) > 12 then
+      return some("too long")
+    else
+      if text.contains(name, " ") then
+        return some("has space")
+      else
+        return none
+      end if
+    end if
+  end if
+end fn
+
+fn failure_line(n: Int, name: Text, reason: Text) -> Text
+  intent "the report line for the n-th name"
+  example failure_line(2, "ab", "too short") == "#2 [ab]: too short"
+  example failure_line(10, "", "too short") == "#10 []: too short"
+do
+  return text.concat("#", text.concat(int.to_text(n), text.concat(" [", text.concat(name, text.concat("]: ", reason)))))
+end fn
+
+fn check_from(names: List<Text>, i: Int) -> Int
+  intent "report the failing names from index i on and count them"
+  uses [console]
+  requires i >= 0
+  ensures out >= 0
+  example problem("bob") == none
+  example failure_line(1, "x", "too short") == "#1 [x]: too short"
+do
+  match list.get(names, i) do
+    case none =>
+      return 0
+    case some(name) =>
+      match problem(name) do
+        case none =>
+          return check_from(names, i + 1)
+        case some(reason) =>
+          console.print(failure_line(i + 1, name, reason))
+          return 1 + check_from(names, i + 1)
+      end match
+  end match
+end fn
+
+fn validate_usernames(names: List<Text>) -> Int
+  intent "print one line per invalid username and return how many are invalid"
+  uses [console]
+  ensures out >= 0 and out <= list.len(names)
+  example problem("zoe") == none
+  example problem("zo") == some("too short")
+do
+  return check_from(names, 0)
+end fn

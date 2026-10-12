@@ -1,0 +1,15 @@
+fn safe_div(a: Int, b: Int) -> Int
+  requires b != 0
+  ensures out * b <= a
+  example safe_div(10, 2) == 5
+  example safe_div(10, 3) == 4
+do
+  return a / b
+end fn
+
+fn buggy_abs(n: Int) -> Int
+  ensures out >= 0
+  example buggy_abs(-3) == 3
+do
+  return n
+end fn

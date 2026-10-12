@@ -1,0 +1,67 @@
+-- Zehn has no loops: iteration is recursion (or list.map / list.fold).
+-- Every run has a fuel budget and a call-depth limit (SPEC section 13), so a wrong base case
+-- becomes a diagnostic (E0801 / E0802) instead of a hang.
+fn gcd(a: Int, b: Int) -> Int
+  intent "greatest common divisor by Euclid's algorithm"
+  requires a >= 0
+  requires b >= 0
+  ensures out >= 0
+  example gcd(12, 18) == 6
+  example gcd(7, 0) == 7
+do
+  if b == 0 then
+    return a
+  else
+    return gcd(b, a % b)
+  end if
+end fn
+
+fn sum_to(n: Int) -> Int
+  intent "1 + 2 + ... + n, by plain recursion (depth n)"
+  requires n >= 0
+  example sum_to(0) == 0
+  example sum_to(1000) == 500500
+do
+  if n == 0 then
+    return 0
+  else
+    return n + sum_to(n - 1)
+  end if
+end fn
+
+fn fib_from(a: Int, b: Int, n: Int) -> Int
+  intent "the value n steps along the Fibonacci walk that starts at the pair (a, b)"
+  requires n >= 0
+  example fib_from(0, 1, 10) == 55
+do
+  if n == 0 then
+    return a
+  else
+    return fib_from(b, a + b, n - 1)
+  end if
+end fn
+
+fn fib(n: Int) -> Int
+  intent "n-th Fibonacci number in linear time (the naive double recursion would exhaust fuel)"
+  requires n >= 0
+  example fib(50) == 12586269025
+do
+  return fib_from(0, 1, n)
+end fn
+
+fn sign(n: Int) -> Int
+  intent "-1, 0 or 1; every path returns, which `zehn check` verifies statically (E0310)"
+  example sign(-9) == -1
+  example sign(0) == 0
+  example sign(4) == 1
+do
+  if n < 0 then
+    return -1
+  else
+    if n == 0 then
+      return 0
+    else
+      return 1
+    end if
+  end if
+end fn

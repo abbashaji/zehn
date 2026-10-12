@@ -1,0 +1,16 @@
+[
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "pen", 3], "expect": {"$": "ok", "args": [[{"name": "pen", "qty": 2}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}]]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "ink", 2], "expect": {"$": "ok", "args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 0}, {"name": "pad", "qty": 0}]]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "pad", 1], "expect": {"$": "err", "args": ["insufficient stock for pad: have 0, need 1"]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "cap", 1], "expect": {"$": "err", "args": ["unknown item: cap"]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "pen", 0], "expect": {"$": "err", "args": ["quantity must be positive"]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "cap", -3], "expect": {"$": "err", "args": ["quantity must be positive"]}},
+  {"args": [[], "pen", 1], "expect": {"$": "err", "args": ["unknown item: pen"]}},
+  {"args": [[], "pen", 0], "expect": {"$": "err", "args": ["quantity must be positive"]}},
+  {"args": [[{"name": "pen", "qty": 5}], "pen", 5], "expect": {"$": "ok", "args": [[{"name": "pen", "qty": 0}]]}},
+  {"args": [[{"name": "pen", "qty": 5}], "pen", 6], "expect": {"$": "err", "args": ["insufficient stock for pen: have 5, need 6"]}},
+  {"args": [[{"name": "pen", "qty": 5}, {"name": "ink", "qty": 2}, {"name": "pad", "qty": 0}], "Pen", 1], "expect": {"$": "err", "args": ["unknown item: Pen"]}},
+  {"args": [[{"name": "a", "qty": 1}, {"name": "b", "qty": 2}, {"name": "c", "qty": 3}], "c", 1], "expect": {"$": "ok", "args": [[{"name": "a", "qty": 1}, {"name": "b", "qty": 2}, {"name": "c", "qty": 2}]]}},
+  {"args": [[{"name": "pen", "qty": 5}], "", 1], "expect": {"$": "err", "args": ["unknown item: "]}},
+  {"args": [[{"name": "bulk", "qty": 4000000000000000}], "bulk", 1], "expect": {"$": "ok", "args": [[{"name": "bulk", "qty": 3999999999999999}]]}}
+]

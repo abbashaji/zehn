@@ -1,0 +1,20 @@
+fn ticket_price(age: Int) -> Result<Int, Text>
+  intent "museum ticket price in cents by visitor age"
+  ensures age >= 0 implies result.is_ok(out)
+  example ticket_price(30) == ok(1500)
+  example ticket_price(-1) == err("invalid age")
+do
+  if age < 0 then
+    return err("invalid age")
+  end if
+  if age < 5 then
+    return ok(0)
+  end if
+  if age < 18 then
+    return ok(800)
+  end if
+  if age <= 65 then
+    return ok(1500)
+  end if
+  return ok(1000)
+end fn

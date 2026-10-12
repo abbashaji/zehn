@@ -1,0 +1,12 @@
+[
+  {"args": [""], "expect": 0},
+  {"args": ["a"], "expect": 1},
+  {"args": ["a,b,c"], "expect": 3},
+  {"args": ["a,,b"], "expect": 3},
+  {"args": [","], "expect": 2},
+  {"args": [",,"], "expect": 3},
+  {"args": ["x,y,"], "expect": 3},
+  {"args": [",x"], "expect": 2},
+  {"args": ["alpha,beta,gamma,delta,epsilon"], "expect": 5},
+  {"args": ["no commas here"], "expect": 1}
+]

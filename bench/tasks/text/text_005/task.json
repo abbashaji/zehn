@@ -1,0 +1,43 @@
+{
+  "id": "text_005",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Normalise a header row",
+  "description": "A header row is a comma-separated list of column names. Upper-case every name and return the names joined again with commas. Scan from left to right and report the first problem as an error: a name that is empty gives \"empty header at position N\" (N counts from 1), and a name that equals an earlier name after upper-casing gives \"duplicate header: NAME\" with the upper-cased name. For each position the emptiness check comes before the duplicate check. An empty row is a single empty name, so it is an error at position 1.",
+  "entry": "normalize_headers",
+  "params": [
+    {
+      "name": "line",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "id,Name,qty"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "ID,NAME,QTY"
+        ]
+      }
+    },
+    {
+      "args": [
+        "id,,qty"
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "empty header at position 2"
+        ]
+      }
+    }
+  ],
+  "notes": "Needs an invariant (the set of names seen so far) and an ordered error rule. Error precedence: left to right, empty before duplicate."
+}

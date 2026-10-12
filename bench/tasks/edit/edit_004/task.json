@@ -1,0 +1,103 @@
+{
+  "id": "edit_004",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Payroll total with a department filter",
+  "description": "Feature request for the payroll helper. Today it returns the total salary of all active employees and ignores its second parameter, an optional department name. Make that parameter work: with no department the result is unchanged; with a department only employees of that department count. The department match ignores upper and lower case (\"Ops\" matches \"ops\" and \"OPS\") but must match the whole name, so \"Ops\" does not match \"Ops Support\". Inactive employees never count.",
+  "entry": "payroll_total",
+  "params": [
+    {
+      "name": "staff",
+      "type": "List<Employee>"
+    },
+    {
+      "name": "dept",
+      "type": "Option<Text>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Employee",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "dept",
+          "type": "Text"
+        },
+        {
+          "name": "salary",
+          "type": "Int"
+        },
+        {
+          "name": "active",
+          "type": "Bool"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "ana",
+            "dept": "Ops",
+            "salary": 3000,
+            "active": true
+          },
+          {
+            "name": "bo",
+            "dept": "Dev",
+            "salary": 4000,
+            "active": true
+          },
+          {
+            "name": "cy",
+            "dept": "ops",
+            "salary": 3500,
+            "active": true
+          },
+          {
+            "name": "di",
+            "dept": "Ops",
+            "salary": 2500,
+            "active": false
+          }
+        ],
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 10500
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "ana",
+            "dept": "Ops",
+            "salary": 3000,
+            "active": true
+          },
+          {
+            "name": "di",
+            "dept": "Ops",
+            "salary": 2500,
+            "active": false
+          }
+        ],
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 3000
+    }
+  ],
+  "notes": "Feature: thread the optional dept through the recursion/loop and compare case-insensitively (ASCII). Start already skips inactive staff."
+}

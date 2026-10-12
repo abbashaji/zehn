@@ -1,0 +1,11 @@
+[
+  {"args": ["hello"], "expect": "HELLO!"},
+  {"args": [""], "expect": "!"},
+  {"args": ["Zehn 10"], "expect": "ZEHN 10!"},
+  {"args": ["a\"b\\c"], "expect": "A\"B\\C!"},
+  {"args": ["line\nbreak"], "expect": "LINE\nBREAK!"},
+  {"args": ["tab\there"], "expect": "TAB\tHERE!"},
+  {"args": ["MiXeD cAsE 123"], "expect": "MIXED CASE 123!"},
+  {"args": ["!"], "expect": "!!"},
+  {"args": ["   "], "expect": "   !"}
+]

@@ -1,0 +1,33 @@
+fn streaks_from(readings: List<Int>, i: Int, prev: Int, run: Int, acc: List<Int>) -> List<Int>
+  intent "streak lengths for readings[i..], given the streak so far (value prev, length run) and the finished lengths acc"
+  requires i >= 1
+  requires run >= 1
+  example streaks_from([4, 4, 7], 1, 4, 1, []) == [2, 1]
+  example streaks_from([4, 4, 7], 3, 7, 1, [2]) == [2, 1]
+do
+  match list.get(readings, i) do
+    case none =>
+      return list.append(acc, run)
+    case some(x) =>
+      if x == prev then
+        return streaks_from(readings, i + 1, prev, run + 1, acc)
+      else
+        return streaks_from(readings, i + 1, x, 1, list.append(acc, run))
+      end if
+  end match
+end fn
+
+fn streak_lengths(readings: List<Int>) -> List<Int>
+  intent "lengths of the maximal blocks of equal neighbouring readings, in order"
+  ensures list.sum(out) == list.len(readings)
+  example streak_lengths([4, 4, 7, 4, 4, 4]) == [2, 1, 3]
+  example streak_lengths([]) == []
+  example streak_lengths([5, 5]) == [2]
+do
+  match list.get(readings, 0) do
+    case none =>
+      return []
+    case some(first) =>
+      return streaks_from(readings, 1, first, 1, [])
+  end match
+end fn

@@ -1,0 +1,65 @@
+type Booking = { begin: Int, finish: Int }
+
+fn clashes(b: Booking, begin: Int, finish: Int, gap: Int) -> Bool
+  intent "true when the new range comes closer than gap to the existing booking"
+  example clashes({begin: 10, finish: 12}, 12, 14, 0) == false
+  example clashes({begin: 10, finish: 12}, 12, 14, 1) == true
+  example clashes({begin: 10, finish: 12}, 14, 16, 2) == false
+do
+  return begin < b.finish + gap and b.begin < finish + gap
+end fn
+
+fn any_clash(bookings: List<Booking>, begin: Int, finish: Int, gap: Int, i: Int) -> Bool
+  example any_clash([], 1, 2, 0, 0) == false
+  example any_clash([{begin: 1, finish: 3}], 2, 4, 0, 0) == true
+do
+  match list.get(bookings, i) do
+    case none =>
+      return false
+    case some(b) =>
+      if clashes(b, begin, finish, gap) then
+        return true
+      end if
+      return any_clash(bookings, begin, finish, gap, i + 1)
+  end match
+end fn
+
+fn insert_from(bookings: List<Booking>, nb: Booking, i: Int, done: List<Booking>, placed: Bool) -> List<Booking>
+  intent "copy bookings from index i on into done, putting nb before the first later-starting one"
+  example insert_from([], {begin: 5, finish: 6}, 0, [], false) == [{begin: 5, finish: 6}]
+  example insert_from([{begin: 1, finish: 2}, {begin: 9, finish: 10}], {begin: 5, finish: 6}, 0, [], false) == [{begin: 1, finish: 2}, {begin: 5, finish: 6}, {begin: 9, finish: 10}]
+do
+  match list.get(bookings, i) do
+    case none =>
+      if placed then
+        return done
+      end if
+      return list.append(done, nb)
+    case some(b) =>
+      if not placed and b.begin > nb.begin then
+        return insert_from(bookings, nb, i + 1, list.append(list.append(done, nb), b), true)
+      end if
+      return insert_from(bookings, nb, i + 1, list.append(done, b), placed)
+  end match
+end fn
+
+fn add_booking(bookings: List<Booking>, begin: Int, finish: Int, gap: Int) -> Result<List<Booking>, Text>
+  intent "add a booking, keeping the list sorted by begin; reject bad ranges, bad gaps and clashes"
+  ensures result.is_ok(out) implies (begin < finish and gap >= 0)
+  example add_booking([], 5, 8, 0) == ok([{begin: 5, finish: 8}])
+  example add_booking([{begin: 1, finish: 3}], 3, 4, 0) == ok([{begin: 1, finish: 3}, {begin: 3, finish: 4}])
+  example add_booking([{begin: 1, finish: 3}], 3, 4, 1) == err("conflict")
+  example add_booking([], 4, 4, 0) == err("invalid range")
+  example add_booking([], 4, 5, -1) == err("invalid gap")
+do
+  if begin >= finish then
+    return err("invalid range")
+  end if
+  if gap < 0 then
+    return err("invalid gap")
+  end if
+  if any_clash(bookings, begin, finish, gap, 0) then
+    return err("conflict")
+  end if
+  return ok(insert_from(bookings, {begin: begin, finish: finish}, 0, [], false))
+end fn

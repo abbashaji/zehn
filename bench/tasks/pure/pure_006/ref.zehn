@@ -1,0 +1,36 @@
+fn reduce_from(n: Int, taken: Int, cap: Int) -> Result<Int, Text>
+  intent "steps needed to reduce n to 1 when taken steps are already used and at most cap are allowed"
+  requires n >= 1
+  requires taken >= 0
+  example reduce_from(4, 0, 10) == ok(5)
+  example reduce_from(4, 0, 4) == err("step limit exceeded")
+  example reduce_from(1, 7, 7) == ok(7)
+do
+  if n == 1 then
+    return ok(taken)
+  else
+    if taken >= cap then
+      return err("step limit exceeded")
+    else
+      if n % 3 == 0 then
+        return reduce_from(n / 3, taken + 1, cap)
+      else
+        return reduce_from(n + 1, taken + 1, cap)
+      end if
+    end if
+  end if
+end fn
+
+fn reduce_steps(n: Int, cap: Int) -> Result<Int, Text>
+  intent "step count to reduce n to 1 within cap steps, or an error"
+  requires cap >= 0
+  example reduce_steps(4, 10) == ok(5)
+  example reduce_steps(0, 10) == err("start must be positive")
+  example reduce_steps(3, 0) == err("step limit exceeded")
+do
+  if n < 1 then
+    return err("start must be positive")
+  else
+    return reduce_from(n, 0, cap)
+  end if
+end fn

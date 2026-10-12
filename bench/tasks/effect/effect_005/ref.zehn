@@ -1,0 +1,70 @@
+fn apply_move(balance: Int, amount: Int) -> Option<Int>
+  intent "the new balance, or none when the move would take the balance below zero"
+  requires balance >= 0
+  ensures option.is_some(out) implies option.unwrap_or(out, 0 - 1) >= 0
+  example apply_move(100, 50) == some(150)
+  example apply_move(100, 0 - 100) == some(0)
+  example apply_move(100, 0 - 101) == none
+do
+  if balance + amount < 0 then
+    return none
+  else
+    return some(balance + amount)
+  end if
+end fn
+
+fn accepted_line(n: Int, balance: Int) -> Text
+  intent "the line for an applied move: its number and the new balance"
+  example accepted_line(1, 150) == "move 1 ok: balance 150"
+  example accepted_line(12, 0) == "move 12 ok: balance 0"
+do
+  return text.concat("move ", text.concat(int.to_text(n), text.concat(" ok: balance ", int.to_text(balance))))
+end fn
+
+fn rejected_line(n: Int, amount: Int) -> Text
+  intent "the line for a refused move: its number and the amount"
+  example rejected_line(2, 0 - 500) == "move 2 rejected: -500"
+  example rejected_line(3, 0 - 1) == "move 3 rejected: -1"
+do
+  return text.concat("move ", text.concat(int.to_text(n), text.concat(" rejected: ", int.to_text(amount))))
+end fn
+
+fn ledger_from(moves: List<Int>, i: Int, balance: Int) -> Int
+  intent "apply the moves from index i on and return the closing balance"
+  uses [console]
+  requires i >= 0
+  requires balance >= 0
+  ensures out >= 0
+  example apply_move(10, 5) == some(15)
+  example accepted_line(1, 15) == "move 1 ok: balance 15"
+do
+  match list.get(moves, i) do
+    case none =>
+      return balance
+    case some(amount) =>
+      match apply_move(balance, amount) do
+        case none =>
+          console.print(rejected_line(i + 1, amount))
+          return ledger_from(moves, i + 1, balance)
+        case some(next) =>
+          console.print(accepted_line(i + 1, next))
+          return ledger_from(moves, i + 1, next)
+      end match
+  end match
+end fn
+
+fn run_ledger(opening: Int, moves: List<Int>) -> Result<Int, Text>
+  intent "apply deposits and withdrawals in order, refusing any that overdraw, and return the closing balance"
+  uses [console]
+  ensures result.is_ok(out) == (opening >= 0)
+  example apply_move(5, 5) == some(10)
+  example apply_move(5, 0 - 6) == none
+do
+  if opening < 0 then
+    return err("negative opening balance")
+  else
+    let closing = ledger_from(moves, 0, opening)
+    console.print(text.concat("final: ", int.to_text(closing)))
+    return ok(closing)
+  end if
+end fn

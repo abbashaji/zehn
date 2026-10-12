@@ -1,0 +1,34 @@
+fn numbered_line(n: Int, item: Text) -> Text
+  intent "one output line: the number, a dot, a space and the item"
+  example numbered_line(1, "milk") == "1. milk"
+  example numbered_line(12, "") == "12. "
+do
+  return text.concat(int.to_text(n), text.concat(". ", item))
+end fn
+
+fn print_from(items: List<Text>, i: Int) -> Int
+  intent "print the items from index i on, numbered from i + 1, and count them"
+  uses [console]
+  requires i >= 0 and i <= list.len(items)
+  ensures out == list.len(items) - i
+  example numbered_line(1, "milk") == "1. milk"
+  example numbered_line(2, "eggs") == "2. eggs"
+do
+  match list.get(items, i) do
+    case none =>
+      return 0
+    case some(item) =>
+      console.print(numbered_line(i + 1, item))
+      return 1 + print_from(items, i + 1)
+  end match
+end fn
+
+fn print_numbered(items: List<Text>) -> Int
+  intent "print every item as a numbered line and return how many there are"
+  uses [console]
+  ensures out == list.len(items)
+  example numbered_line(1, "tea") == "1. tea"
+  example numbered_line(3, "jam") == "3. jam"
+do
+  return print_from(items, 0)
+end fn

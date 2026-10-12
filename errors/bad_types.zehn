@@ -1,0 +1,70 @@
+type Account = { balance: Int }
+type Money = { cents: Int }
+type Cart = { cents: Int }
+type AppError = NotFound | Invalid
+type OtherError = Oops
+
+fn label(n: Int) -> Text
+  example label(1) == "1"
+do
+  return n
+end fn
+
+fn add_text(a: Int, b: Text) -> Int
+  example add_text(1, "x") == 1
+do
+  return a + b
+end fn
+
+fn first(xs: List<Int>) -> Int
+  example first([1]) == 1
+do
+  return list.get(xs, 0)
+end fn
+
+fn lookup(id: Int) -> Result<Int, AppError>
+  example lookup(1) == ok(1)
+do
+  return ok(id)
+end fn
+
+fn wrong_err(id: Int) -> Result<Int, OtherError>
+  example wrong_err(1) == ok(1)
+do
+  let v = lookup(id)?
+  return ok(v)
+end fn
+
+fn bad_field(a: Account) -> Int
+  example bad_field({balance: 1}) == 1
+do
+  return a.cash
+end fn
+
+fn ambiguous() -> Int
+  example ambiguous() == 1
+do
+  let m = {cents: 5}
+  return 1
+end fn
+
+fn bad_call(a: Account) -> Int
+  example bad_call({balance: 1}) == 1
+do
+  return int.abs(a)
+end fn
+
+fn wrong_arity(n: Int) -> Int
+  example wrong_arity(1) == 1
+do
+  return int.max(n)
+end fn
+
+fn bad_cond(n: Int) -> Int
+  example bad_cond(1) == 1
+do
+  if n then
+    return 1
+  end if
+  return 0
+end fn

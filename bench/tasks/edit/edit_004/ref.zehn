@@ -1,0 +1,43 @@
+type Employee = { name: Text, dept: Text, salary: Int, active: Bool }
+
+fn counts(e: Employee, dept: Option<Text>) -> Bool
+  intent "an employee counts when active and, if a department is given, in it (ignoring letter case)"
+  example counts({name: "ana", dept: "Ops", salary: 1, active: true}, none) == true
+  example counts({name: "ana", dept: "Ops", salary: 1, active: true}, some("OPS")) == true
+  example counts({name: "ana", dept: "Ops", salary: 1, active: true}, some("Dev")) == false
+  example counts({name: "ana", dept: "Ops", salary: 1, active: false}, none) == false
+do
+  if not e.active then
+    return false
+  end if
+  match dept do
+    case none =>
+      return true
+    case some(d) =>
+      return text.to_upper(e.dept) == text.to_upper(d)
+  end match
+end fn
+
+fn payroll_from(staff: List<Employee>, i: Int, dept: Option<Text>) -> Int
+  intent "sum the salaries of counting employees from index i on"
+  example payroll_from([], 0, none) == 0
+  example payroll_from([{name: "a", dept: "X", salary: 5, active: true}], 0, some("x")) == 5
+do
+  match list.get(staff, i) do
+    case none =>
+      return 0
+    case some(e) =>
+      if counts(e, dept) then
+        return e.salary + payroll_from(staff, i + 1, dept)
+      end if
+      return payroll_from(staff, i + 1, dept)
+  end match
+end fn
+
+fn payroll_total(staff: List<Employee>, dept: Option<Text>) -> Int
+  intent "total salary of active employees, optionally of one department only"
+  example payroll_total([], none) == 0
+  example payroll_total([{name: "a", dept: "X", salary: 5, active: true}, {name: "b", dept: "Y", salary: 7, active: true}], some("y")) == 7
+do
+  return payroll_from(staff, 0, dept)
+end fn

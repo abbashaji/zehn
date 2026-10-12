@@ -1,0 +1,51 @@
+type Item = { name: Text, qty: Int, cents: Int }
+
+fn money(c: Int) -> Text
+  intent "format a non-negative amount of cents as dollars.cents with two cent digits"
+  requires c >= 0
+  example money(0) == "0.00"
+  example money(1205) == "12.05"
+  example money(99) == "0.99"
+do
+  let rem = c % 100
+  let cents_text = pad2(rem)
+  return text.concat(text.concat(int.to_text(c / 100), "."), cents_text)
+end fn
+
+fn pad2(n: Int) -> Text
+  intent "two-digit text of 0..99"
+  example pad2(5) == "05"
+  example pad2(42) == "42"
+do
+  if n < 10 then
+    return text.concat("0", int.to_text(n))
+  end if
+  return int.to_text(n)
+end fn
+
+fn render_from(items: List<Item>, i: Int, total: Int) -> Result<Text, Text>
+  intent "invoice lines for the items at index i and later, ending with the grand total"
+  example render_from([], 0, 250) == ok("TOTAL 2.50")
+  example render_from([{name: "pen", qty: 2, cents: 150}], 0, 0) == ok("pen x2 @ 1.50 = 3.00; TOTAL 3.00")
+do
+  match list.get(items, i) do
+    case none =>
+      return ok(text.concat("TOTAL ", money(total)))
+    case some(it) =>
+      if it.qty <= 0 or it.cents < 0 then
+        return err(text.concat("invalid item: ", it.name))
+      end if
+      let rest = render_from(items, i + 1, total + it.qty * it.cents)?
+      let line = text.concat(text.concat(text.concat(text.concat(text.concat(it.name, " x"), int.to_text(it.qty)), " @ "), money(it.cents)), text.concat(" = ", money(it.qty * it.cents)))
+      return ok(text.concat(text.concat(line, "; "), rest))
+  end match
+end fn
+
+fn invoice(items: List<Item>) -> Result<Text, Text>
+  intent "one line per item (name, quantity, unit price, line amount) then the total, joined with semicolons; an item with quantity below 1 or a negative price is an error naming the first such item"
+  example invoice([]) == ok("TOTAL 0.00")
+  example invoice([{name: "pen", qty: 0, cents: 100}]) == err("invalid item: pen")
+  example invoice([{name: "pen", qty: 2, cents: 150}, {name: "ink", qty: 1, cents: 5}]) == ok("pen x2 @ 1.50 = 3.00; ink x1 @ 0.05 = 0.05; TOTAL 3.05")
+do
+  return render_from(items, 0, 0)
+end fn

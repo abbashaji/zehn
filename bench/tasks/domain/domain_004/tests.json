@@ -1,0 +1,16 @@
+[
+  {"args": [[{"name": "ann", "score": 95}, {"name": "bob", "score": 85}, {"name": "cy", "score": 75}, {"name": "di", "score": 65}, {"name": "ed", "score": 55}], 0], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "A"}, {"name": "bob", "grade": "B"}, {"name": "cy", "grade": "C"}, {"name": "di", "grade": "D"}, {"name": "ed", "grade": "F"}]]}},
+  {"args": [[{"name": "ann", "score": 95}, {"name": "bob", "score": 85}, {"name": "cy", "score": 75}, {"name": "di", "score": 65}, {"name": "ed", "score": 55}], 10], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "A"}, {"name": "bob", "grade": "A"}, {"name": "cy", "grade": "B"}, {"name": "di", "grade": "C"}, {"name": "ed", "grade": "D"}]]}},
+  {"args": [[{"name": "a", "score": 90}, {"name": "b", "score": 89}, {"name": "c", "score": 80}, {"name": "d", "score": 79}, {"name": "e", "score": 70}, {"name": "f", "score": 69}, {"name": "g", "score": 60}, {"name": "h", "score": 59}], 0], "expect": {"$": "ok", "args": [[{"name": "a", "grade": "A"}, {"name": "b", "grade": "B"}, {"name": "c", "grade": "B"}, {"name": "d", "grade": "C"}, {"name": "e", "grade": "C"}, {"name": "f", "grade": "D"}, {"name": "g", "grade": "D"}, {"name": "h", "grade": "F"}]]}},
+  {"args": [[], 0], "expect": {"$": "ok", "args": [[]]}},
+  {"args": [[], -1], "expect": {"$": "err", "args": ["curve must not be negative"]}},
+  {"args": [[{"name": "ann", "score": 95}, {"name": "bob", "score": 85}, {"name": "cy", "score": 75}, {"name": "di", "score": 65}, {"name": "ed", "score": 55}], -5], "expect": {"$": "err", "args": ["curve must not be negative"]}},
+  {"args": [[{"name": "ann", "score": 101}], 0], "expect": {"$": "err", "args": ["invalid score for ann"]}},
+  {"args": [[{"name": "ann", "score": 50}, {"name": "bob", "score": -1}, {"name": "cy", "score": 200}], 0], "expect": {"$": "err", "args": ["invalid score for bob"]}},
+  {"args": [[{"name": "top", "score": 100}, {"name": "zed", "score": 0}], 0], "expect": {"$": "ok", "args": [[{"name": "top", "grade": "A"}, {"name": "zed", "grade": "F"}]]}},
+  {"args": [[{"name": "ann", "score": 100}], 5], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "A"}]]}},
+  {"args": [[{"name": "ann", "score": 0}], 1000000], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "A"}]]}},
+  {"args": [[{"name": "ann", "score": 59}], 1], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "D"}]]}},
+  {"args": [[{"name": "ann", "score": 58}], 1], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "F"}]]}},
+  {"args": [[{"name": "ann", "score": 85}], 5], "expect": {"$": "ok", "args": [[{"name": "ann", "grade": "A"}]]}}
+]

@@ -1,0 +1,21 @@
+{
+  "id": "pure_002",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Next scheduled tick",
+  "description": "A job runs on a fixed grid of ticks at 0, step, 2*step, 3*step and so on. Given the current time n (n >= 0) and the grid spacing step (step >= 1), return the first grid tick that is strictly later than n. A time that lies exactly on a tick still moves on to the following tick.",
+  "entry": "next_tick",
+  "params": [
+    {"name": "n", "type": "Int"},
+    {"name": "step", "type": "Int"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [11, 5], "expect": 15},
+    {"args": [10, 5], "expect": 15}
+  ],
+  "notes": "Strictly-later rule is the trap (on-tick inputs). Inputs are never negative; the largest test stays below 2^53 so TypeScript is exact."
+}

@@ -1,0 +1,123 @@
+{
+  "id": "domain_004",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Letter grades with a curve",
+  "description": "A class roster is a list of students, each with a name and an integer score. Write assign_grades, which takes the roster and a curve (a number of bonus points) and returns a list of graded students in the same order, each with the student's name and a letter grade. A student's adjusted score is the score plus the curve, but never more than 100. The letter is \"A\" for an adjusted score of 90 or more, \"B\" for 80 or more, \"C\" for 70 or more, \"D\" for 60 or more, and \"F\" otherwise. Checks happen in this order, and the first failing one decides the result: a negative curve gives the error \"curve must not be negative\" (even for an empty roster); then the roster is read from the front, and the first student whose own score, before any curve, is below 0 or above 100 gives \"invalid score for \" followed by that student's name. An empty roster with a valid curve gives an empty list.",
+  "entry": "assign_grades",
+  "params": [
+    {
+      "name": "students",
+      "type": "List<Student>"
+    },
+    {
+      "name": "curve",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Graded>, Text>",
+  "types": [
+    {
+      "name": "Student",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "score",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "name": "Graded",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "grade",
+          "type": "Text"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "ann",
+            "score": 95
+          },
+          {
+            "name": "bob",
+            "score": 85
+          },
+          {
+            "name": "cy",
+            "score": 75
+          },
+          {
+            "name": "di",
+            "score": 65
+          },
+          {
+            "name": "ed",
+            "score": 55
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "name": "ann",
+              "grade": "A"
+            },
+            {
+              "name": "bob",
+              "grade": "B"
+            },
+            {
+              "name": "cy",
+              "grade": "C"
+            },
+            {
+              "name": "di",
+              "grade": "D"
+            },
+            {
+              "name": "ed",
+              "grade": "F"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "ann",
+            "score": 101
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid score for ann"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: two record types, a whole-list validation with the first offender reported, and threshold buckets. Pitfalls: the curve is added after validating the raw score; the cap at 100 matters only for the letter; a bad curve beats everything."
+}

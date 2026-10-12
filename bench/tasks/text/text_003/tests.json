@@ -1,0 +1,12 @@
+[
+  {"args": ["the cat and the dog", "the"], "expect": 2},
+  {"args": ["", "the"], "expect": 0},
+  {"args": ["the", "the"], "expect": 1},
+  {"args": ["The the  the", "the"], "expect": 2},
+  {"args": ["theory of the thing", "the"], "expect": 1},
+  {"args": ["a a a a", "a"], "expect": 4},
+  {"args": ["  a  ", "a"], "expect": 1},
+  {"args": ["one two three", "four"], "expect": 0},
+  {"args": ["go go go", "go go"], "expect": 0},
+  {"args": ["x", "xx"], "expect": 0}
+]

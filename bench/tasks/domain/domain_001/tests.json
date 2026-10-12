@@ -1,0 +1,16 @@
+[
+  {"args": [{"owner": "ann", "balance": 100, "overdraft": 0}, 30], "expect": {"$": "ok", "args": [{"owner": "ann", "balance": 70, "overdraft": 0}]}},
+  {"args": [{"owner": "ann", "balance": 10, "overdraft": 0}, 30], "expect": {"$": "err", "args": ["insufficient funds"]}},
+  {"args": [{"owner": "ann", "balance": 100, "overdraft": 0}, 100], "expect": {"$": "ok", "args": [{"owner": "ann", "balance": 0, "overdraft": 0}]}},
+  {"args": [{"owner": "ann", "balance": 100, "overdraft": 0}, 101], "expect": {"$": "err", "args": ["insufficient funds"]}},
+  {"args": [{"owner": "bob", "balance": 10, "overdraft": 50}, 60], "expect": {"$": "ok", "args": [{"owner": "bob", "balance": -50, "overdraft": 50}]}},
+  {"args": [{"owner": "bob", "balance": 10, "overdraft": 50}, 61], "expect": {"$": "err", "args": ["insufficient funds"]}},
+  {"args": [{"owner": "bob", "balance": 10, "overdraft": 50}, 0], "expect": {"$": "err", "args": ["amount must be positive"]}},
+  {"args": [{"owner": "bob", "balance": 10, "overdraft": 50}, -5], "expect": {"$": "err", "args": ["amount must be positive"]}},
+  {"args": [{"owner": "cy", "balance": -20, "overdraft": 30}, 10], "expect": {"$": "ok", "args": [{"owner": "cy", "balance": -30, "overdraft": 30}]}},
+  {"args": [{"owner": "cy", "balance": -20, "overdraft": 30}, 11], "expect": {"$": "err", "args": ["insufficient funds"]}},
+  {"args": [{"owner": "di", "balance": 0, "overdraft": 0}, 0], "expect": {"$": "err", "args": ["amount must be positive"]}},
+  {"args": [{"owner": "di", "balance": 0, "overdraft": 0}, -1], "expect": {"$": "err", "args": ["amount must be positive"]}},
+  {"args": [{"owner": "", "balance": 5, "overdraft": 0}, 5], "expect": {"$": "ok", "args": [{"owner": "", "balance": 0, "overdraft": 0}]}},
+  {"args": [{"owner": "big", "balance": 4000000000000000, "overdraft": 0}, 3999999999999999], "expect": {"$": "ok", "args": [{"owner": "big", "balance": 1, "overdraft": 0}]}}
+]

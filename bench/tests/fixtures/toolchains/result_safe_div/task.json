@@ -1,0 +1,37 @@
+{
+  "id": "pure_905",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Safe division",
+  "description": "Divide the first number by the second; fail with the message 'division by zero' when the divisor is zero.",
+  "entry": "safe_div",
+  "params": [
+    {
+      "name": "a",
+      "type": "Int"
+    },
+    {
+      "name": "b",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        10,
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          5
+        ]
+      }
+    }
+  ],
+  "notes": "fixture for the Result kind; non-negative only"
+}

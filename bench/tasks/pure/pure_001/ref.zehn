@@ -1,0 +1,28 @@
+fn weighted_from(points: List<Int>, weights: List<Int>, i: Int) -> Int
+  intent "sum of points[k] * weights[k] for every k >= i that exists in both lists"
+  requires i >= 0
+  example weighted_from([2, 3], [10, 1], 0) == 23
+  example weighted_from([2, 3], [10, 1], 1) == 3
+  example weighted_from([2, 3], [10, 1], 2) == 0
+do
+  match list.get(points, i) do
+    case none =>
+      return 0
+    case some(p) =>
+      match list.get(weights, i) do
+        case none =>
+          return 0
+        case some(w) =>
+          return p * w + weighted_from(points, weights, i + 1)
+      end match
+  end match
+end fn
+
+fn weighted_total(points: List<Int>, weights: List<Int>) -> Int
+  intent "weighted total over the positions present in both lists"
+  example weighted_total([2, 3, 4], [10, 1, 5]) == 43
+  example weighted_total([7, 7], [1]) == 7
+  example weighted_total([], []) == 0
+do
+  return weighted_from(points, weights, 0)
+end fn

@@ -1,0 +1,27 @@
+{
+  "id": "pure_902",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Is the number even",
+  "description": "Return true when the non-negative integer is even.",
+  "entry": "is_even",
+  "params": [
+    {
+      "name": "n",
+      "type": "Int"
+    }
+  ],
+  "returns": "Bool",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        4
+      ],
+      "expect": true
+    }
+  ],
+  "notes": "fixture for the Bool kind; non-negative only"
+}

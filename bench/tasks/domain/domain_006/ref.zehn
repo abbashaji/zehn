@@ -1,0 +1,81 @@
+type Stock = { sku: Text, on_hand: Int, reserved: Int }
+
+type Order = { sku: Text, qty: Int }
+
+fn find_stock(stock: List<Stock>, i: Int, sku: Text) -> Option<Stock>
+  intent "the stock line for sku, looking from index i on"
+  example find_stock([{sku: "a", on_hand: 5, reserved: 1}], 0, "a") == some({sku: "a", on_hand: 5, reserved: 1})
+  example find_stock([{sku: "a", on_hand: 5, reserved: 1}], 0, "b") == none
+do
+  match list.get(stock, i) do
+    case none =>
+      return none
+    case some(s) =>
+      if s.sku == sku then
+        return some(s)
+      end if
+      return find_stock(stock, i + 1, sku)
+  end match
+end fn
+
+fn add_reserved(stock: List<Stock>, i: Int, sku: Text, qty: Int) -> List<Stock>
+  intent "copy of the stock lines from index i on, with qty more reserved on the line for sku"
+  example add_reserved([{sku: "a", on_hand: 5, reserved: 1}], 0, "a", 2) == [{sku: "a", on_hand: 5, reserved: 3}]
+  example add_reserved([{sku: "a", on_hand: 5, reserved: 1}], 0, "b", 2) == [{sku: "a", on_hand: 5, reserved: 1}]
+do
+  match list.get(stock, i) do
+    case none =>
+      return []
+    case some(s) =>
+      let rest = add_reserved(stock, i + 1, sku, qty)
+      if s.sku == sku then
+        return list.concat([{sku: s.sku, on_hand: s.on_hand, reserved: s.reserved + qty}], rest)
+      end if
+      return list.concat([s], rest)
+  end match
+end fn
+
+fn reserve_one(stock: List<Stock>, order: Order) -> Result<List<Stock>, Text>
+  intent "reserve one order against the stock lines, or explain why it cannot be done"
+  example reserve_one([{sku: "a", on_hand: 5, reserved: 1}], {sku: "a", qty: 4}) == ok([{sku: "a", on_hand: 5, reserved: 5}])
+  example reserve_one([{sku: "a", on_hand: 5, reserved: 1}], {sku: "a", qty: 5}) == err("cannot reserve 5 of a: only 4 available")
+  example reserve_one([{sku: "a", on_hand: 5, reserved: 1}], {sku: "b", qty: 1}) == err("unknown sku: b")
+  example reserve_one([{sku: "a", on_hand: 5, reserved: 1}], {sku: "a", qty: 0}) == err("invalid quantity for a")
+do
+  if order.qty <= 0 then
+    return err(text.concat("invalid quantity for ", order.sku))
+  end if
+  match find_stock(stock, 0, order.sku) do
+    case none =>
+      return err(text.concat("unknown sku: ", order.sku))
+    case some(s) =>
+      let available = s.on_hand - s.reserved
+      if available < order.qty then
+        return err(text.concat(text.concat(text.concat(text.concat("cannot reserve ", int.to_text(order.qty)), text.concat(" of ", order.sku)), ": only "), text.concat(int.to_text(available), " available")))
+      end if
+      return ok(add_reserved(stock, 0, order.sku, order.qty))
+  end match
+end fn
+
+fn reserve_from(stock: List<Stock>, orders: List<Order>, i: Int) -> Result<List<Stock>, Text>
+  intent "reserve the orders from index i on, one after the other; the first failure stops everything"
+  example reserve_from([{sku: "a", on_hand: 5, reserved: 0}], [{sku: "a", qty: 2}, {sku: "a", qty: 2}], 0) == ok([{sku: "a", on_hand: 5, reserved: 4}])
+  example reserve_from([{sku: "a", on_hand: 5, reserved: 0}], [{sku: "a", qty: 3}, {sku: "a", qty: 3}], 0) == err("cannot reserve 3 of a: only 2 available")
+do
+  match list.get(orders, i) do
+    case none =>
+      return ok(stock)
+    case some(o) =>
+      let next = reserve_one(stock, o)?
+      return reserve_from(next, orders, i + 1)
+  end match
+end fn
+
+fn reserve_orders(stock: List<Stock>, orders: List<Order>) -> Result<List<Stock>, Text>
+  intent "reserve all orders in sequence against the stock, all or nothing; stock lines keep their order and on_hand"
+  ensures result.is_ok(out) implies list.len(result.unwrap(out)) == list.len(stock)
+  example reserve_orders([{sku: "a", on_hand: 5, reserved: 0}], []) == ok([{sku: "a", on_hand: 5, reserved: 0}])
+  example reserve_orders([{sku: "a", on_hand: 5, reserved: 0}, {sku: "b", on_hand: 2, reserved: 0}], [{sku: "b", qty: 2}]) == ok([{sku: "a", on_hand: 5, reserved: 0}, {sku: "b", on_hand: 2, reserved: 2}])
+do
+  return reserve_from(stock, orders, 0)
+end fn

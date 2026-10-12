@@ -1,0 +1,46 @@
+fn is_long(word: Text, min_len: Int) -> Bool
+  intent "true when the word has at least min_len characters"
+  example is_long("hello", 5) == true
+  example is_long("hi", 5) == false
+do
+  return text.len(word) >= min_len
+end fn
+
+fn long_line(word: Text) -> Text
+  intent "the output line for one long word"
+  example long_line("hello") == "LONG: hello"
+  example long_line("") == "LONG: "
+do
+  return text.concat("LONG: ", word)
+end fn
+
+fn log_from(words: List<Text>, min_len: Int, i: Int) -> Int
+  intent "print the long words from index i on and count them"
+  uses [console]
+  requires i >= 0
+  ensures out >= 0
+  example is_long("kiwi", 4) == true
+  example long_line("kiwi") == "LONG: kiwi"
+do
+  match list.get(words, i) do
+    case none =>
+      return 0
+    case some(word) =>
+      if is_long(word, min_len) then
+        console.print(long_line(word))
+        return 1 + log_from(words, min_len, i + 1)
+      else
+        return log_from(words, min_len, i + 1)
+      end if
+  end match
+end fn
+
+fn log_long_words(words: List<Text>, min_len: Int) -> Int
+  intent "print each word of at least min_len characters and return how many were printed"
+  uses [console]
+  ensures out >= 0 and out <= list.len(words)
+  example is_long("pear", 3) == true
+  example is_long("fig", 4) == false
+do
+  return log_from(words, min_len, 0)
+end fn

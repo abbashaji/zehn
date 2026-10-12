@@ -1,0 +1,21 @@
+{
+  "id": "pure_006",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Batch reduction with step cap",
+  "description": "A batch of n units is reduced until exactly 1 unit is left. One reduction step works like this: if the current size is divisible by 3, it becomes one third of itself; otherwise it grows by 1. Count the steps needed to get from n to 1 (n = 1 needs 0 steps). The caller allows at most cap steps (cap >= 0). Return Ok with the step count if 1 is reached using at most cap steps. Return Err with the message 'step limit exceeded' if more than cap steps would be needed. If n is less than 1, return Err with the message 'start must be positive' (this is checked before anything else).",
+  "entry": "reduce_steps",
+  "params": [
+    {"name": "n", "type": "Int"},
+    {"name": "cap", "type": "Int"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [4, 10], "expect": {"$": "ok", "args": [5]}},
+    {"args": [4, 3], "expect": {"$": "err", "args": ["step limit exceeded"]}}
+  ],
+  "notes": "Exactly cap steps must still succeed (boundary). n <= 0 is checked first even when cap is generous. Division only on positive values."
+}

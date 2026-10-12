@@ -1,0 +1,114 @@
+{
+  "id": "edit_005",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Money transfer between accounts",
+  "description": "Bug report for the account transfer function, which moves an amount from one account to another and returns the new list of accounts in the same order. Two symptoms: an account cannot send its whole balance (a transfer of exactly the balance is refused), and a transfer from an account to itself is accepted although money must never appear or vanish. Fix the program. The checks are made in this order and the first one that applies decides the error message: amount of 0 or less: \"invalid amount\"; same source and destination id: \"same account\"; source id not in the list: \"unknown source\"; destination id not in the list: \"unknown destination\"; source balance smaller than the amount: \"insufficient funds\". Otherwise the source balance goes down and the destination balance goes up by the amount, all other accounts stay as they are. Account ids are unique.",
+  "entry": "transfer",
+  "params": [
+    {
+      "name": "accounts",
+      "type": "List<Account>"
+    },
+    {
+      "name": "from_id",
+      "type": "Int"
+    },
+    {
+      "name": "to_id",
+      "type": "Int"
+    },
+    {
+      "name": "amount",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Account>, Text>",
+  "types": [
+    {
+      "name": "Account",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "balance",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "balance": 100
+          },
+          {
+            "id": 2,
+            "balance": 50
+          },
+          {
+            "id": 3,
+            "balance": 0
+          }
+        ],
+        1,
+        2,
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "id": 1,
+              "balance": 70
+            },
+            {
+              "id": 2,
+              "balance": 80
+            },
+            {
+              "id": 3,
+              "balance": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "balance": 100
+          },
+          {
+            "id": 2,
+            "balance": 50
+          },
+          {
+            "id": 3,
+            "balance": 0
+          }
+        ],
+        1,
+        2,
+        101
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "insufficient funds"
+        ]
+      }
+    }
+  ],
+  "notes": "Two bugs: the same-account check is missing; the funds check is balance <= amount (should be <). Error precedence is part of the description and is tested."
+}

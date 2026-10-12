@@ -1,0 +1,20 @@
+{
+  "id": "pure_003",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Streak lengths in readings",
+  "description": "A sensor logs one integer reading per time slot. A streak is a maximal block of consecutive readings that are all equal. Return the length of every streak, in the order the streaks occur. The lengths always add up to the number of readings. An empty log has no streaks.",
+  "entry": "streak_lengths",
+  "params": [
+    {"name": "readings", "type": "List<Int>"}
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[4, 4, 7, 4, 4, 4]], "expect": [2, 1, 3]},
+    {"args": [[]], "expect": []}
+  ],
+  "notes": "Only neighbours count: equal values separated by another value are different streaks. Needs a carried previous value and run counter."
+}

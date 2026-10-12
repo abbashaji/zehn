@@ -1,0 +1,142 @@
+{
+  "id": "domain_006",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Reserve a batch of orders against stock",
+  "description": "A warehouse keeps stock lines, each with a sku (text, unique), a quantity on hand and a quantity already reserved. The reserved quantity is never above the quantity on hand and never negative, and the function must keep it so. An order has a sku and a quantity. Write reserve_orders, which takes the stock lines and a list of orders and reserves the orders one after the other, in list order, each against the stock as left by the previous ones (so two orders for the same sku add up). It returns the new stock lines: the same lines in the same order, with the reserved quantities increased and the quantities on hand unchanged. The result is all or nothing: if any order fails, the whole result is the error of the first failing order and no stock is returned. For one order the checks happen in this order: a quantity of zero or less gives the error \"invalid quantity for \" followed by the sku; a sku with no stock line gives \"unknown sku: \" followed by the sku; a quantity larger than the available quantity (on hand minus reserved) gives \"cannot reserve \", the quantity, \" of \", the sku, \": only \", the available quantity and \" available\" (for example \"cannot reserve 5 of a: only 4 available\"). An empty order list returns the stock unchanged.",
+  "entry": "reserve_orders",
+  "params": [
+    {
+      "name": "stock",
+      "type": "List<Stock>"
+    },
+    {
+      "name": "orders",
+      "type": "List<Order>"
+    }
+  ],
+  "returns": "Result<List<Stock>, Text>",
+  "types": [
+    {
+      "name": "Stock",
+      "fields": [
+        {
+          "name": "sku",
+          "type": "Text"
+        },
+        {
+          "name": "on_hand",
+          "type": "Int"
+        },
+        {
+          "name": "reserved",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "fields": [
+        {
+          "name": "sku",
+          "type": "Text"
+        },
+        {
+          "name": "qty",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "sku": "a",
+            "on_hand": 10,
+            "reserved": 2
+          },
+          {
+            "sku": "b",
+            "on_hand": 5,
+            "reserved": 5
+          },
+          {
+            "sku": "c",
+            "on_hand": 0,
+            "reserved": 0
+          }
+        ],
+        [
+          {
+            "sku": "a",
+            "qty": 8
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "sku": "a",
+              "on_hand": 10,
+              "reserved": 10
+            },
+            {
+              "sku": "b",
+              "on_hand": 5,
+              "reserved": 5
+            },
+            {
+              "sku": "c",
+              "on_hand": 0,
+              "reserved": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "sku": "a",
+            "on_hand": 10,
+            "reserved": 2
+          },
+          {
+            "sku": "b",
+            "on_hand": 5,
+            "reserved": 5
+          },
+          {
+            "sku": "c",
+            "on_hand": 0,
+            "reserved": 0
+          }
+        ],
+        [
+          {
+            "sku": "a",
+            "qty": 4
+          },
+          {
+            "sku": "a",
+            "qty": 5
+          }
+        ]
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "cannot reserve 5 of a: only 4 available"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: two record types, sequential state threading, all-or-nothing semantics, invariant reserved <= on_hand. Pitfalls: orders for the same sku accumulate; the quantity check precedes the sku lookup (an order with qty 0 for an unknown sku is a quantity error); the available count in the message is after earlier orders in the same batch."
+}

@@ -1,0 +1,13 @@
+[
+  {"args": ["a=1;b=2", "b"], "expect": {"$": "some", "args": ["2"]}},
+  {"args": ["a=1;b=2", "c"], "expect": {"$": "none"}},
+  {"args": ["", "a"], "expect": {"$": "none"}},
+  {"args": ["a=;b=x=y;b=7", "b"], "expect": {"$": "some", "args": ["7"]}},
+  {"args": ["a=", "a"], "expect": {"$": "some", "args": [""]}},
+  {"args": ["a=1;a=2", "a"], "expect": {"$": "some", "args": ["1"]}},
+  {"args": ["noequals;k=v", "k"], "expect": {"$": "some", "args": ["v"]}},
+  {"args": ["k=v", "K"], "expect": {"$": "none"}},
+  {"args": ["k=1=2", "k"], "expect": {"$": "none"}},
+  {"args": ["=x;y=1", ""], "expect": {"$": "some", "args": ["x"]}},
+  {"args": ["a=1;;b=2", "b"], "expect": {"$": "some", "args": ["2"]}}
+]

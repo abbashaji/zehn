@@ -1,0 +1,46 @@
+{
+  "id": "text_004",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Look up a setting by name",
+  "description": "A configuration text holds entries separated by semicolons; each entry should look like name=value. Return the value of the first entry whose name is exactly the given key, or none if there is no such entry. An entry is valid only if it contains exactly one equals sign; entries with none or with several are ignored (they never match). A value may be empty. Names are compared case-sensitively. An empty configuration has no entries that match.",
+  "entry": "lookup_value",
+  "params": [
+    {
+      "name": "config",
+      "type": "Text"
+    },
+    {
+      "name": "key",
+      "type": "Text"
+    }
+  ],
+  "returns": "Option<Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "a=1;b=2",
+        "b"
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          "2"
+        ]
+      }
+    },
+    {
+      "args": [
+        "a=1;b=2",
+        "c"
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "Ignored entries (zero or two or more equals signs) do not stop the search; first valid match wins; empty value is some(\"\"), not none. The empty key matches an entry like \"=x\"."
+}

@@ -1,0 +1,44 @@
+type Line = { name: Text, qty: Int, price: Int }
+
+fn subtotal(l: Line) -> Int
+  intent "quantity times unit price"
+  example subtotal({name: "pen", qty: 3, price: 150}) == 450
+  example subtotal({name: "gift", qty: 0, price: 999}) == 0
+do
+  return l.qty * l.price
+end fn
+
+fn line_text(l: Line) -> Text
+  intent "the invoice line: name x qty @ price = subtotal"
+  example line_text({name: "pen", qty: 3, price: 150}) == "pen x 3 @ 150 = 450"
+  example line_text({name: "ink", qty: 1, price: 0}) == "ink x 1 @ 0 = 0"
+do
+  return text.concat(l.name, text.concat(" x ", text.concat(int.to_text(l.qty), text.concat(" @ ", text.concat(int.to_text(l.price), text.concat(" = ", int.to_text(subtotal(l))))))))
+end fn
+
+fn print_lines(lines: List<Line>, i: Int) -> Int
+  intent "print the lines from index i on and return the sum of their subtotals"
+  uses [console]
+  requires i >= 0
+  example subtotal({name: "pen", qty: 2, price: 5}) == 10
+  example line_text({name: "pen", qty: 2, price: 5}) == "pen x 2 @ 5 = 10"
+do
+  match list.get(lines, i) do
+    case none =>
+      return 0
+    case some(l) =>
+      console.print(line_text(l))
+      return subtotal(l) + print_lines(lines, i + 1)
+  end match
+end fn
+
+fn print_invoice(lines: List<Line>) -> Int
+  intent "print one line per entry, then a TOTAL line, and return the total"
+  uses [console]
+  example subtotal({name: "a", qty: 2, price: 3}) == 6
+  example line_text({name: "a", qty: 2, price: 3}) == "a x 2 @ 3 = 6"
+do
+  let total = print_lines(lines, 0)
+  console.print(text.concat("TOTAL: ", int.to_text(total)))
+  return total
+end fn

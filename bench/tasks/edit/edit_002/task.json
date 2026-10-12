@@ -1,0 +1,46 @@
+{
+  "id": "edit_002",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Percent coupon on a cart total",
+  "description": "Feature request for the shop's cart total. Today the function returns the sum of the item prices (in cents) and ignores its second parameter, an optional coupon. Make the coupon work: with no coupon the result is the plain sum; with a coupon of p percent the customer gets p percent of the sum off, where the discount is rounded down to a whole cent. A coupon below 0 counts as 0 and a coupon above 100 counts as 100. Prices are never negative.",
+  "entry": "cart_total",
+  "params": [
+    {
+      "name": "prices",
+      "type": "List<Int>"
+    },
+    {
+      "name": "coupon",
+      "type": "Option<Int>"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1000,
+          500
+        ],
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 1500
+    },
+    {
+      "args": [
+        [],
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Feature: apply the clamped percent discount, discount = sum * pct / 100 rounded down (all operands non-negative, so no sign-rule issue)."
+}

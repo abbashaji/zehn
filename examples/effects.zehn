@@ -1,0 +1,24 @@
+-- Effects are declared in `uses` and must also be granted by the host at run time.
+fn log_line(msg: Text) -> Unit
+  uses [console]
+do
+  return console.print(msg)
+end fn
+
+fn greet(name: Text) -> Unit
+  uses [console]
+do
+  return log_line(text.concat("hello, ", name))
+end fn
+
+fn stamp() -> Int
+  uses [time.now]
+do
+  return time.now()
+end fn
+
+fn pure_len(t: Text) -> Int
+  example pure_len("abc") == 3
+do
+  return text.len(t)
+end fn

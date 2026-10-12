@@ -1,0 +1,43 @@
+{
+  "id": "edit_001",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Senior ticket price starts at 65",
+  "description": "Bug report for the museum ticket price function: a visitor who is exactly 65 years old is charged the adult price, but the senior price applies from age 65 on. Fix the program. The complete rule is: a negative age is an error with the message \"invalid age\"; ages 0 to 4 pay 0; ages 5 to 17 pay 800; ages 18 to 64 pay 1500; ages 65 and older pay 1000. Prices are in cents.",
+  "entry": "ticket_price",
+  "params": [
+    {
+      "name": "age",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          1500
+        ]
+      }
+    },
+    {
+      "args": [
+        -1
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid age"
+        ]
+      }
+    }
+  ],
+  "notes": "Bug: the adult-price test uses <= 65 instead of < 65. Only the age 65 boundary fails; every other band is already right."
+}

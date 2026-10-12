@@ -1,0 +1,17 @@
+[
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 12, 14, 0], "expect": {"$": "ok", "args": [[{"begin": 10, "finish": 12}, {"begin": 12, "finish": 14}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 12, 14, 1], "expect": {"$": "err", "args": ["conflict"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 17, 19, 0], "expect": {"$": "ok", "args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 17, "finish": 19}, {"begin": 20, "finish": 25}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 17, 19, 1], "expect": {"$": "ok", "args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 17, "finish": 19}, {"begin": 20, "finish": 25}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 17, 19, 2], "expect": {"$": "err", "args": ["conflict"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 0, 5, 3], "expect": {"$": "ok", "args": [[{"begin": 0, "finish": 5}, {"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 26, 30, 0], "expect": {"$": "ok", "args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}, {"begin": 26, "finish": 30}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 5, 5, 0], "expect": {"$": "err", "args": ["invalid range"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 6, 5, 0], "expect": {"$": "err", "args": ["invalid range"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 30, 40, -1], "expect": {"$": "err", "args": ["invalid gap"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 5, 5, -1], "expect": {"$": "err", "args": ["invalid range"]}},
+  {"args": [[], 5, 8, 0], "expect": {"$": "ok", "args": [[{"begin": 5, "finish": 8}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 11, 15, 0], "expect": {"$": "err", "args": ["conflict"]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 9, 10, 0], "expect": {"$": "ok", "args": [[{"begin": 9, "finish": 10}, {"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}]]}},
+  {"args": [[{"begin": 10, "finish": 12}, {"begin": 14, "finish": 16}, {"begin": 20, "finish": 25}], 10, 12, 0], "expect": {"$": "err", "args": ["conflict"]}}
+]

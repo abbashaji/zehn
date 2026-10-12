@@ -1,0 +1,79 @@
+{
+  "id": "domain_001",
+  "category": "domain",
+  "level": 1,
+  "kind": "write",
+  "title": "Withdraw from an account with an overdraft limit",
+  "description": "A bank account has an owner name, a balance and an overdraft limit (the limit is never negative). Write withdraw, which takes an account and an amount and returns the account after the withdrawal, with only the balance changed. The balance may fall below zero, but never below minus the overdraft limit: a withdrawal that ends exactly at that floor is allowed. Checks happen in this order, and the first failing one decides the result: an amount that is zero or negative gives the error \"amount must be positive\"; a withdrawal that would push the balance below the floor gives the error \"insufficient funds\". Both error messages must match exactly.",
+  "entry": "withdraw",
+  "params": [
+    {
+      "name": "acct",
+      "type": "Account"
+    },
+    {
+      "name": "amount",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Account, Text>",
+  "types": [
+    {
+      "name": "Account",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "Text"
+        },
+        {
+          "name": "balance",
+          "type": "Int"
+        },
+        {
+          "name": "overdraft",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        {
+          "owner": "ann",
+          "balance": 100,
+          "overdraft": 0
+        },
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          {
+            "owner": "ann",
+            "balance": 70,
+            "overdraft": 0
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        {
+          "owner": "ann",
+          "balance": 10,
+          "overdraft": 0
+        },
+        30
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "insufficient funds"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 1: one record, two guards. Pitfall: the amount check comes before the funds check (amount 0 on an empty account is an amount error). The floor is inclusive, balance may already be negative on entry."
+}

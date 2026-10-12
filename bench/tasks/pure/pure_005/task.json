@@ -1,0 +1,21 @@
+{
+  "id": "pure_005",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Idle time between meetings",
+  "description": "A room's bookings are given as two parallel lists: starts[i] and ends[i] are the start and end time of booking i. Bookings are listed in non-decreasing order of start time, but they may overlap or sit inside each other. Return Ok with the total idle time between the first start and the last moment of any booking: the total length of the stretches in that span that are covered by no booking. Bookings that overlap or just touch leave no idle time. Zero or one booking gives Ok(0). Check the input and return Err with exactly these messages: 'length mismatch' if the lists differ in length (checked first); otherwise go through the bookings from the first one and report the first problem found, where for a booking 'bad interval' (its end is earlier than its start) is checked before 'unsorted' (its start is earlier than the previous booking's start). Equal starts are allowed.",
+  "entry": "idle_time",
+  "params": [
+    {"name": "starts", "type": "List<Int>"},
+    {"name": "ends", "type": "List<Int>"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, 5], [3, 8]], "expect": {"$": "ok", "args": [2]}},
+    {"args": [[1, 2], [3]], "expect": {"$": "err", "args": ["length mismatch"]}}
+  ],
+  "notes": "Invariant: the furthest end seen so far (nested bookings must not pull it back). Error precedence is part of the spec and is tested with inputs that have two problems at once. The scan order matters only for those inputs."
+}

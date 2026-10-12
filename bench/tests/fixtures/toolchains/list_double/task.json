@@ -1,0 +1,33 @@
+{
+  "id": "pure_903",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Double every element",
+  "description": "Return a list with every element multiplied by two.",
+  "entry": "double_all",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expect": [
+        2,
+        4
+      ]
+    }
+  ],
+  "notes": "fixture for the List kind"
+}

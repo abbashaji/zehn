@@ -1,0 +1,60 @@
+-- Stock levels kept in an insertion-ordered Map.
+type StockError = OutOfStock | UnknownItem | InvalidQty
+
+fn add_stock(stock: Map<Text, Int>, item: Text, qty: Int) -> Map<Text, Int>
+  intent "افزودن موجودی به یک کالا؛ اگر کالا نبود با همین مقدار ساخته می‌شود"
+  requires qty > 0
+  ensures map.get(out, item) == some(option.unwrap_or(map.get(stock, item), 0) + qty)
+  example add_stock(map.empty(), "pen", 3) == map.set(map.empty(), "pen", 3)
+  example map.get(add_stock(map.set(map.empty(), "pen", 2), "pen", 3), "pen") == some(5)
+do
+  let current = option.unwrap_or(map.get(stock, item), 0)
+  return map.set(stock, item, current + qty)
+end fn
+
+fn remove_stock(stock: Map<Text, Int>, item: Text, qty: Int) -> Result<Map<Text, Int>, StockError>
+  intent "برداشتن موجودی؛ اگر کالا ناشناس یا موجودی ناکافی باشد خطا می‌دهد"
+  example remove_stock(map.set(map.empty(), "pen", 5), "pen", 2) == ok(map.set(map.empty(), "pen", 3))
+  example remove_stock(map.empty(), "pen", 1) == err(UnknownItem)
+  example remove_stock(map.set(map.empty(), "pen", 1), "pen", 2) == err(OutOfStock)
+  example remove_stock(map.set(map.empty(), "pen", 1), "pen", 0) == err(InvalidQty)
+do
+  if qty <= 0 then
+    return err(InvalidQty)
+  end if
+  match map.get(stock, item) do
+    case none =>
+      return err(UnknownItem)
+    case some(have) =>
+      if have < qty then
+        return err(OutOfStock)
+      end if
+      return ok(map.set(stock, item, have - qty))
+  end match
+end fn
+
+fn double(n: Int) -> Int
+  example double(4) == 8
+do
+  return n * 2
+end fn
+
+fn total_units(stock: Map<Text, Int>) -> Int
+  intent "جمع همه موجودی‌ها"
+  example total_units(map.set(map.set(map.empty(), "a", 2), "b", 5)) == 7
+  example total_units(map.empty()) == 0
+do
+  return list.sum(map.values(stock))
+end fn
+
+fn doubled_values(stock: Map<Text, Int>) -> List<Int>
+  example doubled_values(map.set(map.empty(), "a", 2)) == [4]
+do
+  return list.map(map.values(stock), double)
+end fn
+
+fn lower_stock_keys(stock: Map<Text, Int>) -> List<Text>
+  example lower_stock_keys(map.set(map.set(map.empty(), "b", 1), "a", 2)) == ["b", "a"]
+do
+  return map.keys(stock)
+end fn

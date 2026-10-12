@@ -1,0 +1,13 @@
+fn next_tick(n: Int, step: Int) -> Int
+  intent "first multiple of step that is strictly greater than n"
+  requires n >= 0
+  requires step >= 1
+  ensures out > n
+  ensures out <= n + step
+  ensures out % step == 0
+  example next_tick(11, 5) == 15
+  example next_tick(10, 5) == 15
+  example next_tick(0, 3) == 3
+do
+  return n - n % step + step
+end fn

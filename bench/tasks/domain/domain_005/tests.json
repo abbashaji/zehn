@@ -1,0 +1,22 @@
+[
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, [250]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 25, "tier": "bronze"}]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, []], "expect": {"$": "ok", "args": [{"name": "ann", "points": 0, "tier": "bronze"}]}},
+  {"args": [{"name": "ann", "points": 990, "tier": "bronze"}, [100]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 1000, "tier": "silver"}]}},
+  {"args": [{"name": "ann", "points": 1000, "tier": "silver"}, [100, 100]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 1040, "tier": "silver"}]}},
+  {"args": [{"name": "ann", "points": 4990, "tier": "silver"}, [100]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 5010, "tier": "gold"}]}},
+  {"args": [{"name": "ann", "points": 5000, "tier": "gold"}, [100]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 5030, "tier": "gold"}]}},
+  {"args": [{"name": "ann", "points": 9990, "tier": "gold"}, [1000]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 10000, "tier": "gold"}]}},
+  {"args": [{"name": "ann", "points": 10000, "tier": "gold"}, [5000]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 10000, "tier": "gold"}]}},
+  {"args": [{"name": "ann", "points": 900, "tier": "bronze"}, [1000, 1000, 1000]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 1400, "tier": "silver"}]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, [100, 200, -1, 50]], "expect": {"$": "err", "args": ["purchase 3: negative spend"]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, [-1]], "expect": {"$": "err", "args": ["purchase 1: negative spend"]}},
+  {"args": [{"name": "ann", "points": -1, "tier": "bronze"}, []], "expect": {"$": "err", "args": ["invalid member: points out of range"]}},
+  {"args": [{"name": "ann", "points": 10001, "tier": "gold"}, [10]], "expect": {"$": "err", "args": ["invalid member: points out of range"]}},
+  {"args": [{"name": "ann", "points": 5, "tier": "vip"}, [10]], "expect": {"$": "err", "args": ["unknown tier: vip"]}},
+  {"args": [{"name": "ann", "points": -5, "tier": "vip"}, [10]], "expect": {"$": "err", "args": ["invalid member: points out of range"]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, [0, 9]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 0, "tier": "bronze"}]}},
+  {"args": [{"name": "ann", "points": 1500, "tier": "bronze"}, []], "expect": {"$": "ok", "args": [{"name": "ann", "points": 1500, "tier": "bronze"}]}},
+  {"args": [{"name": "ann", "points": 1500, "tier": "bronze"}, [10]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 1501, "tier": "silver"}]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "gold"}, [99]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 27, "tier": "bronze"}]}},
+  {"args": [{"name": "ann", "points": 0, "tier": "bronze"}, [3000000000000000]], "expect": {"$": "ok", "args": [{"name": "ann", "points": 10000, "tier": "gold"}]}}
+]

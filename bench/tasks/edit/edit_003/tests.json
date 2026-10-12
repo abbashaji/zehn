@@ -1,0 +1,12 @@
+[
+  {"args": [[]], "expect": {"$": "none"}},
+  {"args": [[{"name": "pen", "price": 150, "stock": 10}, {"name": "ink", "price": 90, "stock": 3}, {"name": "pad", "price": 200, "stock": 1}]], "expect": {"$": "some", "args": ["ink"]}},
+  {"args": [[{"name": "pen", "price": 150, "stock": 0}, {"name": "ink", "price": 90, "stock": 0}]], "expect": {"$": "none"}},
+  {"args": [[{"name": "a", "price": 50, "stock": 0}, {"name": "b", "price": 100, "stock": 2}]], "expect": {"$": "some", "args": ["b"]}},
+  {"args": [[{"name": "a", "price": 100, "stock": 1}, {"name": "b", "price": 100, "stock": 5}]], "expect": {"$": "some", "args": ["a"]}},
+  {"args": [[{"name": "a", "price": 100, "stock": 1}, {"name": "b", "price": 80, "stock": 1}, {"name": "c", "price": 80, "stock": 2}]], "expect": {"$": "some", "args": ["b"]}},
+  {"args": [[{"name": "only", "price": 10, "stock": 1}]], "expect": {"$": "some", "args": ["only"]}},
+  {"args": [[{"name": "a", "price": 5, "stock": 0}]], "expect": {"$": "none"}},
+  {"args": [[{"name": "a", "price": 300, "stock": 1}, {"name": "b", "price": 200, "stock": 1}, {"name": "c", "price": 100, "stock": 1}]], "expect": {"$": "some", "args": ["c"]}},
+  {"args": [[{"name": "a", "price": 0, "stock": 1}, {"name": "b", "price": 5, "stock": 1}]], "expect": {"$": "some", "args": ["a"]}}
+]

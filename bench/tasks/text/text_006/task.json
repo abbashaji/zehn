@@ -1,0 +1,67 @@
+{
+  "id": "text_006",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Format an invoice",
+  "description": "Each item has a name, a quantity and a unit price in cents. Produce one text: for every item in order a line \"NAME xQTY @ UNIT = AMOUNT\", then \"TOTAL SUM\", all joined with \"; \". Money is written as dollars, a dot and exactly two cent digits (205 is \"2.05\", 7 is \"0.07\", 0 is \"0.00\"); AMOUNT is quantity times unit price and SUM is the sum of all amounts. An empty list gives just \"TOTAL 0.00\". If an item has quantity below 1 or a negative unit price, return an error \"invalid item: NAME\" for the first such item in order instead.",
+  "entry": "invoice",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Item>"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [
+    {
+      "name": "Item",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "qty",
+          "type": "Int"
+        },
+        {
+          "name": "cents",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "qty": 2,
+            "cents": 150
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "pen x2 @ 1.50 = 3.00; TOTAL 3.00"
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "TOTAL 0.00"
+        ]
+      }
+    }
+  ],
+  "notes": "Zero-padding of the cents (05, 07, 00) is the main trap. Amounts and sums stay far below 2^53. All divisions and remainders are on non-negative numbers."
+}

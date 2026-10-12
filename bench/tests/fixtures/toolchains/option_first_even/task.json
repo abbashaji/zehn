@@ -1,0 +1,35 @@
+{
+  "id": "pure_904",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "First even element",
+  "description": "Return the first even element of the list, or none when there is none.",
+  "entry": "first_even",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          4
+        ]
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          4
+        ]
+      }
+    }
+  ],
+  "notes": "fixture for the Option kind; non-negative only"
+}

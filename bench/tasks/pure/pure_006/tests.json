@@ -1,0 +1,18 @@
+[
+  {"args": [4, 10], "expect": {"$": "ok", "args": [5]}},
+  {"args": [4, 3], "expect": {"$": "err", "args": ["step limit exceeded"]}},
+  {"args": [1, 0], "expect": {"$": "ok", "args": [0]}},
+  {"args": [3, 1], "expect": {"$": "ok", "args": [1]}},
+  {"args": [3, 0], "expect": {"$": "err", "args": ["step limit exceeded"]}},
+  {"args": [2, 2], "expect": {"$": "ok", "args": [2]}},
+  {"args": [2, 1], "expect": {"$": "err", "args": ["step limit exceeded"]}},
+  {"args": [4, 5], "expect": {"$": "ok", "args": [5]}},
+  {"args": [4, 4], "expect": {"$": "err", "args": ["step limit exceeded"]}},
+  {"args": [27, 3], "expect": {"$": "ok", "args": [3]}},
+  {"args": [26, 100], "expect": {"$": "ok", "args": [4]}},
+  {"args": [10, 8], "expect": {"$": "ok", "args": [8]}},
+  {"args": [10, 7], "expect": {"$": "err", "args": ["step limit exceeded"]}},
+  {"args": [80, 1000000], "expect": {"$": "ok", "args": [5]}},
+  {"args": [0, 5], "expect": {"$": "err", "args": ["start must be positive"]}},
+  {"args": [-7, 100], "expect": {"$": "err", "args": ["start must be positive"]}}
+]

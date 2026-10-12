@@ -1,0 +1,16 @@
+fn cart_total(prices: List<Int>, coupon: Option<Int>) -> Int
+  intent "sum of the prices minus the coupon percent, the discount rounded down"
+  ensures coupon == none implies out == list.sum(prices)
+  example cart_total([1000, 500], none) == 1500
+  example cart_total([1000, 500], some(10)) == 1350
+  example cart_total([250, 250], some(150)) == 0
+do
+  let total = list.sum(prices)
+  match coupon do
+    case none =>
+      return total
+    case some(pct) =>
+      let capped = int.min(int.max(pct, 0), 100)
+      return total - total * capped / 100
+  end match
+end fn

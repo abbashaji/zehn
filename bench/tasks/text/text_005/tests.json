@@ -1,0 +1,14 @@
+[
+  {"args": ["id,Name,qty"], "expect": {"$": "ok", "args": ["ID,NAME,QTY"]}},
+  {"args": ["id,,qty"], "expect": {"$": "err", "args": ["empty header at position 2"]}},
+  {"args": ["id,ID"], "expect": {"$": "err", "args": ["duplicate header: ID"]}},
+  {"args": [""], "expect": {"$": "err", "args": ["empty header at position 1"]}},
+  {"args": ["a"], "expect": {"$": "ok", "args": ["A"]}},
+  {"args": ["a,b,a,,"], "expect": {"$": "err", "args": ["duplicate header: A"]}},
+  {"args": ["x,y,,x"], "expect": {"$": "err", "args": ["empty header at position 3"]}},
+  {"args": ["Name,name,NAME"], "expect": {"$": "err", "args": ["duplicate header: NAME"]}},
+  {"args": ["a,b,c,"], "expect": {"$": "err", "args": ["empty header at position 4"]}},
+  {"args": [",a"], "expect": {"$": "err", "args": ["empty header at position 1"]}},
+  {"args": ["Total,Tax,Net,Gross"], "expect": {"$": "ok", "args": ["TOTAL,TAX,NET,GROSS"]}},
+  {"args": ["q,Q"], "expect": {"$": "err", "args": ["duplicate header: Q"]}}
+]

@@ -1,0 +1,11 @@
+[
+  {"args": [[]], "expect": {"$": "none"}},
+  {"args": [[{"owner": "ann", "balance": 10, "active": true}]], "expect": {"$": "some", "args": [{"owner": "ann", "balance": 10, "active": true}]}},
+  {"args": [[{"owner": "ann", "balance": 10, "active": true}, {"owner": "bob", "balance": 25, "active": false}]], "expect": {"$": "some", "args": [{"owner": "bob", "balance": 25, "active": false}]}},
+  {"args": [[{"owner": "ann", "balance": 30, "active": true}, {"owner": "bob", "balance": 30, "active": false}]], "expect": {"$": "some", "args": [{"owner": "ann", "balance": 30, "active": true}]}},
+  {"args": [[{"owner": "x", "balance": -5, "active": true}, {"owner": "y", "balance": -2, "active": true}]], "expect": {"$": "some", "args": [{"owner": "y", "balance": -2, "active": true}]}},
+  {"args": [[{"owner": "a", "balance": 1, "active": false}, {"owner": "b", "balance": 2, "active": false}, {"owner": "c", "balance": 3, "active": true}]], "expect": {"$": "some", "args": [{"owner": "c", "balance": 3, "active": true}]}},
+  {"args": [[{"owner": "z", "balance": 0, "active": false}]], "expect": {"$": "some", "args": [{"owner": "z", "balance": 0, "active": false}]}},
+  {"args": [[{"owner": "p", "balance": 7, "active": true}, {"owner": "q", "balance": 3, "active": true}, {"owner": "r", "balance": 9, "active": false}, {"owner": "s", "balance": 9, "active": true}]], "expect": {"$": "some", "args": [{"owner": "r", "balance": 9, "active": false}]}},
+  {"args": [[{"owner": "big", "balance": 4000000000, "active": true}, {"owner": "small", "balance": 1, "active": false}]], "expect": {"$": "some", "args": [{"owner": "big", "balance": 4000000000, "active": true}]}}
+]

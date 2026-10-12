@@ -1,0 +1,40 @@
+{
+  "id": "effect_001",
+  "category": "effect",
+  "level": 1,
+  "kind": "write",
+  "title": "Numbered shopping list",
+  "description": "Print the items of a list, one per line, each prefixed with its position counted from 1, a dot and a single space (for example `1. milk`). Items are printed in order exactly as given, even when an item is empty. Return how many items were printed. An empty list prints nothing and returns 0.",
+  "entry": "print_numbered",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "milk",
+          "eggs"
+        ]
+      ],
+      "expect": 2,
+      "stdout": "1. milk\n2. eggs\n"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 0,
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 1. Position numbers go past 9 (two digits, no padding); empty and blank items keep their line; trailing space after the dot stays when the item is empty."
+}

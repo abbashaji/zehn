@@ -1,0 +1,41 @@
+type Item = { name: Text, price: Int, stock: Int }
+
+fn item_name(item: Item) -> Text
+  example item_name({name: "pen", price: 150, stock: 1}) == "pen"
+  example item_name({name: "ink", price: 90, stock: 0}) == "ink"
+do
+  return item.name
+end fn
+
+fn pick(items: List<Item>, i: Int, best: Option<Item>) -> Option<Item>
+  intent "scan items from index i on, keeping the cheapest available item seen so far"
+  example pick([], 0, none) == none
+  example pick([{name: "a", price: 5, stock: 1}], 0, none) == some({name: "a", price: 5, stock: 1})
+  example pick([{name: "a", price: 5, stock: 0}], 0, none) == none
+do
+  match list.get(items, i) do
+    case none =>
+      return best
+    case some(item) =>
+      if item.stock > 0 then
+        match best do
+          case none =>
+            return pick(items, i + 1, some(item))
+          case some(b) =>
+            if item.price < b.price then
+              return pick(items, i + 1, some(item))
+            end if
+        end match
+      end if
+      return pick(items, i + 1, best)
+  end match
+end fn
+
+fn cheapest_in_stock(items: List<Item>) -> Option<Text>
+  intent "name of the cheapest item with stock above 0; the first one wins ties"
+  example cheapest_in_stock([]) == none
+  example cheapest_in_stock([{name: "pen", price: 150, stock: 10}, {name: "ink", price: 90, stock: 3}]) == some("ink")
+  example cheapest_in_stock([{name: "a", price: 1, stock: 0}, {name: "b", price: 2, stock: 1}]) == some("b")
+do
+  return option.map(pick(items, 0, none), item_name)
+end fn

@@ -1,0 +1,66 @@
+{
+  "id": "effect_003",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Invoice printer",
+  "description": "Each invoice line has a product name, a quantity and a unit price in whole cents; quantities and prices are never negative. Print one line per entry, in order, as `NAME x QTY @ PRICE = SUBTOTAL`, where SUBTOTAL is the quantity times the price. After the last entry print `TOTAL: N` with the sum of all subtotals. Return that total. An empty invoice prints only `TOTAL: 0`.",
+  "entry": "print_invoice",
+  "params": [
+    {
+      "name": "lines",
+      "type": "List<Line>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Line",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "qty",
+          "type": "Int"
+        },
+        {
+          "name": "price",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "qty": 3,
+            "price": 150
+          },
+          {
+            "name": "ink",
+            "qty": 1,
+            "price": 899
+          }
+        ]
+      ],
+      "expect": 1349,
+      "stdout": "pen x 3 @ 150 = 450\nink x 1 @ 899 = 899\nTOTAL: 1349\n"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 0,
+      "stdout": "TOTAL: 0\n"
+    }
+  ],
+  "notes": "Level 2. Record input. Products are stated with the declared field names. Largest test product 8e15, below 2^53 so TypeScript numbers stay exact. Empty name leaves a leading space."
+}

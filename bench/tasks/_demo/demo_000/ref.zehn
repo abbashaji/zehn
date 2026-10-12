@@ -1,0 +1,24 @@
+fn sum_from(xs: List<Int>, i: Int, limit: Int) -> Int
+  intent "sum the elements at index i and later that exceed limit"
+  example sum_from([1, 5, 10], 0, 4) == 15
+  example sum_from([1, 5, 10], 3, 4) == 0
+do
+  match list.get(xs, i) do
+    case none =>
+      return 0
+    case some(x) =>
+      if x > limit then
+        return x + sum_from(xs, i + 1, limit)
+      else
+        return sum_from(xs, i + 1, limit)
+      end if
+  end match
+end fn
+
+fn sum_above(xs: List<Int>, limit: Int) -> Int
+  intent "sum of all elements strictly greater than limit"
+  example sum_above([1, 5, 10], 4) == 15
+  example sum_above([], 0) == 0
+do
+  return sum_from(xs, 0, limit)
+end fn

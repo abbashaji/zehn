@@ -1,0 +1,56 @@
+type Item = { name: Text, qty: Int }
+
+fn find_qty(items: List<Item>, i: Int, name: Text) -> Option<Int>
+  intent "quantity of the item called name, looking from index i on"
+  example find_qty([{name: "pen", qty: 4}], 0, "pen") == some(4)
+  example find_qty([{name: "pen", qty: 4}], 0, "ink") == none
+do
+  match list.get(items, i) do
+    case none =>
+      return none
+    case some(it) =>
+      if it.name == name then
+        return some(it.qty)
+      end if
+      return find_qty(items, i + 1, name)
+  end match
+end fn
+
+fn lower_qty(items: List<Item>, i: Int, name: Text, qty: Int) -> List<Item>
+  intent "copy of the items from index i on, with qty taken off the item called name"
+  example lower_qty([{name: "pen", qty: 4}], 0, "pen", 1) == [{name: "pen", qty: 3}]
+  example lower_qty([{name: "pen", qty: 4}], 0, "ink", 1) == [{name: "pen", qty: 4}]
+do
+  match list.get(items, i) do
+    case none =>
+      return []
+    case some(it) =>
+      let rest = lower_qty(items, i + 1, name, qty)
+      if it.name == name then
+        return list.concat([{name: it.name, qty: it.qty - qty}], rest)
+      end if
+      return list.concat([it], rest)
+  end match
+end fn
+
+fn remove_stock(items: List<Item>, name: Text, qty: Int) -> Result<List<Item>, Text>
+  intent "take qty units of the named item out of stock, or explain why that is impossible"
+  ensures result.is_ok(out) implies list.len(result.unwrap(out)) == list.len(items)
+  example remove_stock([{name: "pen", qty: 4}], "pen", 3) == ok([{name: "pen", qty: 1}])
+  example remove_stock([{name: "pen", qty: 4}], "ink", 1) == err("unknown item: ink")
+  example remove_stock([{name: "pen", qty: 4}], "pen", 9) == err("insufficient stock for pen: have 4, need 9")
+  example remove_stock([{name: "pen", qty: 4}], "pen", 0) == err("quantity must be positive")
+do
+  if qty <= 0 then
+    return err("quantity must be positive")
+  end if
+  match find_qty(items, 0, name) do
+    case none =>
+      return err(text.concat("unknown item: ", name))
+    case some(have) =>
+      if have < qty then
+        return err(text.concat(text.concat(text.concat(text.concat("insufficient stock for ", name), ": have "), int.to_text(have)), text.concat(", need ", int.to_text(qty))))
+      end if
+      return ok(lower_qty(items, 0, name, qty))
+  end match
+end fn

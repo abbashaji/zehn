@@ -1,0 +1,74 @@
+{
+  "id": "edit_003",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Cheapest item that is in stock",
+  "description": "Bug report for a shop helper that returns the name of the cheapest item that can be bought right now. Two symptoms: an item with stock 0 is sometimes returned, and when two available items have the same price the later one is returned instead of the earlier one. Fix the program. The complete rule is: only items with stock greater than 0 count; the answer is the name of the one with the lowest price; on equal prices the item that comes first in the list wins; if no item is available the result is none.",
+  "entry": "cheapest_in_stock",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Item>"
+    }
+  ],
+  "returns": "Option<Text>",
+  "types": [
+    {
+      "name": "Item",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "price",
+          "type": "Int"
+        },
+        {
+          "name": "stock",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "price": 150,
+            "stock": 10
+          },
+          {
+            "name": "ink",
+            "price": 90,
+            "stock": 3
+          },
+          {
+            "name": "pad",
+            "price": 200,
+            "stock": 1
+          }
+        ]
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          "ink"
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "Two bugs: availability test is stock >= 0 (should be > 0) and the replacement test is <= (should be <, first wins ties)."
+}

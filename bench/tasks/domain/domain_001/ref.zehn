@@ -1,0 +1,19 @@
+type Account = { owner: Text, balance: Int, overdraft: Int }
+
+fn withdraw(acct: Account, amount: Int) -> Result<Account, Text>
+  intent "withdraw amount from the account; the balance may go down to minus overdraft but no further"
+  requires acct.overdraft >= 0
+  ensures result.is_ok(out) implies result.unwrap(out).balance == acct.balance - amount
+  ensures result.is_ok(out) implies result.unwrap(out).overdraft == acct.overdraft
+  example withdraw({owner: "ann", balance: 100, overdraft: 0}, 30) == ok({owner: "ann", balance: 70, overdraft: 0})
+  example withdraw({owner: "ann", balance: 10, overdraft: 0}, 30) == err("insufficient funds")
+  example withdraw({owner: "ann", balance: 10, overdraft: 50}, 0) == err("amount must be positive")
+do
+  if amount <= 0 then
+    return err("amount must be positive")
+  end if
+  if acct.balance - amount < 0 - acct.overdraft then
+    return err("insufficient funds")
+  end if
+  return ok({owner: acct.owner, balance: acct.balance - amount, overdraft: acct.overdraft})
+end fn

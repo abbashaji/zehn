@@ -1,0 +1,58 @@
+type Student = { name: Text, score: Int }
+
+type Graded = { name: Text, grade: Text }
+
+fn letter(score: Int) -> Text
+  intent "letter grade for a score from 0 to 100: A from 90, B from 80, C from 70, D from 60, otherwise F"
+  requires score >= 0 and score <= 100
+  example letter(95) == "A"
+  example letter(80) == "B"
+  example letter(70) == "C"
+  example letter(60) == "D"
+  example letter(59) == "F"
+do
+  if score >= 90 then
+    return "A"
+  end if
+  if score >= 80 then
+    return "B"
+  end if
+  if score >= 70 then
+    return "C"
+  end if
+  if score >= 60 then
+    return "D"
+  end if
+  return "F"
+end fn
+
+fn grade_from(students: List<Student>, i: Int, curve: Int) -> Result<List<Graded>, Text>
+  intent "graded students from index i on, stopping at the first invalid score"
+  example grade_from([{name: "ann", score: 85}], 0, 0) == ok([{name: "ann", grade: "B"}])
+  example grade_from([{name: "bob", score: 101}], 0, 0) == err("invalid score for bob")
+do
+  match list.get(students, i) do
+    case none =>
+      return ok([])
+    case some(s) =>
+      if s.score < 0 or s.score > 100 then
+        return err(text.concat("invalid score for ", s.name))
+      end if
+      let rest = grade_from(students, i + 1, curve)?
+      let adjusted = int.min(100, s.score + curve)
+      return ok(list.concat([{name: s.name, grade: letter(adjusted)}], rest))
+  end match
+end fn
+
+fn assign_grades(students: List<Student>, curve: Int) -> Result<List<Graded>, Text>
+  intent "letter grade per student after adding the curve (capped at 100); the first invalid raw score or a negative curve is an error"
+  ensures result.is_ok(out) implies list.len(result.unwrap(out)) == list.len(students)
+  example assign_grades([{name: "ann", score: 85}, {name: "bob", score: 55}], 0) == ok([{name: "ann", grade: "B"}, {name: "bob", grade: "F"}])
+  example assign_grades([{name: "ann", score: 85}], 10) == ok([{name: "ann", grade: "A"}])
+  example assign_grades([], -1) == err("curve must not be negative")
+do
+  if curve < 0 then
+    return err("curve must not be negative")
+  end if
+  return grade_from(students, 0, curve)
+end fn

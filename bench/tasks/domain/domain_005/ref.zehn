@@ -1,0 +1,86 @@
+type Member = { name: Text, points: Int, tier: Text }
+
+fn multiplier(tier: Text) -> Option<Int>
+  intent "points multiplier of a tier: bronze 1, silver 2, gold 3; none for any other text"
+  example multiplier("bronze") == some(1)
+  example multiplier("silver") == some(2)
+  example multiplier("gold") == some(3)
+  example multiplier("platinum") == none
+do
+  if tier == "bronze" then
+    return some(1)
+  end if
+  if tier == "silver" then
+    return some(2)
+  end if
+  if tier == "gold" then
+    return some(3)
+  end if
+  return none
+end fn
+
+fn tier_for(points: Int) -> Text
+  intent "tier that goes with a points total: bronze below 1000, silver below 5000, gold from 5000"
+  requires points >= 0
+  example tier_for(0) == "bronze"
+  example tier_for(999) == "bronze"
+  example tier_for(1000) == "silver"
+  example tier_for(5000) == "gold"
+do
+  if points < 1000 then
+    return "bronze"
+  end if
+  if points < 5000 then
+    return "silver"
+  end if
+  return "gold"
+end fn
+
+fn earn(m: Member, spend: Int) -> Member
+  intent "one purchase: spend / 10 points times the multiplier of the current tier, total capped at 10000, tier recomputed"
+  requires spend >= 0
+  requires m.points >= 0 and m.points <= 10000
+  ensures out.points >= m.points and out.points <= 10000
+  ensures out.tier == tier_for(out.points)
+  example earn({name: "ann", points: 0, tier: "bronze"}, 250) == {name: "ann", points: 25, tier: "bronze"}
+  example earn({name: "ann", points: 990, tier: "bronze"}, 100) == {name: "ann", points: 1000, tier: "silver"}
+  example earn({name: "ann", points: 9990, tier: "gold"}, 1000) == {name: "ann", points: 10000, tier: "gold"}
+do
+  let factor = option.unwrap_or(multiplier(m.tier), 1)
+  let total = int.min(10000, m.points + spend / 10 * factor)
+  return {name: m.name, points: total, tier: tier_for(total)}
+end fn
+
+fn apply_from(m: Member, spends: List<Int>, i: Int) -> Result<Member, Text>
+  intent "apply the purchases from index i on, in order; a negative spend names its 1-based position"
+  requires m.points >= 0 and m.points <= 10000
+  example apply_from({name: "ann", points: 0, tier: "bronze"}, [100], 0) == ok({name: "ann", points: 10, tier: "bronze"})
+  example apply_from({name: "ann", points: 0, tier: "bronze"}, [100, -5], 0) == err("purchase 2: negative spend")
+do
+  match list.get(spends, i) do
+    case none =>
+      return ok(m)
+    case some(spend) =>
+      if spend < 0 then
+        return err(text.concat(text.concat("purchase ", int.to_text(i + 1)), ": negative spend"))
+      end if
+      return apply_from(earn(m, spend), spends, i + 1)
+  end match
+end fn
+
+fn apply_purchases(m: Member, spends: List<Int>) -> Result<Member, Text>
+  intent "loyalty member after a series of purchases; checks the member first (points 0 to 10000, known tier)"
+  example apply_purchases({name: "ann", points: 0, tier: "bronze"}, [250, 250]) == ok({name: "ann", points: 50, tier: "bronze"})
+  example apply_purchases({name: "ann", points: -1, tier: "bronze"}, []) == err("invalid member: points out of range")
+  example apply_purchases({name: "ann", points: 5, tier: "vip"}, []) == err("unknown tier: vip")
+do
+  if m.points < 0 or m.points > 10000 then
+    return err("invalid member: points out of range")
+  end if
+  match multiplier(m.tier) do
+    case none =>
+      return err(text.concat("unknown tier: ", m.tier))
+    case some(factor) =>
+      return apply_from(m, spends, 0)
+  end match
+end fn

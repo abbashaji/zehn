@@ -1,0 +1,39 @@
+type Booking = { begin: Int, finish: Int }
+
+fn overlaps(b: Booking, begin: Int, finish: Int) -> Bool
+  intent "true when the new range shares time with the existing booking"
+  example overlaps({begin: 10, finish: 12}, 12, 14) == false
+  example overlaps({begin: 10, finish: 12}, 11, 14) == true
+do
+  return begin < b.finish and b.begin < finish
+end fn
+
+fn any_overlap(bookings: List<Booking>, begin: Int, finish: Int, i: Int) -> Bool
+  example any_overlap([], 1, 2, 0) == false
+  example any_overlap([{begin: 1, finish: 3}], 2, 4, 0) == true
+do
+  match list.get(bookings, i) do
+    case none =>
+      return false
+    case some(b) =>
+      if overlaps(b, begin, finish) then
+        return true
+      end if
+      return any_overlap(bookings, begin, finish, i + 1)
+  end match
+end fn
+
+fn add_booking(bookings: List<Booking>, begin: Int, finish: Int, gap: Int) -> Result<List<Booking>, Text>
+  intent "add a booking at the end of the list; reject bad ranges and overlaps"
+  example add_booking([], 5, 8, 0) == ok([{begin: 5, finish: 8}])
+  example add_booking([{begin: 1, finish: 3}], 2, 4, 0) == err("conflict")
+  example add_booking([], 4, 4, 0) == err("invalid range")
+do
+  if begin >= finish then
+    return err("invalid range")
+  end if
+  if any_overlap(bookings, begin, finish, 0) then
+    return err("conflict")
+  end if
+  return ok(list.append(bookings, {begin: begin, finish: finish}))
+end fn

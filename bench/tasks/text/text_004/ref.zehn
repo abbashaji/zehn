@@ -1,0 +1,27 @@
+fn lookup_from(entries: List<Text>, i: Int, key: Text) -> Option<Text>
+  intent "first valid name=value entry at index i or later whose name is key"
+  example lookup_from(["a=1", "b=2"], 0, "b") == some("2")
+  example lookup_from(["a=1"], 1, "a") == none
+do
+  match list.get(entries, i) do
+    case none =>
+      return none
+    case some(e) =>
+      let parts = text.split_on(e, "=")
+      if list.len(parts) == 2 then
+        if list.get(parts, 0) == some(key) then
+          return list.get(parts, 1)
+        end if
+      end if
+      return lookup_from(entries, i + 1, key)
+  end match
+end fn
+
+fn lookup_value(config: Text, key: Text) -> Option<Text>
+  intent "value of the first name=value entry (entries separated by semicolons) with the given name; entries without exactly one equals sign are ignored"
+  example lookup_value("a=1;b=2", "b") == some("2")
+  example lookup_value("a=1;b=2", "c") == none
+  example lookup_value("a=;b=x=y;b=7", "b") == some("7")
+do
+  return lookup_from(text.split_on(config, ";"), 0, key)
+end fn

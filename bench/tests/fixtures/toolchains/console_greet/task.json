@@ -1,0 +1,30 @@
+{
+  "id": "effect_901",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Greet and measure",
+  "description": "Print 'Hello, NAME!' on its own line and return the length of the name.",
+  "entry": "greet",
+  "params": [
+    {
+      "name": "name",
+      "type": "Text"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        "Ann"
+      ],
+      "expect": 3,
+      "stdout": "Hello, Ann!\n"
+    }
+  ],
+  "notes": "fixture for console stdout"
+}

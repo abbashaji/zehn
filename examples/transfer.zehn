@@ -1,0 +1,40 @@
+-- Money transfer between two immutable accounts. Every function returns new state.
+type Account = { balance: Int }
+
+type TransferError = InsufficientFunds | InvalidAmount
+
+type Transfer = { from: Account, to: Account }
+
+fn debit(account: Account, amount: Int) -> Result<Account, TransferError>
+  intent "کم کردن مبلغ از حساب؛ اگر موجودی کافی نباشد خطا برمی‌گرداند"
+  requires amount > 0
+  example debit({balance: 100}, 30) == ok({balance: 70})
+  example debit({balance: 10}, 30) == err(InsufficientFunds)
+do
+  if account.balance < amount then
+    return err(InsufficientFunds)
+  end if
+  return ok({balance: account.balance - amount})
+end fn
+
+fn credit(account: Account, amount: Int) -> Account
+  intent "اضافه کردن مبلغ به حساب"
+  requires amount > 0
+  ensures out.balance == account.balance + amount
+  example credit({balance: 5}, 3) == {balance: 8}
+do
+  return {balance: account.balance + amount}
+end fn
+
+fn transfer(from: Account, to: Account, amount: Int) -> Result<Transfer, TransferError>
+  intent "انتقال پول بین دو حساب بدون تغییر حساب‌های ورودی"
+  requires amount > 0
+  ensures result.is_ok(out) implies result.unwrap(out).from.balance == from.balance - amount
+  ensures result.is_ok(out) implies result.unwrap(out).to.balance == to.balance + amount
+  example transfer({balance: 100}, {balance: 0}, 30) == ok({from: {balance: 70}, to: {balance: 30}})
+  example transfer({balance: 10}, {balance: 0}, 30) == err(InsufficientFunds)
+do
+  let debited = debit(from, amount)?
+  let credited = credit(to, amount)
+  return ok({from: debited, to: credited})
+end fn

@@ -1,0 +1,26 @@
+fn count_from(tokens: List<Text>, i: Int, word: Text) -> Int
+  intent "count the tokens at index i and later that equal word"
+  example count_from(["a", "b", "a"], 0, "a") == 2
+  example count_from(["a"], 1, "a") == 0
+do
+  match list.get(tokens, i) do
+    case none =>
+      return 0
+    case some(t) =>
+      if t == word then
+        return 1 + count_from(tokens, i + 1, word)
+      end if
+      return count_from(tokens, i + 1, word)
+  end match
+end fn
+
+fn count_word(sentence: Text, word: Text) -> Int
+  intent "how many space-separated tokens of the sentence are exactly word (case-sensitive)"
+  requires word != ""
+  ensures out >= 0
+  example count_word("the cat and the dog", "the") == 2
+  example count_word("", "the") == 0
+  example count_word("The the  the", "the") == 2
+do
+  return count_from(text.split_on(sentence, " "), 0, word)
+end fn

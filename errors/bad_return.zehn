@@ -1,0 +1,39 @@
+type Shape = Circle(Int) | Square(Int) | Dot
+
+fn sign(n: Int) -> Int
+  example sign(5) == 1
+do
+  if n > 0 then
+    return 1
+  end if
+end fn
+
+fn pick(n: Int) -> Int
+  example pick(1) == 1
+do
+  if n > 0 then
+    return 1
+  else
+    let other = 2
+  end if
+end fn
+
+fn area(s: Shape) -> Int
+  example area(Dot) == 0
+do
+  match s do
+    case Circle(r) =>
+      return r * r * 3
+    case Square(w) =>
+      let side = w
+    case Dot =>
+      return 0
+  end match
+end fn
+
+fn dead(n: Int) -> Int
+  example dead(1) == 1
+do
+  return n
+  let never = 1
+end fn

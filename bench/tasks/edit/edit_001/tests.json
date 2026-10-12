@@ -1,0 +1,14 @@
+[
+  {"args": [30], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [-1], "expect": {"$": "err", "args": ["invalid age"]}},
+  {"args": [0], "expect": {"$": "ok", "args": [0]}},
+  {"args": [4], "expect": {"$": "ok", "args": [0]}},
+  {"args": [5], "expect": {"$": "ok", "args": [800]}},
+  {"args": [17], "expect": {"$": "ok", "args": [800]}},
+  {"args": [18], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [64], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [65], "expect": {"$": "ok", "args": [1000]}},
+  {"args": [66], "expect": {"$": "ok", "args": [1000]}},
+  {"args": [120], "expect": {"$": "ok", "args": [1000]}},
+  {"args": [-100], "expect": {"$": "err", "args": ["invalid age"]}}
+]

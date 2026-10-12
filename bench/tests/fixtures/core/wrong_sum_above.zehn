@@ -1,0 +1,6 @@
+fn sum_above(xs: List<Int>, limit: Int) -> Int
+  intent "wrong: sums everything"
+  example sum_above([1, 5, 10], 4) == 16
+do
+  return list.sum(xs)
+end fn

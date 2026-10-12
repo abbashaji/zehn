@@ -1,0 +1,118 @@
+{
+  "id": "edit_006",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Room bookings with a cleaning gap",
+  "description": "Feature request for the room booking function. A booking occupies the half-open time range from begin up to, but not including, finish. The function receives the existing bookings, which are sorted by begin and do not clash, plus a new booking and a gap (cleaning time). Today it ignores the gap and simply appends the new booking at the end of the list. Change it so that: (1) two bookings clash when the time between them is less than the gap, that is when the new begin is less than an existing finish plus the gap and the existing begin is less than the new finish plus the gap; (2) the new booking is inserted so that the result stays sorted by begin. The checks are made in this order and the first one that applies decides the error message: begin not less than finish: \"invalid range\"; negative gap: \"invalid gap\"; a clash with any existing booking: \"conflict\". With a gap of 0, bookings that merely touch (one finishes exactly when the next begins) are allowed.",
+  "entry": "add_booking",
+  "params": [
+    {
+      "name": "bookings",
+      "type": "List<Booking>"
+    },
+    {
+      "name": "begin",
+      "type": "Int"
+    },
+    {
+      "name": "finish",
+      "type": "Int"
+    },
+    {
+      "name": "gap",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Booking>, Text>",
+  "types": [
+    {
+      "name": "Booking",
+      "fields": [
+        {
+          "name": "begin",
+          "type": "Int"
+        },
+        {
+          "name": "finish",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "begin": 10,
+            "finish": 12
+          },
+          {
+            "begin": 14,
+            "finish": 16
+          },
+          {
+            "begin": 20,
+            "finish": 25
+          }
+        ],
+        11,
+        15,
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "conflict"
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "begin": 10,
+            "finish": 12
+          },
+          {
+            "begin": 14,
+            "finish": 16
+          },
+          {
+            "begin": 20,
+            "finish": 25
+          }
+        ],
+        26,
+        30,
+        0
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "begin": 10,
+              "finish": 12
+            },
+            {
+              "begin": 14,
+              "finish": 16
+            },
+            {
+              "begin": 20,
+              "finish": 25
+            },
+            {
+              "begin": 26,
+              "finish": 30
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Feature, several steps: gap-aware clash test (strict <, so a gap that is exactly met is fine) plus sorted insertion. Fields are begin/finish because `end` is a Zehn keyword. Start ignores gap and appends. Visible examples are chosen so that the start passes them (the adapters run visible examples in tool_check)."
+}

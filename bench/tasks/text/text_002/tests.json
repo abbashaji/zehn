@@ -1,0 +1,11 @@
+[
+  {"args": [[], ", "], "expect": ""},
+  {"args": [["x"], ", "], "expect": "x"},
+  {"args": [["a", "b", "c"], "; "], "expect": "a; b; c"},
+  {"args": [["a", "b"], ""], "expect": "ab"},
+  {"args": [["", "", ""], "-"], "expect": "--"},
+  {"args": [["a", "", "b"], ","], "expect": "a,,b"},
+  {"args": [[""], "+"], "expect": ""},
+  {"args": [["north", "south"], " and "], "expect": "north and south"},
+  {"args": [["1", "2", "3", "4", "5"], "|"], "expect": "1|2|3|4|5"}
+]

@@ -1,0 +1,78 @@
+type Seat = { label: Text, holder: Option<Text> }
+
+fn find_seat(seats: List<Seat>, i: Int, label: Text) -> Option<Seat>
+  intent "the seat with this label, looking from index i on"
+  example find_seat([{label: "A1", holder: none}], 0, "A1") == some({label: "A1", holder: none})
+  example find_seat([{label: "A1", holder: none}], 0, "B2") == none
+do
+  match list.get(seats, i) do
+    case none =>
+      return none
+    case some(s) =>
+      if s.label == label then
+        return some(s)
+      end if
+      return find_seat(seats, i + 1, label)
+  end match
+end fn
+
+fn count_held(seats: List<Seat>, i: Int, guest: Text) -> Int
+  intent "number of seats from index i on that are held by guest"
+  example count_held([{label: "A1", holder: some("kim")}, {label: "A2", holder: none}], 0, "kim") == 1
+  example count_held([{label: "A1", holder: some("kim")}], 0, "lee") == 0
+do
+  match list.get(seats, i) do
+    case none =>
+      return 0
+    case some(s) =>
+      let rest = count_held(seats, i + 1, guest)
+      if s.holder == some(guest) then
+        return rest + 1
+      end if
+      return rest
+  end match
+end fn
+
+fn assign_seat(seats: List<Seat>, i: Int, label: Text, guest: Text) -> List<Seat>
+  intent "copy of the seats from index i on, with the seat called label given to guest"
+  example assign_seat([{label: "A1", holder: none}], 0, "A1", "kim") == [{label: "A1", holder: some("kim")}]
+  example assign_seat([{label: "A1", holder: none}], 0, "B2", "kim") == [{label: "A1", holder: none}]
+do
+  match list.get(seats, i) do
+    case none =>
+      return []
+    case some(s) =>
+      let rest = assign_seat(seats, i + 1, label, guest)
+      if s.label == label then
+        return list.concat([{label: s.label, holder: some(guest)}], rest)
+      end if
+      return list.concat([s], rest)
+  end match
+end fn
+
+fn book_seat(seats: List<Seat>, label: Text, guest: Text) -> Result<List<Seat>, Text>
+  intent "give the seat to the guest unless the guest is nameless, the seat is unknown or taken, or the guest already holds two seats"
+  ensures result.is_ok(out) implies list.len(result.unwrap(out)) == list.len(seats)
+  example book_seat([{label: "A1", holder: none}], "A1", "kim") == ok([{label: "A1", holder: some("kim")}])
+  example book_seat([{label: "A1", holder: none}], "A1", "") == err("guest name required")
+  example book_seat([{label: "A1", holder: none}], "B2", "kim") == err("no such seat: B2")
+  example book_seat([{label: "A1", holder: some("lee")}], "A1", "kim") == err("seat already booked: A1")
+do
+  if guest == "" then
+    return err("guest name required")
+  end if
+  match find_seat(seats, 0, label) do
+    case none =>
+      return err(text.concat("no such seat: ", label))
+    case some(s) =>
+      match s.holder do
+        case some(h) =>
+          return err(text.concat("seat already booked: ", label))
+        case none =>
+          if count_held(seats, 0, guest) >= 2 then
+            return err(text.concat("booking limit reached for ", guest))
+          end if
+          return ok(assign_seat(seats, 0, label, guest))
+      end match
+  end match
+end fn

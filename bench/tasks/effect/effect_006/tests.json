@@ -1,0 +1,16 @@
+[
+  {"args": [[]], "expect": 0, "stdout": ""},
+  {"args": [[{"op": "add", "n": 5}, {"op": "show", "n": 0}]], "expect": 5, "stdout": "acc = 5\n"},
+  {"args": [[{"op": "add", "n": 10}, {"op": "sub", "n": 3}, {"op": "mul", "n": 4}, {"op": "show", "n": 0}]], "expect": 28, "stdout": "acc = 28\n"},
+  {"args": [[{"op": "mul", "n": 5}]], "expect": 0, "stdout": ""},
+  {"args": [[{"op": "add", "n": 1}, {"op": "halt", "n": 0}, {"op": "add", "n": 100}, {"op": "show", "n": 0}]], "expect": 1, "stdout": "halted at command 2\n"},
+  {"args": [[{"op": "halt", "n": 0}]], "expect": 0, "stdout": "halted at command 1\n"},
+  {"args": [[{"op": "add", "n": 2}, {"op": "foo", "n": 9}, {"op": "add", "n": 3}]], "expect": 5, "stdout": "command 2: unknown op [foo]\n"},
+  {"args": [[{"op": "add", "n": 5}, {"op": "ADD", "n": 5}]], "expect": 5, "stdout": "command 2: unknown op [ADD]\n"},
+  {"args": [[{"op": "add", "n": 3}, {"op": "show", "n": 0}, {"op": "show", "n": 0}]], "expect": 3, "stdout": "acc = 3\nacc = 3\n"},
+  {"args": [[{"op": "sub", "n": 10}, {"op": "show", "n": 0}, {"op": "mul", "n": -3}, {"op": "show", "n": 0}]], "expect": 30, "stdout": "acc = -10\nacc = 30\n"},
+  {"args": [[{"op": "", "n": 0}]], "expect": 0, "stdout": "command 1: unknown op []\n"},
+  {"args": [[{"op": "bogus", "n": 1}, {"op": "halt", "n": 7}, {"op": "bogus", "n": 2}]], "expect": 0, "stdout": "command 1: unknown op [bogus]\nhalted at command 2\n"},
+  {"args": [[{"op": "add", "n": 1000000}, {"op": "mul", "n": 1000000}, {"op": "mul", "n": 4000}]], "expect": 4000000000000000, "stdout": ""},
+  {"args": [[{"op": "halt", "n": 0}, {"op": "halt", "n": 0}]], "expect": 0, "stdout": "halted at command 1\n"}
+]

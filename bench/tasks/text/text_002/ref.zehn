@@ -1,0 +1,24 @@
+fn join_from(parts: List<Text>, i: Int, sep: Text) -> Text
+  intent "join the parts at index i and later with sep"
+  example join_from(["a", "b", "c"], 1, "-") == "b-c"
+  example join_from(["a"], 1, "-") == ""
+do
+  match list.get(parts, i) do
+    case none =>
+      return ""
+    case some(p) =>
+      if i + 1 >= list.len(parts) then
+        return p
+      end if
+      return text.concat(text.concat(p, sep), join_from(parts, i + 1, sep))
+  end match
+end fn
+
+fn join_with(parts: List<Text>, sep: Text) -> Text
+  intent "join the parts with sep between neighbours; no parts give the empty text"
+  example join_with([], ", ") == ""
+  example join_with(["x"], ", ") == "x"
+  example join_with(["a", "b", "c"], "; ") == "a; b; c"
+do
+  return join_from(parts, 0, sep)
+end fn

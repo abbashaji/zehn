@@ -1,0 +1,49 @@
+{
+  "id": "effect_002",
+  "category": "effect",
+  "level": 1,
+  "kind": "write",
+  "title": "Log the long words",
+  "description": "Print every word that has at least min_len characters, each on its own line as `LONG: ` followed by the word (one space after the colon), in the original order. Shorter words are skipped without any output. Return how many lines were printed. min_len may be zero or negative, in which case every word counts as long.",
+  "entry": "log_long_words",
+  "params": [
+    {
+      "name": "words",
+      "type": "List<Text>"
+    },
+    {
+      "name": "min_len",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "hi",
+          "hello",
+          "hey"
+        ],
+        3
+      ],
+      "expect": 2,
+      "stdout": "LONG: hello\nLONG: hey\n"
+    },
+    {
+      "args": [
+        [
+          "a"
+        ],
+        2
+      ],
+      "expect": 0,
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 1. Filter then print. Boundary: length equal to min_len is long. Spaces count as characters. Empty word with min_len <= 0 prints 'LONG: ' with a trailing space."
+}

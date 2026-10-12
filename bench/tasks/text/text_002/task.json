@@ -1,0 +1,43 @@
+{
+  "id": "text_002",
+  "category": "text",
+  "level": 1,
+  "kind": "write",
+  "title": "Join texts with a separator",
+  "description": "Join the texts of a list into one text, putting the separator between each pair of neighbours (not before the first or after the last). An empty list gives the empty text and a single element is returned unchanged. Empty elements and an empty separator are allowed.",
+  "entry": "join_with",
+  "params": [
+    {
+      "name": "parts",
+      "type": "List<Text>"
+    },
+    {
+      "name": "sep",
+      "type": "Text"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        "; "
+      ],
+      "expect": "a; b; c"
+    },
+    {
+      "args": [
+        [],
+        ", "
+      ],
+      "expect": ""
+    }
+  ],
+  "notes": "No trailing separator; a list of three empty texts gives two separators."
+}

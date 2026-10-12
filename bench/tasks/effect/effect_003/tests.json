@@ -1,0 +1,12 @@
+[
+  {"args": [[]], "expect": 0, "stdout": "TOTAL: 0\n"},
+  {"args": [[{"name": "pen", "qty": 3, "price": 150}]], "expect": 450, "stdout": "pen x 3 @ 150 = 450\nTOTAL: 450\n"},
+  {"args": [[{"name": "pen", "qty": 3, "price": 150}, {"name": "ink", "qty": 1, "price": 899}, {"name": "pad", "qty": 10, "price": 275}]], "expect": 4099, "stdout": "pen x 3 @ 150 = 450\nink x 1 @ 899 = 899\npad x 10 @ 275 = 2750\nTOTAL: 4099\n"},
+  {"args": [[{"name": "gift", "qty": 0, "price": 999}, {"name": "bag", "qty": 2, "price": 50}]], "expect": 100, "stdout": "gift x 0 @ 999 = 0\nbag x 2 @ 50 = 100\nTOTAL: 100\n"},
+  {"args": [[{"name": "sample", "qty": 5, "price": 0}]], "expect": 0, "stdout": "sample x 5 @ 0 = 0\nTOTAL: 0\n"},
+  {"args": [[{"name": "bulk", "qty": 4000000, "price": 2000000000}, {"name": "one", "qty": 1, "price": 1}]], "expect": 8000000000000001, "stdout": "bulk x 4000000 @ 2000000000 = 8000000000000000\none x 1 @ 1 = 1\nTOTAL: 8000000000000001\n"},
+  {"args": [[{"name": "", "qty": 2, "price": 5}]], "expect": 10, "stdout": " x 2 @ 5 = 10\nTOTAL: 10\n"},
+  {"args": [[{"name": "Widget 2000", "qty": 7, "price": 13}, {"name": "a b", "qty": 1, "price": 1}]], "expect": 92, "stdout": "Widget 2000 x 7 @ 13 = 91\na b x 1 @ 1 = 1\nTOTAL: 92\n"},
+  {"args": [[{"name": "n1", "qty": 1, "price": 101}, {"name": "n2", "qty": 2, "price": 102}, {"name": "n3", "qty": 3, "price": 103}, {"name": "n4", "qty": 4, "price": 104}, {"name": "n5", "qty": 5, "price": 105}, {"name": "n6", "qty": 6, "price": 106}, {"name": "n7", "qty": 7, "price": 107}, {"name": "n8", "qty": 8, "price": 108}, {"name": "n9", "qty": 9, "price": 109}, {"name": "n10", "qty": 10, "price": 110}, {"name": "n11", "qty": 11, "price": 111}, {"name": "n12", "qty": 12, "price": 112}]], "expect": 8450, "stdout": "n1 x 1 @ 101 = 101\nn2 x 2 @ 102 = 204\nn3 x 3 @ 103 = 309\nn4 x 4 @ 104 = 416\nn5 x 5 @ 105 = 525\nn6 x 6 @ 106 = 636\nn7 x 7 @ 107 = 749\nn8 x 8 @ 108 = 864\nn9 x 9 @ 109 = 981\nn10 x 10 @ 110 = 1100\nn11 x 11 @ 111 = 1221\nn12 x 12 @ 112 = 1344\nTOTAL: 8450\n"},
+  {"args": [[{"name": "dup", "qty": 2, "price": 2}, {"name": "dup", "qty": 2, "price": 2}]], "expect": 8, "stdout": "dup x 2 @ 2 = 4\ndup x 2 @ 2 = 4\nTOTAL: 8\n"}
+]

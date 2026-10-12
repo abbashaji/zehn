@@ -1,0 +1,20 @@
+[
+  {"args": [[1, 5], [3, 8]], "expect": {"$": "ok", "args": [2]}},
+  {"args": [[1, 2], [3]], "expect": {"$": "err", "args": ["length mismatch"]}},
+  {"args": [[], []], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[2], [9]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[0, 2], [10, 5]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[0, 4, 20], [5, 10, 25]], "expect": {"$": "ok", "args": [10]}},
+  {"args": [[0, 5, 6], [5, 6, 7]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[1, 10, 12], [2, 11, 30]], "expect": {"$": "ok", "args": [9]}},
+  {"args": [[0, 1, 8], [10, 3, 9]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[3, 3], [4, 5]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[0, 1000000000000], [1, 1000000000001]], "expect": {"$": "ok", "args": [999999999999]}},
+  {"args": [[0, 3], [2, 1]], "expect": {"$": "err", "args": ["bad interval"]}},
+  {"args": [[1], [0]], "expect": {"$": "err", "args": ["bad interval"]}},
+  {"args": [[5, 2], [6, 3]], "expect": {"$": "err", "args": ["unsorted"]}},
+  {"args": [[0, 10, 4], [5, 12, 6]], "expect": {"$": "err", "args": ["unsorted"]}},
+  {"args": [[5, 2], [6, 1]], "expect": {"$": "err", "args": ["bad interval"]}},
+  {"args": [[3], [1, 2]], "expect": {"$": "err", "args": ["length mismatch"]}},
+  {"args": [[9, 1, 2], [10, 5, 3]], "expect": {"$": "err", "args": ["unsorted"]}}
+]

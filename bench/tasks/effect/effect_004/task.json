@@ -1,0 +1,43 @@
+{
+  "id": "effect_004",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Username validator",
+  "description": "Check each username, in order, against three rules and use only the first rule it breaks: fewer than 3 characters is `too short`; more than 12 characters is `too long`; containing a space character is `has space`. For every failing username print one line `#POS [NAME]: REASON`, where POS is its position counted from 1 and NAME is the username exactly as given. Valid usernames print nothing. Return the number of failing usernames.",
+  "entry": "validate_usernames",
+  "params": [
+    {
+      "name": "names",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "alice",
+          "ab",
+          "x y z"
+        ]
+      ],
+      "expect": 2,
+      "stdout": "#2 [ab]: too short\n#3 [x y z]: has space\n"
+    },
+    {
+      "args": [
+        [
+          "bob"
+        ]
+      ],
+      "expect": 0,
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 2. Rule order matters: 'a ' is too short (not has space) and a long name with spaces is too long. Lengths 3 and 12 are valid. Positions go past 9."
+}

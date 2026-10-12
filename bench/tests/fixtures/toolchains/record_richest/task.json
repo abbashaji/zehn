@@ -1,0 +1,47 @@
+{
+  "id": "domain_901",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Richest account",
+  "description": "Return the account with the highest balance; on a tie the first one wins; none for an empty list.",
+  "entry": "richest",
+  "params": [
+    {
+      "name": "accts",
+      "type": "List<Account>"
+    }
+  ],
+  "returns": "Option<Account>",
+  "types": [
+    {
+      "name": "Account",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "Text"
+        },
+        {
+          "name": "balance",
+          "type": "Int"
+        },
+        {
+          "name": "active",
+          "type": "Bool"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        []
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "fixture for the record kind (record inside List and Option)"
+}

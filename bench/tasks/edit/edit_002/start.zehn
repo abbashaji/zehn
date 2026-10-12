@@ -1,0 +1,7 @@
+fn cart_total(prices: List<Int>, coupon: Option<Int>) -> Int
+  intent "sum of the prices"
+  example cart_total([1000, 500], none) == 1500
+  example cart_total([], none) == 0
+do
+  return list.sum(prices)
+end fn

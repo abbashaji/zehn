@@ -1,0 +1,45 @@
+type Shape = Circle(Int) | Rect(Int, Int) | Dot
+
+fn area(s: Shape) -> Int
+  intent "مساحت تقریبی شکل (π ≈ 3)"
+  ensures out >= 0
+  example area(Circle(2)) == 12
+  example area(Rect(3, 4)) == 12
+  example area(Dot) == 0
+do
+  match s do
+    case Circle(r) =>
+      return r * r * 3
+    case Rect(w, h) =>
+      return w * h
+    case Dot =>
+      return 0
+  end match
+end fn
+
+fn describe(s: Shape) -> Text
+  example describe(Dot) == "dot"
+  example describe(Rect(1, 2)) == "rect 1x2"
+do
+  match s do
+    case Circle(r) =>
+      return text.concat("circle ", int.to_text(r))
+    case Rect(w, h) =>
+      return text.concat(text.concat(text.concat("rect ", int.to_text(w)), "x"), int.to_text(h))
+    case Dot =>
+      return "dot"
+  end match
+end fn
+
+fn total_area(shapes: List<Shape>) -> Int
+  example total_area([Circle(1), Rect(2, 5), Dot]) == 13
+do
+  return list.sum(list.map(shapes, area))
+end fn
+
+fn first_area(shapes: List<Shape>) -> Option<Int>
+  example first_area([]) == none
+  example first_area([Dot]) == some(0)
+do
+  return option.map(list.get(shapes, 0), area)
+end fn

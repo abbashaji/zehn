@@ -1,0 +1,210 @@
+{
+  "id": "domain_003",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Book a seat with a per-guest limit",
+  "description": "A small hall has a list of seats. Each seat has a label and a holder, which is either nobody or the name of the guest who booked it. Seat labels are unique and compared exactly. Write book_seat, which takes the list, a seat label and a guest name and returns the new list: the same seats in the same order, with the named seat now held by the guest. Checks happen in this order, and the first failing one decides the result: an empty guest name gives the error \"guest name required\"; a label that matches no seat gives \"no such seat: \" followed by the label; a seat that already has a holder (even the same guest) gives \"seat already booked: \" followed by the label; a guest who already holds two or more seats gives \"booking limit reached for \" followed by the guest name. A guest may therefore hold at most two seats.",
+  "entry": "book_seat",
+  "params": [
+    {
+      "name": "seats",
+      "type": "List<Seat>"
+    },
+    {
+      "name": "label",
+      "type": "Text"
+    },
+    {
+      "name": "guest",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<List<Seat>, Text>",
+  "types": [
+    {
+      "name": "Seat",
+      "fields": [
+        {
+          "name": "label",
+          "type": "Text"
+        },
+        {
+          "name": "holder",
+          "type": "Option<Text>"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "label": "A1",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "A2",
+            "holder": {
+              "$": "some",
+              "args": [
+                "kim"
+              ]
+            }
+          },
+          {
+            "label": "A3",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "B1",
+            "holder": {
+              "$": "some",
+              "args": [
+                "kim"
+              ]
+            }
+          },
+          {
+            "label": "B2",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "B3",
+            "holder": {
+              "$": "some",
+              "args": [
+                "lee"
+              ]
+            }
+          }
+        ],
+        "A1",
+        "ann"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "label": "A1",
+              "holder": {
+                "$": "some",
+                "args": [
+                  "ann"
+                ]
+              }
+            },
+            {
+              "label": "A2",
+              "holder": {
+                "$": "some",
+                "args": [
+                  "kim"
+                ]
+              }
+            },
+            {
+              "label": "A3",
+              "holder": {
+                "$": "none"
+              }
+            },
+            {
+              "label": "B1",
+              "holder": {
+                "$": "some",
+                "args": [
+                  "kim"
+                ]
+              }
+            },
+            {
+              "label": "B2",
+              "holder": {
+                "$": "none"
+              }
+            },
+            {
+              "label": "B3",
+              "holder": {
+                "$": "some",
+                "args": [
+                  "lee"
+                ]
+              }
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "label": "A1",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "A2",
+            "holder": {
+              "$": "some",
+              "args": [
+                "kim"
+              ]
+            }
+          },
+          {
+            "label": "A3",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "B1",
+            "holder": {
+              "$": "some",
+              "args": [
+                "kim"
+              ]
+            }
+          },
+          {
+            "label": "B2",
+            "holder": {
+              "$": "none"
+            }
+          },
+          {
+            "label": "B3",
+            "holder": {
+              "$": "some",
+              "args": [
+                "lee"
+              ]
+            }
+          }
+        ],
+        "A2",
+        "ann"
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "seat already booked: A2"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: record with an optional field, four ordered checks, an invariant (at most two seats per guest) that needs a count over the whole list. Pitfalls: the already-booked check comes before the limit check; the limit counts seats before this booking."
+}

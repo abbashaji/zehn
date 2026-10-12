@@ -1,0 +1,10 @@
+{
+  "_note": "Free-tier limits PER KEY, per model spec: rpm = requests per minute, tpm = tokens per minute, rpd = requests per day. The gemini: entries come from the builder's own Google account table, not from Google's public docs; check them in your account before a long run. The openai: entry below is a placeholder: add your Groq (or other provider) model ids with the limits shown in your own Groq account. Entries with null are refused by the runner; limits are never guessed. Google applies its limits per project, not per API key.",
+  "gemini:gemma-4-31b": {"rpm": 30, "tpm": 16000, "rpd": 14400},
+  "gemini:gemma-4-26b": {"rpm": 30, "tpm": 16000, "rpd": 14400},
+  "gemini:gemini-3.1-flash-lite": {"rpm": 15, "tpm": 250000, "rpd": 500},
+  "gemini:gemini-3.5-flash-lite": {"rpm": 15, "tpm": 250000, "rpd": 500},
+  "gemini:gemini-2.5-flash-lite": {"rpm": 10, "tpm": 250000, "rpd": 20},
+  "gemini:gemini-2.5-flash": {"rpm": 5, "tpm": 250000, "rpd": 20},
+  "openai:REPLACE-WITH-GROQ-MODEL-ID": {"rpm": null, "tpm": null, "rpd": null}
+}

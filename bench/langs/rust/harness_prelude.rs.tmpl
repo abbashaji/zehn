@@ -1,0 +1,71 @@
+trait BenchJs {
+    fn bench_js(&self) -> ::std::string::String;
+}
+
+fn bench_str(s: &str) -> ::std::string::String {
+    let mut out = ::std::string::String::from("\"");
+    for c in s.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            '\u{8}' => out.push_str("\\b"),
+            '\u{c}' => out.push_str("\\f"),
+            c if (c as u32) < 0x20 => out.push_str(&::std::format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out.push('"');
+    out
+}
+
+impl BenchJs for i64 {
+    fn bench_js(&self) -> ::std::string::String {
+        self.to_string()
+    }
+}
+
+impl BenchJs for bool {
+    fn bench_js(&self) -> ::std::string::String {
+        self.to_string()
+    }
+}
+
+impl BenchJs for ::std::string::String {
+    fn bench_js(&self) -> ::std::string::String {
+        bench_str(self)
+    }
+}
+
+impl BenchJs for () {
+    fn bench_js(&self) -> ::std::string::String {
+        ::std::string::String::from("null")
+    }
+}
+
+impl<T: BenchJs> BenchJs for ::std::vec::Vec<T> {
+    fn bench_js(&self) -> ::std::string::String {
+        let parts: ::std::vec::Vec<::std::string::String> = self.iter().map(|x| x.bench_js()).collect();
+        ::std::format!("[{}]", parts.join(","))
+    }
+}
+
+impl<T: BenchJs> BenchJs for ::std::option::Option<T> {
+    fn bench_js(&self) -> ::std::string::String {
+        match self {
+            ::std::option::Option::None => ::std::string::String::from("{\"$\":\"none\"}"),
+            ::std::option::Option::Some(x) => ::std::format!("{{\"$\":\"some\",\"args\":[{}]}}", x.bench_js()),
+        }
+    }
+}
+
+impl<T: BenchJs> BenchJs for ::std::result::Result<T, ::std::string::String> {
+    fn bench_js(&self) -> ::std::string::String {
+        match self {
+            ::std::result::Result::Ok(x) => ::std::format!("{{\"$\":\"ok\",\"args\":[{}]}}", x.bench_js()),
+            ::std::result::Result::Err(e) => ::std::format!("{{\"$\":\"err\",\"args\":[{}]}}", bench_str(e)),
+        }
+    }
+}

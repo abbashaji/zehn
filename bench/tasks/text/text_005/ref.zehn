@@ -1,0 +1,32 @@
+fn norm_from(parts: List<Text>, i: Int, seen: List<Text>) -> Result<Text, Text>
+  intent "normalise the headers at index i and later, given the upper-cased headers seen before"
+  example norm_from(["a", "b"], 0, []) == ok("A,B")
+  example norm_from(["a"], 1, []) == ok("")
+do
+  match list.get(parts, i) do
+    case none =>
+      return ok("")
+    case some(p) =>
+      if p == "" then
+        return err(text.concat("empty header at position ", int.to_text(i + 1)))
+      end if
+      let u = text.to_upper(p)
+      if list.contains(seen, u) then
+        return err(text.concat("duplicate header: ", u))
+      end if
+      let rest = norm_from(parts, i + 1, list.append(seen, u))?
+      if i + 1 >= list.len(parts) then
+        return ok(u)
+      end if
+      return ok(text.concat(text.concat(u, ","), rest))
+  end match
+end fn
+
+fn normalize_headers(line: Text) -> Result<Text, Text>
+  intent "upper-case every comma-separated header; the first empty header or repeated header (after upper-casing) is an error"
+  example normalize_headers("id,Name,qty") == ok("ID,NAME,QTY")
+  example normalize_headers("id,,qty") == err("empty header at position 2")
+  example normalize_headers("id,ID") == err("duplicate header: ID")
+do
+  return norm_from(text.split_on(line, ","), 0, [])
+end fn

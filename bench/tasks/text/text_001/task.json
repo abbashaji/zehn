@@ -1,0 +1,33 @@
+{
+  "id": "text_001",
+  "category": "text",
+  "level": 1,
+  "kind": "write",
+  "title": "Count the fields of a CSV line",
+  "description": "A line holds fields separated by commas. Return how many fields it has. Empty fields count (\"a,,b\" has 3 fields, a trailing comma adds an empty last field), but a completely empty line has 0 fields.",
+  "entry": "csv_field_count",
+  "params": [
+    {
+      "name": "line",
+      "type": "Text"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        ""
+      ],
+      "expect": 0
+    },
+    {
+      "args": [
+        "a"
+      ],
+      "expect": 1
+    }
+  ],
+  "notes": "Splitting an empty text gives one empty field in every language, so the empty line is the trap (0, not 1)."
+}

@@ -1,0 +1,11 @@
+[
+  {"args": ["Ann"], "expect": 3, "stdout": "Hello, Ann!\n"},
+  {"args": [""], "expect": 0, "stdout": "Hello, !\n"},
+  {"args": ["Bob Smith"], "expect": 9, "stdout": "Hello, Bob Smith!\n"},
+  {"args": ["x"], "expect": 1, "stdout": "Hello, x!\n"},
+  {"args": ["Zehn"], "expect": 4, "stdout": "Hello, Zehn!\n"},
+  {"args": ["a b c"], "expect": 5, "stdout": "Hello, a b c!\n"},
+  {"args": ["say \"hi\""], "expect": 8, "stdout": "Hello, say \"hi\"!\n"},
+  {"args": ["back\\slash"], "expect": 10, "stdout": "Hello, back\\slash!\n"},
+  {"args": ["0123456789"], "expect": 10, "stdout": "Hello, 0123456789!\n"}
+]

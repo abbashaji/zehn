@@ -1,0 +1,27 @@
+{
+  "id": "text_901",
+  "category": "text",
+  "level": 1,
+  "kind": "write",
+  "title": "Shout a text",
+  "description": "Return the text in upper case followed by an exclamation mark.",
+  "entry": "shout",
+  "params": [
+    {
+      "name": "s",
+      "type": "Text"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "hi"
+      ],
+      "expect": "HI!"
+    }
+  ],
+  "notes": "fixture for the Text kind; includes JSON escapes"
+}

@@ -1,0 +1,12 @@
+[
+  {"args": [[{"name": "ana", "dept": "Ops", "salary": 3000, "active": true}, {"name": "bo", "dept": "Dev", "salary": 4000, "active": true}, {"name": "cy", "dept": "ops", "salary": 3500, "active": true}, {"name": "di", "dept": "Ops", "salary": 2500, "active": false}], {"$": "none"}], "expect": 10500},
+  {"args": [[{"name": "ana", "dept": "Ops", "salary": 3000, "active": true}, {"name": "bo", "dept": "Dev", "salary": 4000, "active": true}, {"name": "cy", "dept": "ops", "salary": 3500, "active": true}, {"name": "di", "dept": "Ops", "salary": 2500, "active": false}], {"$": "some", "args": ["Ops"]}], "expect": 6500},
+  {"args": [[{"name": "ana", "dept": "Ops", "salary": 3000, "active": true}, {"name": "bo", "dept": "Dev", "salary": 4000, "active": true}, {"name": "cy", "dept": "ops", "salary": 3500, "active": true}, {"name": "di", "dept": "Ops", "salary": 2500, "active": false}], {"$": "some", "args": ["dev"]}], "expect": 4000},
+  {"args": [[{"name": "ana", "dept": "Ops", "salary": 3000, "active": true}, {"name": "bo", "dept": "Dev", "salary": 4000, "active": true}, {"name": "cy", "dept": "ops", "salary": 3500, "active": true}, {"name": "di", "dept": "Ops", "salary": 2500, "active": false}], {"$": "some", "args": ["HR"]}], "expect": 0},
+  {"args": [[], {"$": "none"}], "expect": 0},
+  {"args": [[], {"$": "some", "args": ["Ops"]}], "expect": 0},
+  {"args": [[{"name": "di", "dept": "Ops", "salary": 2500, "active": false}], {"$": "some", "args": ["Ops"]}], "expect": 0},
+  {"args": [[{"name": "ed", "dept": "Ops Support", "salary": 1000, "active": true}], {"$": "some", "args": ["Ops"]}], "expect": 0},
+  {"args": [[{"name": "ed", "dept": "Ops", "salary": 1000, "active": true}], {"$": "some", "args": ["OPS"]}], "expect": 1000},
+  {"args": [[{"name": "a", "dept": "X", "salary": 1, "active": true}, {"name": "b", "dept": "X", "salary": 2, "active": true}, {"name": "c", "dept": "X", "salary": 3, "active": true}], {"$": "some", "args": ["x"]}], "expect": 6}
+]

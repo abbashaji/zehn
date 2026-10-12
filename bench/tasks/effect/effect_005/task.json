@@ -1,0 +1,56 @@
+{
+  "id": "effect_005",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Overdraft-safe ledger",
+  "description": "An account starts with an opening balance and receives a list of moves: positive numbers are deposits, negative numbers are withdrawals, zero changes nothing. If the opening balance is negative, return the error `negative opening balance` and print nothing at all. Otherwise process the moves in order, numbering them from 1. A move that would take the balance below zero is refused: print `move N rejected: AMOUNT` (AMOUNT with its sign, as given) and leave the balance as it was. Any other move is applied: print `move N ok: balance B` with the new balance. After the last move print `final: B` and return the closing balance as a success value. The balance never becomes negative; a balance of exactly zero is allowed.",
+  "entry": "run_ledger",
+  "params": [
+    {
+      "name": "opening",
+      "type": "Int"
+    },
+    {
+      "name": "moves",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        100,
+        [
+          50,
+          -200
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          150
+        ]
+      },
+      "stdout": "move 1 ok: balance 150\nmove 2 rejected: -200\nfinal: 150\n"
+    },
+    {
+      "args": [
+        -1,
+        []
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "negative opening balance"
+        ]
+      },
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 3. Invariant balance >= 0 across steps; refused moves do not change state; error path prints nothing; withdrawal to exactly 0 is accepted; ok and err JSON encodings."
+}

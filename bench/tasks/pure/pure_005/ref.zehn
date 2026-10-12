@@ -1,0 +1,49 @@
+fn idle_from(starts: List<Int>, ends: List<Int>, i: Int, prev_start: Int, cover_end: Int, idle: Int) -> Result<Int, Text>
+  intent "idle time added by bookings i.. given the previous start, the furthest end so far and the idle time so far"
+  requires i >= 0
+  example idle_from([1, 5], [3, 8], 1, 1, 3, 0) == ok(2)
+  example idle_from([1, 5], [3, 8], 2, 5, 8, 2) == ok(2)
+  example idle_from([1, 5], [3, 4], 1, 1, 3, 0) == err("bad interval")
+do
+  match list.get(starts, i) do
+    case none =>
+      return ok(idle)
+    case some(s) =>
+      match list.get(ends, i) do
+        case none =>
+          return err("length mismatch")
+        case some(e) =>
+          if e < s then
+            return err("bad interval")
+          else
+            if s < prev_start then
+              return err("unsorted")
+            else
+              if s > cover_end then
+                return idle_from(starts, ends, i + 1, s, int.max(cover_end, e), idle + s - cover_end)
+              else
+                return idle_from(starts, ends, i + 1, s, int.max(cover_end, e), idle)
+              end if
+            end if
+          end if
+      end match
+  end match
+end fn
+
+fn idle_time(starts: List<Int>, ends: List<Int>) -> Result<Int, Text>
+  intent "total uncovered time between the first start and the last end, or an error for malformed input"
+  example idle_time([1, 5], [3, 8]) == ok(2)
+  example idle_time([1, 2], [3]) == err("length mismatch")
+  example idle_time([], []) == ok(0)
+do
+  if list.len(starts) != list.len(ends) then
+    return err("length mismatch")
+  else
+    match list.get(starts, 0) do
+      case none =>
+        return ok(0)
+      case some(first) =>
+        return idle_from(starts, ends, 0, first, first, 0)
+    end match
+  end if
+end fn

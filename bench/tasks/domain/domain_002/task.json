@@ -1,0 +1,108 @@
+{
+  "id": "domain_002",
+  "category": "domain",
+  "level": 1,
+  "kind": "write",
+  "title": "Remove stock of a named item",
+  "description": "A shop keeps its stock as a list of items, each with a name and a quantity on hand. Item names are unique and are compared exactly (upper and lower case differ). Write remove_stock, which takes the list, an item name and a quantity to remove, and returns the new list: the same items in the same order, with the quantity of the named item reduced by the amount removed. An item that reaches zero stays in the list. Checks happen in this order, and the first failing one decides the result: a quantity that is zero or negative gives the error \"quantity must be positive\"; a name that is not in the list gives \"unknown item: \" followed by the name; a quantity larger than what is on hand gives \"insufficient stock for \" followed by the name, then \": have \", the quantity on hand, \", need \" and the requested quantity (for example \"insufficient stock for pen: have 4, need 9\").",
+  "entry": "remove_stock",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Item>"
+    },
+    {
+      "name": "name",
+      "type": "Text"
+    },
+    {
+      "name": "qty",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Item>, Text>",
+  "types": [
+    {
+      "name": "Item",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "qty",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "qty": 5
+          },
+          {
+            "name": "ink",
+            "qty": 2
+          },
+          {
+            "name": "pad",
+            "qty": 0
+          }
+        ],
+        "pen",
+        3
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "name": "pen",
+              "qty": 2
+            },
+            {
+              "name": "ink",
+              "qty": 2
+            },
+            {
+              "name": "pad",
+              "qty": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "qty": 5
+          },
+          {
+            "name": "ink",
+            "qty": 2
+          },
+          {
+            "name": "pad",
+            "qty": 0
+          }
+        ],
+        "cap",
+        1
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "unknown item: cap"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 1: lookup plus rebuild of a list of records. Pitfalls: error order (quantity check first, even for unknown names), zero-quantity items are kept, the list order is preserved, numbers inside an error message."
+}

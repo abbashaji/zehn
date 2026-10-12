@@ -1,0 +1,12 @@
+[
+  {"args": [[]], "expect": {"$": "ok", "args": ["TOTAL 0.00"]}},
+  {"args": [[{"name": "pen", "qty": 2, "cents": 150}]], "expect": {"$": "ok", "args": ["pen x2 @ 1.50 = 3.00; TOTAL 3.00"]}},
+  {"args": [[{"name": "pen", "qty": 2, "cents": 150}, {"name": "ink", "qty": 1, "cents": 5}]], "expect": {"$": "ok", "args": ["pen x2 @ 1.50 = 3.00; ink x1 @ 0.05 = 0.05; TOTAL 3.05"]}},
+  {"args": [[{"name": "pen", "qty": 0, "cents": 100}]], "expect": {"$": "err", "args": ["invalid item: pen"]}},
+  {"args": [[{"name": "a", "qty": 1, "cents": 100}, {"name": "b", "qty": 1, "cents": -1}, {"name": "c", "qty": 0, "cents": 1}]], "expect": {"$": "err", "args": ["invalid item: b"]}},
+  {"args": [[{"name": "free", "qty": 3, "cents": 0}]], "expect": {"$": "ok", "args": ["free x3 @ 0.00 = 0.00; TOTAL 0.00"]}},
+  {"args": [[{"name": "bulk", "qty": 1000, "cents": 99999}]], "expect": {"$": "ok", "args": ["bulk x1000 @ 999.99 = 999990.00; TOTAL 999990.00"]}},
+  {"args": [[{"name": "x", "qty": 1, "cents": 7}]], "expect": {"$": "ok", "args": ["x x1 @ 0.07 = 0.07; TOTAL 0.07"]}},
+  {"args": [[{"name": "x", "qty": 1, "cents": 100}, {"name": "y", "qty": 2, "cents": 1000}]], "expect": {"$": "ok", "args": ["x x1 @ 1.00 = 1.00; y x2 @ 10.00 = 20.00; TOTAL 21.00"]}},
+  {"args": [[{"name": "neg", "qty": -2, "cents": 5}]], "expect": {"$": "err", "args": ["invalid item: neg"]}}
+]

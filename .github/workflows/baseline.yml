@@ -1,0 +1,230 @@
+# Phase 0 baseline on free model tiers. Not executed by the person who wrote it: review before the first run.
+# One run folder per model (run id "<run_id>-<model-slug>"); progress lives in the branch bench-data.
+name: baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      models:
+        description: "Comma list of model specs, e.g. gemini:gemma-4-31b (empty = repository variable BASELINE_MODELS)"
+        required: false
+        default: ""
+      repeats:
+        description: "Repeats per task and language"
+        required: false
+        default: "5"
+      langs:
+        description: "Comma list of languages"
+        required: false
+        default: "zehn,python_plain,python_strict,ts_strict,rust,rust_strict"
+      only:
+        description: "Optional comma list of task ids (empty = all tasks)"
+        required: false
+        default: ""
+      run_id:
+        description: "Run id prefix"
+        required: false
+        default: "baseline"
+  schedule:
+    - cron: "0 */6 * * *"
+
+concurrency:
+  group: baseline
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      models: ${{ steps.plan.outputs.models }}
+    steps:
+      - name: Build the model matrix
+        id: plan
+        env:
+          MODELS: ${{ inputs.models || vars.BASELINE_MODELS }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys
+          specs = [m.strip() for m in os.environ.get("MODELS", "").split(",") if m.strip()]
+          if not specs:
+              sys.exit("no models: pass the 'models' input or set the repository variable BASELINE_MODELS")
+          out, seen = [], set()
+          for s in specs:
+              if not re.match(r"^(gemini|openai):[A-Za-z0-9._/-]+$", s):
+                  sys.exit("bad model spec %r (expected gemini:<id> or openai:<id>)" % s)
+              slug = re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
+              if slug in seen:
+                  sys.exit("duplicate model %r" % s)
+              seen.add(slug)
+              out.append({"spec": s, "slug": slug})
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("models=" + json.dumps(out) + "\n")
+          PY
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        model: ${{ fromJSON(needs.plan.outputs.models) }}
+    env:
+      RUN_NAME: ${{ inputs.run_id || 'baseline' }}-${{ matrix.model.slug }}
+      REPEATS: ${{ inputs.repeats || '5' }}
+      LANGS: ${{ inputs.langs || 'zehn,python_plain,python_strict,ts_strict,rust,rust_strict' }}
+      ONLY: ${{ inputs.only }}
+      MODEL_SPEC: ${{ matrix.model.spec }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Attach branch bench-data as bench/results
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin bench-data >/dev/null 2>&1; then
+            git fetch --no-tags origin bench-data:refs/remotes/origin/bench-data
+            git worktree add -B bench-data bench/results origin/bench-data
+          else
+            mkdir -p bench/results
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install language tools
+        run: |
+          set -euo pipefail
+          python3 -m pip install mypy ruff
+          sudo env "PATH=$PATH" npm install -g typescript
+          rustup component add clippy rustfmt
+
+      - name: doctor
+        run: python3 bench/run.py doctor --lang "$LANGS"
+
+      - name: status
+        id: status
+        run: |
+          set -euo pipefail
+          args=(--lang "$LANGS" --repeats "$REPEATS" --models "$MODEL_SPEC" --run-id "$RUN_NAME")
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 bench/run.py status "${args[@]}" | tee status.txt
+          echo "remaining=$(sed -n 's/^remaining: //p' status.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: run
+        if: steps.status.outputs.remaining != '0'
+        env:
+          GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
+          OPENAI_COMPAT_API_KEYS: ${{ secrets.OPENAI_COMPAT_API_KEYS }}
+          OPENAI_COMPAT_BASE_URL: ${{ vars.OPENAI_COMPAT_BASE_URL }}
+        run: |
+          set -euo pipefail
+          args=(--lang "$LANGS" --repeats "$REPEATS" --models "$MODEL_SPEC" --run-id "$RUN_NAME" \
+                --resume --yes --time-budget-minutes 330)
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 bench/run.py run "${args[@]}"
+
+      - name: Upload run folder
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.model.slug }}
+          path: bench/results/${{ env.RUN_NAME }}/
+          if-no-files-found: ignore
+
+  persist:
+    needs: [plan, run]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      RUN_PREFIX: ${{ inputs.run_id || 'baseline' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Attach branch bench-data as data/
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin bench-data >/dev/null 2>&1; then
+            git fetch --no-tags origin bench-data:refs/remotes/origin/bench-data
+            git worktree add -B bench-data data origin/bench-data
+          else
+            git worktree add --detach data
+            git -C data checkout --orphan bench-data
+            git -C data rm -rf --quiet . || true
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: results-*
+          path: incoming
+
+      - name: Copy run folders into the branch
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for d in incoming/results-*; do
+            slug="${d#incoming/results-}"
+            dest="data/${RUN_PREFIX}-${slug}"
+            mkdir -p "$dest"
+            cp -a "$d"/. "$dest"/
+          done
+
+      - name: Report
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          rm -f data/REPORT.md
+          args=()
+          for d in data/*/; do
+            if [ -f "${d}records.jsonl" ]; then args+=(--run "${d%/}"); fi
+          done
+          if [ "${#args[@]}" -gt 0 ]; then
+            python3 bench/report.py "${args[@]}" --out data/REPORT.md
+          fi
+
+      - name: Commit to bench-data
+        run: |
+          set -euo pipefail
+          cd data
+          git config user.name "baseline-bot"
+          git config user.email "baseline-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nothing new to commit"
+            exit 0
+          fi
+          git commit -m "baseline: update run folders and REPORT.md"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:bench-data; then
+              exit 0
+            fi
+            git pull --rebase origin bench-data || true
+          done
+          echo "push failed after 5 attempts" >&2
+          exit 1
+
+      - name: Collect everything
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          tar --exclude=.git -cf - -C data . | tar -xf - -C out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: baseline-results
+          path: out/
+          if-no-files-found: ignore

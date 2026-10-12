@@ -1,0 +1,77 @@
+{
+  "id": "effect_006",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Accumulator machine",
+  "description": "A machine has one accumulator that starts at 0 and runs a list of commands in order. Each command has an op name and a number n. `add` adds n to the accumulator; `sub` subtracts n; `mul` multiplies the accumulator by n; `show` prints `acc = V` with the current value (n is ignored); `halt` prints `halted at command N` and stops immediately, so no later command runs (n is ignored); any other op prints `command N: unknown op [OP]` and is otherwise skipped. N is the command's position counted from 1, and op names are case-sensitive. Return the final accumulator value.",
+  "entry": "run_commands",
+  "params": [
+    {
+      "name": "cmds",
+      "type": "List<Cmd>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Cmd",
+      "fields": [
+        {
+          "name": "op",
+          "type": "Text"
+        },
+        {
+          "name": "n",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "op": "add",
+            "n": 5
+          },
+          {
+            "op": "mul",
+            "n": 3
+          },
+          {
+            "op": "show",
+            "n": 0
+          }
+        ]
+      ],
+      "expect": 15,
+      "stdout": "acc = 15\n"
+    },
+    {
+      "args": [
+        [
+          {
+            "op": "add",
+            "n": 1
+          },
+          {
+            "op": "halt",
+            "n": 0
+          },
+          {
+            "op": "add",
+            "n": 9
+          }
+        ]
+      ],
+      "expect": 1,
+      "stdout": "halted at command 2\n"
+    }
+  ],
+  "notes": "Level 3. State threaded through steps, early exit (halt), a fall-through default case, output interleaved with computation. Case-sensitive ops; empty op is unknown. Largest value 4e15 < 2^53."
+}

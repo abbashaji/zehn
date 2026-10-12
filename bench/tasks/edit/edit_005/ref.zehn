@@ -1,0 +1,89 @@
+type Account = { id: Int, balance: Int }
+
+fn balance_of(accounts: List<Account>, id: Int, i: Int) -> Option<Int>
+  intent "balance of the account with this id, searching from index i on"
+  example balance_of([], 1, 0) == none
+  example balance_of([{id: 1, balance: 10}, {id: 2, balance: 20}], 2, 0) == some(20)
+do
+  match list.get(accounts, i) do
+    case none =>
+      return none
+    case some(a) =>
+      if a.id == id then
+        return some(a.balance)
+      end if
+      return balance_of(accounts, id, i + 1)
+  end match
+end fn
+
+fn account_balance(a: Account) -> Int
+  example account_balance({id: 1, balance: 10}) == 10
+  example account_balance({id: 2, balance: 0}) == 0
+do
+  return a.balance
+end fn
+
+fn total_balance(accounts: List<Account>) -> Int
+  example total_balance([]) == 0
+  example total_balance([{id: 1, balance: 10}, {id: 2, balance: 20}]) == 30
+do
+  return list.sum(list.map(accounts, account_balance))
+end fn
+
+fn adjusted(a: Account, from_id: Int, to_id: Int, amount: Int) -> Account
+  intent "the account after the transfer: debit the source, credit the destination"
+  example adjusted({id: 1, balance: 10}, 1, 2, 4) == {id: 1, balance: 6}
+  example adjusted({id: 2, balance: 10}, 1, 2, 4) == {id: 2, balance: 14}
+  example adjusted({id: 3, balance: 10}, 1, 2, 4) == {id: 3, balance: 10}
+do
+  if a.id == from_id then
+    return {id: a.id, balance: a.balance - amount}
+  end if
+  if a.id == to_id then
+    return {id: a.id, balance: a.balance + amount}
+  end if
+  return a
+end fn
+
+fn rebuild(accounts: List<Account>, from_id: Int, to_id: Int, amount: Int, i: Int, done: List<Account>) -> List<Account>
+  intent "apply the transfer to every account from index i on, appending to done"
+  example rebuild([], 1, 2, 5, 0, []) == []
+  example rebuild([{id: 1, balance: 10}, {id: 2, balance: 0}], 1, 2, 5, 0, []) == [{id: 1, balance: 5}, {id: 2, balance: 5}]
+do
+  match list.get(accounts, i) do
+    case none =>
+      return done
+    case some(a) =>
+      return rebuild(accounts, from_id, to_id, amount, i + 1, list.append(done, adjusted(a, from_id, to_id, amount)))
+  end match
+end fn
+
+fn transfer(accounts: List<Account>, from_id: Int, to_id: Int, amount: Int) -> Result<List<Account>, Text>
+  intent "move amount from one account to another; checks run in a fixed order"
+  ensures result.is_ok(out) implies (amount > 0 and from_id != to_id)
+  ensures result.is_ok(out) implies total_balance(result.unwrap(out)) == total_balance(accounts)
+  example transfer([{id: 1, balance: 10}, {id: 2, balance: 0}], 1, 2, 10) == ok([{id: 1, balance: 0}, {id: 2, balance: 10}])
+  example transfer([{id: 1, balance: 10}], 1, 1, 5) == err("same account")
+  example transfer([{id: 1, balance: 10}], 1, 2, 5) == err("unknown destination")
+do
+  if amount <= 0 then
+    return err("invalid amount")
+  end if
+  if from_id == to_id then
+    return err("same account")
+  end if
+  match balance_of(accounts, from_id, 0) do
+    case none =>
+      return err("unknown source")
+    case some(have) =>
+      match balance_of(accounts, to_id, 0) do
+        case none =>
+          return err("unknown destination")
+        case some(_) =>
+          if have < amount then
+            return err("insufficient funds")
+          end if
+          return ok(rebuild(accounts, from_id, to_id, amount, 0, []))
+      end match
+  end match
+end fn

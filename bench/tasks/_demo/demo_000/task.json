@@ -1,0 +1,21 @@
+{
+  "id": "demo_000",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Sum of values above a limit",
+  "description": "Given a list of integers and a limit, return the sum of all elements that are strictly greater than the limit. An empty list, or a list where nothing exceeds the limit, gives 0.",
+  "entry": "sum_above",
+  "params": [
+    {"name": "xs", "type": "List<Int>"},
+    {"name": "limit", "type": "Int"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, 5, 10], 4], "expect": 15},
+    {"args": [[], 0], "expect": 0}
+  ],
+  "notes": "Demo fixture for the bench core. Not part of any real task set."
+}

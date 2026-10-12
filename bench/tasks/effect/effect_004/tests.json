@@ -1,0 +1,13 @@
+[
+  {"args": [[]], "expect": 0, "stdout": ""},
+  {"args": [["alice", "bob", "carol"]], "expect": 0, "stdout": ""},
+  {"args": [["ab"]], "expect": 1, "stdout": "#1 [ab]: too short\n"},
+  {"args": [["", "x", "xy"]], "expect": 3, "stdout": "#1 []: too short\n#2 [x]: too short\n#3 [xy]: too short\n"},
+  {"args": [["abc", "abcdefghijkl", "abcdefghijklm"]], "expect": 1, "stdout": "#3 [abcdefghijklm]: too long\n"},
+  {"args": [["a b", "ab cd"]], "expect": 2, "stdout": "#1 [a b]: has space\n#2 [ab cd]: has space\n"},
+  {"args": [["a b c d e f g h"]], "expect": 1, "stdout": "#1 [a b c d e f g h]: too long\n"},
+  {"args": [["a "]], "expect": 1, "stdout": "#1 [a ]: too short\n"},
+  {"args": [[" ", "   "]], "expect": 2, "stdout": "#1 [ ]: too short\n#2 [   ]: has space\n"},
+  {"args": [[" abc"]], "expect": 1, "stdout": "#1 [ abc]: has space\n"},
+  {"args": [["u1", "uuu", "u3", "ok_name", "dd", "has space", "fine", "toolongusername1", "yes", "no", "y es"]], "expect": 7, "stdout": "#1 [u1]: too short\n#3 [u3]: too short\n#5 [dd]: too short\n#6 [has space]: has space\n#8 [toolongusername1]: too long\n#10 [no]: too short\n#11 [y es]: has space\n"}
+]

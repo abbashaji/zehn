@@ -1,0 +1,39 @@
+{
+  "id": "text_003",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Count a word in a sentence",
+  "description": "A sentence is a text whose words are separated by single spaces; there is no other punctuation. Count how many of its space-separated tokens are exactly equal to the given word. The comparison is case-sensitive and whole-token only: \"theory\" does not contain the word \"the\", and \"The\" is not \"the\". Consecutive spaces produce empty tokens, which never match. The word is never empty (the Zehn version states this as a precondition). An empty sentence has no matches.",
+  "entry": "count_word",
+  "params": [
+    {
+      "name": "sentence",
+      "type": "Text"
+    },
+    {
+      "name": "word",
+      "type": "Text"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "the cat and the dog",
+        "the"
+      ],
+      "expect": 2
+    },
+    {
+      "args": [
+        "",
+        "the"
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Whole-token matching (not substring) and case sensitivity are the traps. The word is never empty."
+}

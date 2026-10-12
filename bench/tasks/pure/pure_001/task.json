@@ -1,0 +1,21 @@
+{
+  "id": "pure_001",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Weighted score total",
+  "description": "A scorecard keeps two parallel lists: the points awarded for each criterion and the weight of each criterion. Return the weighted total: the sum of points[i] * weights[i] over all positions i that exist in both lists. If the lists differ in length, the extra elements of the longer list are ignored. Empty lists give 0. Values may be negative.",
+  "entry": "weighted_total",
+  "params": [
+    {"name": "points", "type": "List<Int>"},
+    {"name": "weights", "type": "List<Int>"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[2, 3, 4], [10, 1, 5]], "expect": 43},
+    {"args": [[7, 7], [1]], "expect": 7}
+  ],
+  "notes": "Tests the shared-prefix rule (unequal lengths both ways), negatives, empty lists and a large product. No division."
+}

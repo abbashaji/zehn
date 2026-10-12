@@ -1,0 +1,13 @@
+[
+  {"args": [[], 3], "expect": 0, "stdout": ""},
+  {"args": [["a", "bb", "ccc", "dddd"], 3], "expect": 2, "stdout": "LONG: ccc\nLONG: dddd\n"},
+  {"args": [["a", "bb", "ccc", "dddd"], 5], "expect": 0, "stdout": ""},
+  {"args": [["a", "bb", "ccc", "dddd"], 0], "expect": 4, "stdout": "LONG: a\nLONG: bb\nLONG: ccc\nLONG: dddd\n"},
+  {"args": [["", "x"], 0], "expect": 2, "stdout": "LONG: \nLONG: x\n"},
+  {"args": [["abc", "abc"], 3], "expect": 2, "stdout": "LONG: abc\nLONG: abc\n"},
+  {"args": [["hello world", "hi"], 5], "expect": 1, "stdout": "LONG: hello world\n"},
+  {"args": [["one", "two"], -4], "expect": 2, "stdout": "LONG: one\nLONG: two\n"},
+  {"args": [["boundary", "boundar", "boundary!"], 8], "expect": 2, "stdout": "LONG: boundary\nLONG: boundary!\n"},
+  {"args": [["xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "y"], 30], "expect": 1, "stdout": "LONG: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"},
+  {"args": [["Zebra", "apple", "Mango"], 5], "expect": 3, "stdout": "LONG: Zebra\nLONG: apple\nLONG: Mango\n"}
+]

@@ -1,0 +1,27 @@
+fn spin(n: Int) -> Int
+  example spin(1) == 1
+do
+  return spin(n + 1)
+end fn
+
+fn ping(n: Int) -> Int
+  example ping(1) == 1
+do
+  return pong(n + 1)
+end fn
+
+fn pong(n: Int) -> Int
+  example pong(1) == 1
+do
+  return ping(n + 1)
+end fn
+
+fn fib(n: Int) -> Int
+  example fib(40) == 102334155
+do
+  if n < 2 then
+    return n
+  else
+    return fib(n - 1) + fib(n - 2)
+  end if
+end fn

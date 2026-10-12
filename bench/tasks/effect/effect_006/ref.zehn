@@ -1,0 +1,83 @@
+type Cmd = { op: Text, n: Int }
+
+fn arith(op: Text, acc: Int, n: Int) -> Option<Int>
+  intent "the new accumulator for add, sub or mul; none for any other op"
+  example arith("add", 5, 3) == some(8)
+  example arith("sub", 5, 8) == some(0 - 3)
+  example arith("mul", 4, 0 - 2) == some(0 - 8)
+  example arith("show", 5, 3) == none
+do
+  match op do
+    case "add" =>
+      return some(acc + n)
+    case "sub" =>
+      return some(acc - n)
+    case "mul" =>
+      return some(acc * n)
+    case _ =>
+      return none
+  end match
+end fn
+
+fn show_line(acc: Int) -> Text
+  intent "the line printed by a show command"
+  example show_line(7) == "acc = 7"
+  example show_line(0 - 4) == "acc = -4"
+do
+  return text.concat("acc = ", int.to_text(acc))
+end fn
+
+fn halt_line(n: Int) -> Text
+  intent "the line printed by a halt command"
+  example halt_line(3) == "halted at command 3"
+  example halt_line(1) == "halted at command 1"
+do
+  return text.concat("halted at command ", int.to_text(n))
+end fn
+
+fn unknown_line(n: Int, op: Text) -> Text
+  intent "the line printed for an unrecognised op"
+  example unknown_line(2, "div") == "command 2: unknown op [div]"
+  example unknown_line(1, "") == "command 1: unknown op []"
+do
+  return text.concat("command ", text.concat(int.to_text(n), text.concat(": unknown op [", text.concat(op, "]"))))
+end fn
+
+fn run_from(cmds: List<Cmd>, i: Int, acc: Int) -> Int
+  intent "run the commands from index i on with accumulator acc and return the final accumulator"
+  uses [console]
+  requires i >= 0
+  example arith("add", 1, 1) == some(2)
+  example show_line(2) == "acc = 2"
+do
+  match list.get(cmds, i) do
+    case none =>
+      return acc
+    case some(c) =>
+      match arith(c.op, acc, c.n) do
+        case some(next) =>
+          return run_from(cmds, i + 1, next)
+        case none =>
+          match c.op do
+            case "show" =>
+              console.print(show_line(acc))
+              return run_from(cmds, i + 1, acc)
+            case "halt" =>
+              console.print(halt_line(i + 1))
+              return acc
+            case _ =>
+              console.print(unknown_line(i + 1, c.op))
+              return run_from(cmds, i + 1, acc)
+          end match
+      end match
+  end match
+end fn
+
+fn run_commands(cmds: List<Cmd>) -> Int
+  intent "run an accumulator machine that starts at 0 and return its final value"
+  uses [console]
+  example arith("add", 0, 9) == some(9)
+  example halt_line(2) == "halted at command 2"
+do
+  return run_from(cmds, 0, 0)
+end fn

@@ -1,0 +1,14 @@
+[
+  {"args": [[1000, 500], {"$": "none"}], "expect": 1500},
+  {"args": [[], {"$": "none"}], "expect": 0},
+  {"args": [[1000, 500], {"$": "some", "args": [10]}], "expect": 1350},
+  {"args": [[1999], {"$": "some", "args": [10]}], "expect": 1800},
+  {"args": [[100], {"$": "some", "args": [33]}], "expect": 67},
+  {"args": [[250, 250], {"$": "some", "args": [100]}], "expect": 0},
+  {"args": [[250, 250], {"$": "some", "args": [150]}], "expect": 0},
+  {"args": [[250, 250], {"$": "some", "args": [-5]}], "expect": 500},
+  {"args": [[], {"$": "some", "args": [50]}], "expect": 0},
+  {"args": [[999], {"$": "some", "args": [0]}], "expect": 999},
+  {"args": [[1, 2, 3], {"$": "some", "args": [50]}], "expect": 3},
+  {"args": [[7], {"$": "some", "args": [99]}], "expect": 1}
+]

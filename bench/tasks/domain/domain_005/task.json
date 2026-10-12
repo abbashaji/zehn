@@ -1,0 +1,89 @@
+{
+  "id": "domain_005",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Loyalty points over a series of purchases",
+  "description": "A loyalty member has a name, a points total and a tier, which is the text \"bronze\", \"silver\" or \"gold\". Write apply_purchases, which takes a member and a list of purchase amounts (whole currency units, in order) and returns the member after all purchases. Each purchase earns points: the amount divided by 10, rounded down, times the multiplier of the member's current tier (bronze 1, silver 2, gold 3). The points total never exceeds 10000: earnings beyond that are lost, not an error. After every purchase the tier is recomputed from the new points total: below 1000 is \"bronze\", below 5000 is \"silver\", otherwise \"gold\". The next purchase therefore uses the new tier. Checks happen in this order, and the first failing one decides the result: a member whose points are below 0 or above 10000 gives the error \"invalid member: points out of range\"; a member whose tier is not one of the three names gives \"unknown tier: \" followed by the tier text; then the purchases are processed from the front, and the first negative amount gives \"purchase \" followed by its position counted from 1, then \": negative spend\" (for example \"purchase 3: negative spend\"). The member's stored tier is trusted as given: with no purchases the member is returned unchanged, even if the tier does not match the points.",
+  "entry": "apply_purchases",
+  "params": [
+    {
+      "name": "m",
+      "type": "Member"
+    },
+    {
+      "name": "spends",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Result<Member, Text>",
+  "types": [
+    {
+      "name": "Member",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "points",
+          "type": "Int"
+        },
+        {
+          "name": "tier",
+          "type": "Text"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        {
+          "name": "ann",
+          "points": 0,
+          "tier": "bronze"
+        },
+        [
+          250
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          {
+            "name": "ann",
+            "points": 25,
+            "tier": "bronze"
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "ann",
+          "points": 900,
+          "tier": "bronze"
+        },
+        [
+          1000,
+          1000,
+          1000
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          {
+            "name": "ann",
+            "points": 1400,
+            "tier": "silver"
+          }
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: several steps and invariants (0 <= points <= 10000, tier derived from points after each purchase). Pitfalls: the multiplier uses the tier before the purchase, not after; the cap applies per purchase; the stored tier is used for the first purchase even when inconsistent; positions in messages are 1-based."
+}
