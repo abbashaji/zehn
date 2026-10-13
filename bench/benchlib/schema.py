@@ -370,9 +370,16 @@ def validate_record(rec: Any) -> List[str]:
     if ar is not None and not (_is(ar, int) and 1 <= ar <= len(rec["rounds"])):
         errs.append("accepted_round must be null or a round number present in rounds")
     for n, r in enumerate(rec["rounds"]):
-        if not isinstance(r, dict) or set(r) != set(_ROUND_KEYS):
-            errs.append("rounds[%d] must have exactly the keys %s" % (n, sorted(_ROUND_KEYS)))
+        if not isinstance(r, dict) or not (set(_ROUND_KEYS) <= set(r) <= set(_ROUND_KEYS) | {"diags"}):
+            errs.append("rounds[%d] must have exactly the keys %s (and optionally 'diags')" % (n, sorted(_ROUND_KEYS)))
             continue
+        if "diags" in r:
+            ds = r["diags"]
+            if not isinstance(ds, list) or not all(
+                    isinstance(d, dict) and isinstance(d.get("code"), str) and isinstance(d.get("message"), str)
+                    and (d.get("line") is None or _is(d.get("line"), int)) and set(d) == {"code", "line", "message"}
+                    for d in ds):
+                errs.append("rounds[%d].diags must be a list of {code, line, message}" % n)
         for key, typ in _ROUND_KEYS.items():
             if not _is(r[key], typ):
                 errs.append("rounds[%d].%s must be %s" % (n, key, typ.__name__))

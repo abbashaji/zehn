@@ -44,14 +44,22 @@ def table(header, rows):
     return lines
 
 
+ERRORED = []   # records left out of every metric because the run ended on an error (see build_report)
+
+
 def load(dirs, only_set=None):
+    """Valid records only: a run that ended on an error (API outage, tool crash) says nothing about the
+    language or the model, so it is listed in its own section and counted in no metric."""
     metas = []
     records = []
     infos = []
+    del ERRORED[:]
     for d in dirs:
         meta, recs = metrics.load_run(d)
         if only_set:
             recs = [r for r in recs if r.get("set") == only_set]
+        ERRORED.extend(r for r in recs if r.get("error"))
+        recs = [r for r in recs if not r.get("error")]
         metas.append(meta)
         records.extend(recs)
         infos.append((d, meta, recs))
@@ -73,6 +81,19 @@ def build_report(dirs, only_set=None):
                      ", ".join(sets) or "-", len(recs),
                      len(set(r["task_id"] for r in recs)), meta_txt])
     out += table(["dir", "run_id", "set", "records", "tasks", "meta"], rows)
+    if ERRORED:
+        out += ["", "## Runs left out (ended on an error)", "",
+                "These runs hit an error before they could finish (API outage, tool crash). They are counted "
+                "in no metric below; `run.py run --resume` redoes the API ones."]
+        langs = sorted(set(r["lang"] for r in ERRORED) | set(r["lang"] for r in records))
+        rows = []
+        for lang in langs:
+            e = [r for r in ERRORED if r["lang"] == lang]
+            rows.append([lang, sum(1 for r in records if r["lang"] == lang), len(e),
+                         ", ".join(sorted(set(str(r["error"]).split(":")[0] + " " + (
+                             str(r["error"]).split("(HTTP ")[1][:3] if "(HTTP " in str(r["error"]) else "")
+                             for r in e))) or "-"])
+        out += [""] + table(["lang", "valid runs", "left out", "kinds"], rows)
     out += ["", "max_rounds used for censoring: %d" % max_rounds,
             "Bootstrap: %d resamples over tasks, seed %d, 95%% percentile interval." % (
                 stats.DEFAULT_N, stats.DEFAULT_SEED)]

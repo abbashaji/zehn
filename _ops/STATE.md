@@ -1,6 +1,6 @@
 # STATE
 Name: Zehn
-Version: 5
+Version: 6
 Return: full
 Build: python3 -m compileall -q zehn.py bench
 Test: python3 -m unittest discover -s tests && python3 -m unittest discover -s bench/tests
@@ -16,10 +16,12 @@ Baseline: red on rustc 1.97 (302 tests, 1 fails, same on the untouched v3 tree: 
 - [ ] <item> - Done when: <one observable check>
 
 ## Decisions and why
-- 14 ADRs in DECISIONS/ (all unmeasured); CONTEXT.md is the session memory (<=2800 chars, unverified as 800 tokens)
+- 15 ADRs in DECISIONS/ (all unmeasured); CONTEXT.md is the session memory (<=2800 chars, unverified as 800 tokens)
 - ADR-0010 (Int / and % use floor semantics) must be resolved in v0.4
 
 ## Known hazards / open issues
+- Baseline (gemma-4-31b-it) had 24% API-failure runs (Gemini 500/503, rising over time): v006 resume redoes them; read the report's "Runs left out" table
+- Unreviewed: do the python/ts/rust strict tools have a layout-style asymmetry like E0203 (ADR-0014)?
 - Pilot (6 tasks, gemma-4-31b-it) was run before ADR-0014: its zehn numbers are not comparable; python_strict/ts_strict/rust_strict layout checks were not reviewed for the same asymmetry
 - Remote models: `gemini:`/`openai:` clients and the scheduler were tested only against local fake servers; Gemini facts not on Google's own pages: finish reason MAX_TOKENS, `thought` part flag, 429 body (see bench/README.md)
 - Google limits apply per project, not per key: extra keys of one project add no quota; bench/limits.json Gemini rows come from the builder's account table
@@ -35,6 +37,7 @@ Baseline: red on rustc 1.97 (302 tests, 1 fails, same on the untouched v3 tree: 
 - Toolchains (mypy, ruff, tsc, rust, clippy, rustfmt) were all installable in the branches and in the merge; none missing
 
 ## History (newest first, last 8, one line each)
+- v006: bench: API failures redone on --resume and left out of reports, optional round diags (ADR-0015); prune-errors command
 - v005: bench zehn adapter forgives layout-only E0203 (ADR-0014) after the pilot; 2 tests
 - v004: free remote baseline: gemini/openai clients, per-key rate scheduler, resume, status, doctor, time budget, baseline.yml, limits.json
 - v003: merged a b c d e: 30 benchmark tasks (pure, text, domain, effect, edit; 6 each, refs in zehn, python, ts, rust), notes in bench/notes

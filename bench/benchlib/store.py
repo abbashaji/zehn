@@ -41,6 +41,7 @@ class RunStore:
         os.makedirs(self.dir, exist_ok=True)
         if resume and os.path.exists(self.records_path):
             repair_records(self.records_path)
+            self.pruned = prune_api_errors(self.records_path)
         else:
             with open(self.records_path, "w", encoding="utf-8", newline="\n"):
                 pass
@@ -88,6 +89,35 @@ def repair_records(path: str) -> None:
     if keep != data:
         with open(path, "wb") as f:
             f.write(keep)
+
+
+def prune_api_errors(path: str) -> int:
+    """Move records that ended on API failures (HTTP 429/5xx after all retries) out of records.jsonl into
+    records.errors.jsonl next to it, so a resume runs them again. Other records are never touched.
+    Returns how many were moved."""
+    from .loop import is_retryable_error
+    if not os.path.exists(path):
+        return 0
+    keep: List[str] = []
+    moved: List[str] = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                keep.append(line if line.endswith("\n") else line + "\n")
+                continue
+            (moved if isinstance(rec, dict) and is_retryable_error(rec) else keep).append(
+                line if line.endswith("\n") else line + "\n")
+    if not moved:
+        return 0
+    with open(os.path.join(os.path.dirname(path), "records.errors.jsonl"), "a", encoding="utf-8", newline="\n") as f:
+        f.writelines(moved)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.writelines(keep)
+    return len(moved)
 
 
 def read_records(path: str) -> Iterator[Dict[str, Any]]:

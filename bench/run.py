@@ -84,6 +84,9 @@ def build_parser() -> argparse.ArgumentParser:
     st.add_argument("--repeats", type=int, default=5)
     st.add_argument("--variant", default="default")
     st.add_argument("--seed", type=int, default=1234)
+    pe = sub.add_parser("prune-errors", help="move API-failure records (HTTP 429/5xx) out of a run so --resume redoes them")
+    pe.add_argument("--run-id", required=True)
+    pe.add_argument("--out", default=DEFAULT_OUT)
     dr = sub.add_parser("doctor", help="check that the language tools exist; print their versions")
     dr.add_argument("--lang", action="append", help="language adapter(s); repeatable or comma list")
     rp = sub.add_parser("replay", help="run with stub:perfect (no network); CI uses it")
@@ -229,7 +232,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         raise SystemExit("no model known for this run: pass --models")
     tasks, langs = _tasks(args), _langs(args)
     recs = _read_records_tolerant(os.path.join(run_dir, "records.jsonl"))
-    have = {loop.done_key(r) for r in recs if all(k in r for k in ("task_id", "lang", "variant", "model", "repeat"))}
+    have = {loop.done_key(r) for r in recs
+            if all(k in r for k in ("task_id", "lang", "variant", "model", "repeat")) and not loop.is_retryable_error(r)}
     plan = _plan(args, tasks, langs, specs)
     per_lang: Dict[str, List[int]] = {ad.name: [0, 0] for ad in langs}
     done = 0
@@ -247,11 +251,12 @@ def cmd_status(args: argparse.Namespace) -> int:
               if all(k in r for k in ("task_id", "lang", "variant", "model", "repeat")) and loop.done_key(r) in planned_keys]
     avg = (sum(rounds) / len(rounds)) if rounds else 2.0
     errored = sum(1 for r in recs if r.get("error"))
+    retry = sum(1 for r in recs if loop.is_retryable_error(r))
     print("run: %s" % args.run_id)
     print("models: %s" % ", ".join(specs))
     print("done: %d" % done)
     print("remaining: %d" % remaining)
-    print("errored records: %d" % errored)
+    print("errored records: %d (%d from API failures, redone by --resume)" % (errored, retry))
     for name in sorted(per_lang):
         print("  %-14s done=%d remaining=%d" % (name, per_lang[name][0], per_lang[name][1]))
     print("estimated remaining calls: %d (%.2f rounds per run, %s)"
@@ -346,6 +351,8 @@ def cmd_run(args: argparse.Namespace, replay: bool = False) -> int:
     if args.resume:
         have = {loop.done_key(r) for r in store.read_records(rs.records_path)}
     items = [it for it in plan if (it[0]["id"], it[1].name, args.variant, it[2], it[3]) not in have]
+    if args.resume and getattr(rs, "pruned", 0):
+        print("resume: %d earlier API-failure records moved to records.errors.jsonl and redone" % rs.pruned)
     if args.resume:
         print("resume: %d of %d attempts already recorded, %d to do" % (len(plan) - len(items), len(plan), len(items)))
 
@@ -420,6 +427,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_verify(args)
     if args.cmd == "status":
         return cmd_status(args)
+    if args.cmd == "prune-errors":
+        n = store.prune_api_errors(os.path.join(args.out, store.check_run_id(args.run_id), "records.jsonl"))
+        print("moved %d API-failure records to records.errors.jsonl" % n)
+        return 0
     if args.cmd == "doctor":
         return cmd_doctor(args)
     if args.cmd == "replay":

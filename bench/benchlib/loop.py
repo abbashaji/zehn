@@ -11,6 +11,9 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
 from .models import RunAborted
 from .schema import RECORD_SCHEMA_VERSION
 
+DIAG_MESSAGE_MAX = 300
+MAX_DIAGS_RECORDED = 8
+_RETRYABLE = re.compile(r"^ModelError: giving up after \d+ attempts \(HTTP (429|5\d\d)\b")
 FIX_REQUEST = "Fix the program and reply with the complete program in one code block."
 _FENCE = re.compile(r"^[ \t]*```[^\n]*\n(.*?)^[ \t]*```[ \t]*$", re.MULTILINE | re.DOTALL)
 
@@ -118,10 +121,15 @@ def run_one(adapter: Any, task: Dict[str, Any], model: Any, *, run_id: str, set_
                 except Exception as ex:  # noqa: BLE001
                     error = "tool_check crashed: %s: %s" % (type(ex).__name__, ex)
                     break
-            rounds.append({"i": i, "tool_ok": bool(check["ok"]),
-                           "diag_codes": [d["code"] for d in check["diagnostics"]],
-                           "unknown_names": _unknown_count(check),
-                           "in_tokens": reply["in_tokens"], "out_tokens": reply["out_tokens"]})
+            rnd = {"i": i, "tool_ok": bool(check["ok"]),
+                   "diag_codes": [d["code"] for d in check["diagnostics"]],
+                   "unknown_names": _unknown_count(check),
+                   "in_tokens": reply["in_tokens"], "out_tokens": reply["out_tokens"]}
+            if check["diagnostics"]:    # optional key (v006): the message text, so failures can be read later
+                rnd["diags"] = [{"code": d["code"], "line": d.get("line"),
+                                 "message": str(d.get("message", ""))[:DIAG_MESSAGE_MAX]}
+                                for d in check["diagnostics"][:MAX_DIAGS_RECORDED]]
+            rounds.append(rnd)
             if i == 1:
                 first = _hidden(adapter, task, attempts[0], tests, work)
             if check["ok"]:
@@ -179,6 +187,13 @@ def work_order(tasks: Sequence[Dict[str, Any]], langs: Sequence[Any], model_spec
             for ad in ls:
                 for spec in model_specs:
                     yield t, ad, spec, rep
+
+
+def is_retryable_error(rec: Dict[str, Any]) -> bool:
+    """A record that ended only because the model API kept failing (HTTP 429 or 5xx after all retries).
+    It says nothing about the model, so a resume redoes the run and a report leaves it out."""
+    err = rec.get("error")
+    return isinstance(err, str) and bool(_RETRYABLE.match(err))
 
 
 def done_key(rec: Dict[str, Any]) -> Tuple[str, str, str, str, int]:

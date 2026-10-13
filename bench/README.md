@@ -73,6 +73,9 @@ that hour; the 429 handling covers it. A run that ended with an `error` after re
 
 ## Running the baseline for free
 
+API failures (HTTP 429/5xx after all retries) are not model failures (ADR-0015): `--resume` moves those records to `records.errors.jsonl` and redoes them, `status` counts them as remaining, `run.py prune-errors --run-id X` does the move by hand, and the report leaves every errored run out of its metrics (section "Runs left out"). Rounds carry an optional `diags` list with the message text.
+
+
 "No rate limits" does not exist on free tiers. The aim is to never hit them, never lose finished work and
 finish unattended. The workflow `.github/workflows/baseline.yml` runs every 6 hours (and on demand) until the
 run is complete and keeps its progress in the git branch `bench-data`.
