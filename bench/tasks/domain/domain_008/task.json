@@ -1,0 +1,79 @@
+{
+  "id": "domain_008",
+  "category": "domain",
+  "level": 1,
+  "kind": "write",
+  "title": "Renew a library loan",
+  "description": "A library loan has an item title, a due day (a day number) and a count of renewals already used. Write renew_loan, which takes the loan and today's day number and returns the renewed loan or an error. A renewal moves the due day 14 days later than the current due day (not later than today) and raises the renewal count by one; the title is unchanged. Checks happen in this order, and the first failing one decides the result: a loan that is past due, meaning today is after the due day, gives the error \"overdue by \" followed by the number of days past due and \" days\" (for example \"overdue by 1 days\"); a loan with two or more renewals already used gives \"renewal limit reached for \" followed by the item title; a renewal is only allowed in the last 3 days before the due day, so if today is more than 3 days before the due day the error is \"too early: renew from day \" followed by the first day on which renewal is allowed. Renewing on the due day itself is allowed.",
+  "entry": "renew_loan",
+  "params": [
+    {
+      "name": "loan",
+      "type": "Loan"
+    },
+    {
+      "name": "today",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Loan, Text>",
+  "types": [
+    {
+      "name": "Loan",
+      "fields": [
+        {
+          "name": "item",
+          "type": "Text"
+        },
+        {
+          "name": "due_day",
+          "type": "Int"
+        },
+        {
+          "name": "renewals",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        {
+          "item": "Dune",
+          "due_day": 20,
+          "renewals": 0
+        },
+        20
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          {
+            "item": "Dune",
+            "due_day": 34,
+            "renewals": 1
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        {
+          "item": "Dune",
+          "due_day": 20,
+          "renewals": 0
+        },
+        21
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "overdue by 1 days"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 1: one record, three ordered checks, a computed message. Pitfalls: the new due day is old due day + 14, not today + 14; the overdue check comes before the limit check, and the limit check before the too-early check; the due day itself is not overdue; the earliest renewal day is due_day - 3."
+}

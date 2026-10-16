@@ -1,0 +1,10 @@
+{
+  "examples": [
+    {
+      "fn": "pure_len",
+      "fuel": 7,
+      "line": 21,
+      "status": "pass"
+    }
+  ]
+}

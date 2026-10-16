@@ -1,0 +1,62 @@
+{
+  "id": "effect_011",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Retry log with capped backoff",
+  "description": "Make up to max_attempts attempts, numbered from 1. Attempt K succeeds when outcomes has the value true at position K (counted from 1); a false, or a position beyond the end of outcomes, is a failure. On success print `attempt K: ok` and stop, returning K as a success value. On failure print `attempt K: failed`; then, if another attempt is still allowed, print `waiting D`, where D is the wait before the next attempt: the first wait is base, each later wait is twice the previous one, and no wait is ever longer than 60 (a larger value is printed as 60, and doubling continues from the capped value). No wait is printed after the last allowed attempt. If every allowed attempt fails, return the error `gave up after N attempts` with N equal to max_attempts (the word is always `attempts`). If max_attempts is less than 1, return the error `no attempts allowed` and print nothing. Entries of outcomes beyond max_attempts are never looked at. base is never negative.",
+  "entry": "retry_log",
+  "params": [
+    {
+      "name": "outcomes",
+      "type": "List<Bool>"
+    },
+    {
+      "name": "max_attempts",
+      "type": "Int"
+    },
+    {
+      "name": "base",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          false,
+          true
+        ],
+        3,
+        5
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          2
+        ]
+      },
+      "stdout": "attempt 1: failed\nwaiting 5\nattempt 2: ok\n"
+    },
+    {
+      "args": [
+        [],
+        0,
+        1
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "no attempts allowed"
+        ]
+      },
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 2. Loop state (attempt number, current wait) plus early exit; the wait is skipped after the last attempt; cap at 60 applies to the first wait too (base 100 prints 60); base 0 prints `waiting 0`; outcomes shorter than max_attempts count as failures; error text keeps the plural for N = 1; max_attempts < 1 prints nothing. Waits are only printed, never slept."
+}

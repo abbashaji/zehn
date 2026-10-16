@@ -1,0 +1,16 @@
+[
+  {"args": [[]], "expect": 0, "stdout": ""},
+  {"args": [[{"op": "set", "key": "a", "n": 1}, {"op": "get", "key": "a", "n": 0}]], "expect": 1, "stdout": "a = 1\n"},
+  {"args": [[{"op": "get", "key": "x", "n": 0}]], "expect": 0, "stdout": "x: unset\n"},
+  {"args": [[{"op": "add", "key": "a", "n": 5}, {"op": "get", "key": "a", "n": 0}, {"op": "add", "key": "a", "n": 3}, {"op": "get", "key": "a", "n": 0}]], "expect": 1, "stdout": "a = 5\na = 8\n"},
+  {"args": [[{"op": "set", "key": "b", "n": 1}, {"op": "set", "key": "a", "n": 2}, {"op": "set", "key": "b", "n": 3}, {"op": "dump", "key": "", "n": 0}]], "expect": 2, "stdout": "b=3\na=2\n"},
+  {"args": [[{"op": "set", "key": "a", "n": 1}, {"op": "set", "key": "b", "n": 2}, {"op": "del", "key": "a", "n": 0}, {"op": "set", "key": "a", "n": 9}, {"op": "dump", "key": "", "n": 0}]], "expect": 2, "stdout": "b=2\na=9\n"},
+  {"args": [[{"op": "del", "key": "k", "n": 0}]], "expect": 0, "stdout": "nothing to delete: k\n"},
+  {"args": [[{"op": "dump", "key": "", "n": 0}, {"op": "set", "key": "a", "n": 1}, {"op": "del", "key": "a", "n": 0}, {"op": "dump", "key": "", "n": 0}]], "expect": 0, "stdout": "(empty)\n(empty)\n"},
+  {"args": [[{"op": "set", "key": "a", "n": 1}, {"op": "SET", "key": "b", "n": 2}, {"op": "", "key": "c", "n": 3}, {"op": "get", "key": "b", "n": 0}]], "expect": 1, "stdout": "command 2: bad op SET\ncommand 3: bad op \nb: unset\n"},
+  {"args": [[{"op": "add", "key": "a", "n": -5}, {"op": "get", "key": "a", "n": 0}, {"op": "add", "key": "a", "n": 5}, {"op": "get", "key": "a", "n": 0}]], "expect": 1, "stdout": "a = -5\na = 0\n"},
+  {"args": [[{"op": "set", "key": "", "n": 3}, {"op": "get", "key": "", "n": 0}, {"op": "dump", "key": "", "n": 0}]], "expect": 1, "stdout": " = 3\n=3\n"},
+  {"args": [[{"op": "set", "key": "x", "n": 1}, {"op": "set", "key": "y", "n": 2}, {"op": "add", "key": "x", "n": 10}, {"op": "dump", "key": "", "n": 0}]], "expect": 2, "stdout": "x=11\ny=2\n"},
+  {"args": [[{"op": "add", "key": "n", "n": 1}, {"op": "add", "key": "m", "n": 2}, {"op": "del", "key": "n", "n": 0}, {"op": "add", "key": "n", "n": 7}, {"op": "add", "key": "m", "n": 1}, {"op": "dump", "key": "", "n": 0}, {"op": "get", "key": "n", "n": 0}]], "expect": 2, "stdout": "m=3\nn=7\nn = 7\n"},
+  {"args": [[{"op": "set", "key": "big", "n": 9000000000000000}, {"op": "add", "key": "big", "n": -1}, {"op": "get", "key": "big", "n": 0}]], "expect": 1, "stdout": "big = 8999999999999999\n"}
+]

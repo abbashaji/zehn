@@ -1,0 +1,55 @@
+fn max_from(values: List<Int>, i: Int, best: Int) -> Int
+  intent "largest of best and every element of values from index i on"
+  requires i >= 0
+  example max_from([1, 9, 4], 0, 0) == 9
+  example max_from([1, 9, 4], 2, 5) == 5
+  example max_from([], 0, 3) == 3
+do
+  match list.get(values, i) do
+    case none =>
+      return best
+    case some(x) =>
+      return max_from(values, i + 1, int.max(best, x))
+  end match
+end fn
+
+fn below_from(values: List<Int>, i: Int, top: Int, found: Bool, best: Int) -> Option<Int>
+  intent "largest element of values from index i on that is smaller than top, also considering best when found is true; none when there is no such value"
+  requires i >= 0
+  example below_from([5, 3, 4], 0, 5, false, 0) == some(4)
+  example below_from([5, 5], 0, 5, false, 0) == none
+  example below_from([5, 1], 0, 5, true, 3) == some(3)
+do
+  match list.get(values, i) do
+    case none =>
+      if found then
+        return some(best)
+      else
+        return none
+      end if
+    case some(x) =>
+      if x < top then
+        if found then
+          return below_from(values, i + 1, top, true, int.max(best, x))
+        else
+          return below_from(values, i + 1, top, true, x)
+        end if
+      else
+        return below_from(values, i + 1, top, found, best)
+      end if
+  end match
+end fn
+
+fn second_largest(values: List<Int>) -> Option<Int>
+  intent "the second largest distinct value, or none when there are fewer than two distinct values"
+  example second_largest([3, 1, 2]) == some(2)
+  example second_largest([5, 5, 5]) == none
+  example second_largest([]) == none
+do
+  match list.get(values, 0) do
+    case none =>
+      return none
+    case some(first) =>
+      return below_from(values, 0, max_from(values, 1, first), false, 0)
+  end match
+end fn

@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "an example may not call a function that needs `time.now`"
+}

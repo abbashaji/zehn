@@ -1,0 +1,8 @@
+fn quotient_toward_zero(a: Int, b: Int) -> Int
+  intent "a divided by b with the fraction dropped, rounded toward zero"
+  requires b != 0
+  example quotient_toward_zero(9, 3) == 3
+  example quotient_toward_zero(7, 2) == 3
+do
+  return int.div_trunc(a, b)
+end fn

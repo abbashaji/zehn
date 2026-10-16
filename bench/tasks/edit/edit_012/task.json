@@ -1,0 +1,87 @@
+{
+  "id": "edit_012",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Income tax with progressive brackets",
+  "description": "Bug report for the income tax function. Two symptoms: some taxes are a few cents off, and a list of brackets that repeats a limit is accepted instead of refused. Fix the program. Brackets are given from lowest to highest; each bracket has a limit (upto) and a rate in percent and covers the part of the income above the limit of the previous bracket (0 for the first bracket) up to its own limit. Income above the limit of the last bracket is taxed at top_rate; with no brackets all income is taxed at top_rate. The tax of every bracket slice is rounded down to a whole cent on its own, and the total is the sum of those rounded amounts (the part above the last limit is rounded down on its own as well). The checks are made in this order and the first one that applies decides the error message: income below 0: \"invalid income\"; the limits are not strictly rising or the first limit is not above 0: \"invalid brackets\"; any rate (a bracket rate or top_rate) below 0 or above 100: \"invalid rate\". Amounts are in cents.",
+  "entry": "income_tax",
+  "params": [
+    {
+      "name": "income",
+      "type": "Int"
+    },
+    {
+      "name": "brackets",
+      "type": "List<Bracket>"
+    },
+    {
+      "name": "top_rate",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [
+    {
+      "name": "Bracket",
+      "fields": [
+        {
+          "name": "upto",
+          "type": "Int"
+        },
+        {
+          "name": "rate",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        5000,
+        [
+          {
+            "upto": 1000,
+            "rate": 10
+          },
+          {
+            "upto": 4000,
+            "rate": 20
+          }
+        ],
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          1000
+        ]
+      }
+    },
+    {
+      "args": [
+        -1,
+        [
+          {
+            "upto": 1000,
+            "rate": 10
+          },
+          {
+            "upto": 4000,
+            "rate": 20
+          }
+        ],
+        30
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid income"
+        ]
+      }
+    }
+  ],
+  "notes": "Two bugs: the rounding is done once on the summed slice*rate products instead of per slice (and top slice), and the strictly-rising check uses < instead of <= so equal limits pass. Visible examples use amounts whose slices are multiples of 100 so the start passes them. Divisions are by the constant 100 on non-negative operands only (negative income is rejected first; slices are clamped at 0)."
+}

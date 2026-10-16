@@ -1,0 +1,24 @@
+fn floor_total_from(xs: List<Int>, d: Int, i: Int) -> Int
+  intent "sum of the floor quotients of the elements of xs from position i on"
+  requires d > 0
+  requires i >= 0
+  example floor_total_from([-1, -1], 2, 0) == -2
+  example floor_total_from([-1, -1], 2, 1) == -1
+  example floor_total_from([-1, -1], 2, 2) == 0
+do
+  match list.get(xs, i) do
+    case none =>
+      return 0
+    case some(x) =>
+      return int.div_floor(x, d) + floor_total_from(xs, d, i + 1)
+  end match
+end fn
+
+fn floor_total(xs: List<Int>, d: Int) -> Int
+  intent "sum of the quotients x / d, each rounded down toward negative infinity"
+  requires d > 0
+  example floor_total([4, 6], 2) == 5
+  example floor_total([], 5) == 0
+do
+  return floor_total_from(xs, d, 0)
+end fn

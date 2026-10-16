@@ -1,0 +1,70 @@
+type Entry = { name: Text, points: Int }
+
+type Ranked = { name: Text, rank: Int }
+
+fn insert_sorted(sorted: List<Entry>, e: Entry, i: Int, done: List<Entry>, placed: Bool) -> List<Entry>
+  intent "insert e into the list sorted by points (high first), after every entry with equal or more points"
+  example insert_sorted([], {name: "a", points: 5}, 0, [], false) == [{name: "a", points: 5}]
+  example insert_sorted([{name: "a", points: 5}], {name: "b", points: 5}, 0, [], false) == [{name: "a", points: 5}, {name: "b", points: 5}]
+  example insert_sorted([{name: "a", points: 5}], {name: "b", points: 9}, 0, [], false) == [{name: "b", points: 9}, {name: "a", points: 5}]
+do
+  match list.get(sorted, i) do
+    case none =>
+      if placed then
+        return done
+      end if
+      return list.append(done, e)
+    case some(x) =>
+      if not placed and e.points > x.points then
+        return insert_sorted(sorted, e, i, list.append(done, e), true)
+      end if
+      return insert_sorted(sorted, e, i + 1, list.append(done, x), placed)
+  end match
+end fn
+
+fn sort_entries(entries: List<Entry>, i: Int, acc: List<Entry>) -> List<Entry>
+  intent "entries sorted by points from high to low, equal points in input order"
+  example sort_entries([], 0, []) == []
+  example sort_entries([{name: "a", points: 1}, {name: "b", points: 2}, {name: "c", points: 1}], 0, []) == [{name: "b", points: 2}, {name: "a", points: 1}, {name: "c", points: 1}]
+do
+  match list.get(entries, i) do
+    case none =>
+      return acc
+    case some(e) =>
+      return sort_entries(entries, i + 1, insert_sorted(acc, e, 0, [], false))
+  end match
+end fn
+
+fn rank_for(i: Int, prev_points: Int, points: Int, prev_rank: Int) -> Int
+  intent "rank of the entry at index i: the previous rank + 1 when its points differ from the previous entry, else the previous rank"
+  example rank_for(3, 5, 5, 2) == 2
+  example rank_for(3, 5, 4, 2) == 3
+do
+  if points == prev_points then
+    return prev_rank
+  end if
+  return prev_rank + 1
+end fn
+
+fn rank_sorted(sorted: List<Entry>, i: Int, prev_points: Int, prev_rank: Int, done: List<Ranked>) -> List<Ranked>
+  intent "dense ranks of the sorted entries from index i on, appended to done; prev_points is -1 before the first entry"
+  example rank_sorted([], 0, -1, 0, []) == []
+  example rank_sorted([{name: "a", points: 9}, {name: "b", points: 9}, {name: "c", points: 4}], 0, -1, 0, []) == [{name: "a", rank: 1}, {name: "b", rank: 1}, {name: "c", rank: 2}]
+do
+  match list.get(sorted, i) do
+    case none =>
+      return done
+    case some(e) =>
+      let r = rank_for(i, prev_points, e.points, prev_rank)
+      return rank_sorted(sorted, i + 1, e.points, r, list.append(done, {name: e.name, rank: r}))
+  end match
+end fn
+
+fn rank_players(entries: List<Entry>) -> List<Ranked>
+  intent "sort by points and rank the players, equal points share a rank"
+  example rank_players([]) == []
+  example rank_players([{name: "a", points: 50}, {name: "b", points: 70}]) == [{name: "b", rank: 1}, {name: "a", rank: 2}]
+  example rank_players([{name: "a", points: 8}, {name: "b", points: 8}, {name: "c", points: 5}]) == [{name: "a", rank: 1}, {name: "b", rank: 1}, {name: "c", rank: 2}]
+do
+  return rank_sorted(sort_entries(entries, 0, []), 0, -1, 0, [])
+end fn

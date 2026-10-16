@@ -1,0 +1,23 @@
+[
+  {"args": [120, 300, 2000], "expect": {"$": "ok", "args": [600]}},
+  {"args": [0, 300, 2000], "expect": {"$": "ok", "args": [0]}},
+  {"args": [15, 100, 1500], "expect": {"$": "ok", "args": [0]}},
+  {"args": [16, 100, 1500], "expect": {"$": "ok", "args": [100]}},
+  {"args": [60, 100, 1500], "expect": {"$": "ok", "args": [100]}},
+  {"args": [61, 100, 1500], "expect": {"$": "ok", "args": [200]}},
+  {"args": [600, 100, 1500], "expect": {"$": "ok", "args": [1000]}},
+  {"args": [900, 100, 1500], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [960, 100, 1500], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [1440, 100, 1500], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [1441, 100, 1500], "expect": {"$": "ok", "args": [1600]}},
+  {"args": [2880, 100, 1500], "expect": {"$": "ok", "args": [3000]}},
+  {"args": [3000, 100, 1500], "expect": {"$": "ok", "args": [3200]}},
+  {"args": [1440, 50, 5000], "expect": {"$": "ok", "args": [1200]}},
+  {"args": [2000, 50, 5000], "expect": {"$": "ok", "args": [1700]}},
+  {"args": [30, 100, 50], "expect": {"$": "ok", "args": [50]}},
+  {"args": [100, 100, 0], "expect": {"$": "err", "args": ["invalid cap"]}},
+  {"args": [-5, 100, 0], "expect": {"$": "err", "args": ["invalid minutes"]}},
+  {"args": [-1, 0, 0], "expect": {"$": "err", "args": ["invalid minutes"]}},
+  {"args": [10, 0, 0], "expect": {"$": "err", "args": ["invalid rate"]}},
+  {"args": [30, -1, 0], "expect": {"$": "err", "args": ["invalid rate"]}}
+]

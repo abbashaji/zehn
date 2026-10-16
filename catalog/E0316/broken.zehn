@@ -1,0 +1,6 @@
+fn sum(p: (Int, Int)) -> Int
+  example sum((1, 2)) == 3
+do
+  let (a, b) = p
+  return a + b
+end fn

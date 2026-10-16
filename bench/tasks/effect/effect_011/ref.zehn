@@ -1,0 +1,76 @@
+fn attempt_line(k: Int, good: Bool) -> Text
+  intent "the line for attempt k: ok when it succeeded, failed otherwise"
+  example attempt_line(2, true) == "attempt 2: ok"
+  example attempt_line(1, false) == "attempt 1: failed"
+do
+  if good then
+    return text.concat("attempt ", text.concat(int.to_text(k), ": ok"))
+  else
+    return text.concat("attempt ", text.concat(int.to_text(k), ": failed"))
+  end if
+end fn
+
+fn wait_line(d: Int) -> Text
+  intent "the line that announces a wait of d"
+  example wait_line(5) == "waiting 5"
+  example wait_line(0) == "waiting 0"
+do
+  return text.concat("waiting ", int.to_text(d))
+end fn
+
+fn next_wait(d: Int) -> Int
+  intent "the wait after d: double it, but never more than 60"
+  requires d >= 0
+  ensures out <= 60
+  example next_wait(10) == 20
+  example next_wait(40) == 60
+  example next_wait(0) == 0
+do
+  return int.min(d * 2, 60)
+end fn
+
+fn gave_up_text(n: Int) -> Text
+  intent "the error text after n failed attempts"
+  example gave_up_text(3) == "gave up after 3 attempts"
+  example gave_up_text(1) == "gave up after 1 attempts"
+do
+  return text.concat("gave up after ", text.concat(int.to_text(n), " attempts"))
+end fn
+
+fn try_from(outcomes: List<Bool>, k: Int, max_attempts: Int, wait: Int) -> Result<Int, Text>
+  intent "run attempt k and the ones after it, waiting between failures, and return the successful attempt number or the give-up error"
+  uses [console]
+  requires k >= 1
+  requires wait >= 0
+  example attempt_line(3, false) == "attempt 3: failed"
+  example wait_line(1) == "waiting 1"
+do
+  if k > max_attempts then
+    return err(gave_up_text(max_attempts))
+  else
+    let good = option.unwrap_or(list.get(outcomes, k - 1), false)
+    console.print(attempt_line(k, good))
+    if good then
+      return ok(k)
+    else
+      if k < max_attempts then
+        console.print(wait_line(wait))
+      end if
+      return try_from(outcomes, k + 1, max_attempts, next_wait(wait))
+    end if
+  end if
+end fn
+
+fn retry_log(outcomes: List<Bool>, max_attempts: Int, base: Int) -> Result<Int, Text>
+  intent "log up to max_attempts attempts with doubling waits capped at 60 and return the attempt that succeeded or an error"
+  uses [console]
+  requires base >= 0
+  example next_wait(30) == 60
+  example wait_line(60) == "waiting 60"
+do
+  if max_attempts < 1 then
+    return err("no attempts allowed")
+  else
+    return try_from(outcomes, 1, max_attempts, int.min(base, 60))
+  end if
+end fn

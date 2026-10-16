@@ -1,0 +1,34 @@
+fn collect(tags: List<Text>, i: Int, kept: List<Text>, seen: List<Text>) -> List<Text>
+  intent "walk the tags from index i on, keeping each non-empty tag whose upper-case form is new"
+  example collect([], 0, [], []) == []
+  example collect(["Go", "go", ""], 0, [], []) == ["Go"]
+  example collect(["a", "b", "A"], 0, [], []) == ["a", "b"]
+do
+  match list.get(tags, i) do
+    case none =>
+      return kept
+    case some(tag) =>
+      let key = text.to_upper(tag)
+      if tag == "" or list.contains(seen, key) then
+        return collect(tags, i + 1, kept, seen)
+      end if
+      return collect(tags, i + 1, list.append(kept, tag), list.append(seen, key))
+  end match
+end fn
+
+fn clean_tags(tags: List<Text>, limit: Int) -> Result<List<Text>, Text>
+  intent "tags without empty ones and without repeats ignoring letter case, first spelling kept, at most limit of them"
+  example clean_tags(["rust", "go", "rust"], 5) == ok(["rust", "go"])
+  example clean_tags(["Go", "", "GO", "c"], 5) == ok(["Go", "c"])
+  example clean_tags(["a", "b", "c"], 2) == err("too many tags")
+  example clean_tags([], 0) == err("invalid limit")
+do
+  if limit < 1 then
+    return err("invalid limit")
+  end if
+  let cleaned = collect(tags, 0, [], [])
+  if list.len(cleaned) > limit then
+    return err("too many tags")
+  end if
+  return ok(cleaned)
+end fn

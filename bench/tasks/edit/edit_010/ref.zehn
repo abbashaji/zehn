@@ -1,0 +1,62 @@
+fn lowest_from(scores: List<Int>, i: Int, best: Int) -> Int
+  intent "the smallest of best and the scores from index i on"
+  example lowest_from([], 0, 7) == 7
+  example lowest_from([9, 3, 5], 0, 8) == 3
+do
+  match list.get(scores, i) do
+    case none =>
+      return best
+    case some(x) =>
+      return lowest_from(scores, i + 1, int.min(best, x))
+  end match
+end fn
+
+fn remove_first(scores: List<Int>, target: Int, i: Int, done: List<Int>, removed: Bool) -> List<Int>
+  intent "the scores from index i on appended to done, leaving out the first score equal to target"
+  example remove_first([], 3, 0, [], false) == []
+  example remove_first([5, 3, 3], 3, 0, [], false) == [5, 3]
+do
+  match list.get(scores, i) do
+    case none =>
+      return done
+    case some(x) =>
+      if x == target and not removed then
+        return remove_first(scores, target, i + 1, done, true)
+      end if
+      return remove_first(scores, target, i + 1, list.append(done, x), removed)
+  end match
+end fn
+
+fn drop_lowest(scores: List<Int>, k: Int) -> List<Int>
+  intent "the scores without k lowest ones (one occurrence removed per round)"
+  example drop_lowest([4, 2, 8], 0) == [4, 2, 8]
+  example drop_lowest([4, 2, 8], 1) == [4, 8]
+  example drop_lowest([4, 2, 8], 2) == [8]
+do
+  if k <= 0 then
+    return scores
+  end if
+  match list.get(scores, 0) do
+    case none =>
+      return scores
+    case some(first) =>
+      let low = lowest_from(scores, 1, first)
+      return drop_lowest(remove_first(scores, low, 0, [], false), k - 1)
+  end match
+end fn
+
+fn trimmed_average(scores: List<Int>, drop: Int) -> Option<Int>
+  intent "average of the scores after dropping the lowest ones, rounded down; at least one score stays"
+  example trimmed_average([80, 90, 100], 0) == some(90)
+  example trimmed_average([100, 60, 80, 90], 1) == some(90)
+  example trimmed_average([100, 60, 80, 90], 9) == some(100)
+  example trimmed_average([], 2) == none
+do
+  let n = list.len(scores)
+  if n == 0 then
+    return none
+  end if
+  let k = int.min(int.max(drop, 0), n - 1)
+  let kept = drop_lowest(scores, k)
+  return some(list.sum(kept) / list.len(kept))
+end fn

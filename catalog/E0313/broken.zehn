@@ -1,0 +1,8 @@
+fn total(p: (Int, Int)) -> Int
+  example total((1, 2)) == 3
+do
+  match p do
+    case (a, b, c) =>
+      return a + b + c
+  end match
+end fn

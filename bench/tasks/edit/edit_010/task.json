@@ -1,0 +1,50 @@
+{
+  "id": "edit_010",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Average score without the lowest marks",
+  "description": "Feature request for the gradebook helper. Today it returns the average of all scores and ignores its second parameter, the number of lowest scores to drop. Make that parameter work. The complete rule is: an empty list of scores gives none. Otherwise the given number of lowest scores are left out of the average (if two scores are equal and one of them must go, the value is the same either way), but at least one score always stays: a number to drop of 0 or below drops nothing, and a number larger than the list length minus 1 drops all scores but the highest one. The result is some of the average of the remaining scores, rounded down to a whole number. Scores are never negative.",
+  "entry": "trimmed_average",
+  "params": [
+    {
+      "name": "scores",
+      "type": "List<Int>"
+    },
+    {
+      "name": "drop",
+      "type": "Int"
+    }
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          80,
+          90,
+          100
+        ],
+        0
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          90
+        ]
+      }
+    },
+    {
+      "args": [
+        [],
+        2
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "Feature: drop the k lowest (k clamped to 0..len-1) then floor-average the rest. Scores are non-negative so floor division matches in all languages; the Zehn reference removes the minimum k times (no sort in the stdlib). Start already handles empty and averages all scores."
+}

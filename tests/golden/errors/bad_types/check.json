@@ -1,0 +1,208 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Account",
+        "ref": "type#301f"
+      },
+      {
+        "kind": "type",
+        "name": "Money",
+        "ref": "type#4086"
+      },
+      {
+        "kind": "type",
+        "name": "Cart",
+        "ref": "type#1b59"
+      },
+      {
+        "kind": "type",
+        "name": "AppError",
+        "ref": "type#b1d9"
+      },
+      {
+        "kind": "type",
+        "name": "OtherError",
+        "ref": "type#270d"
+      },
+      {
+        "kind": "fn",
+        "name": "label",
+        "ref": "fn#000b"
+      },
+      {
+        "kind": "fn",
+        "name": "add_text",
+        "ref": "fn#0807"
+      },
+      {
+        "kind": "fn",
+        "name": "first",
+        "ref": "fn#c11f"
+      },
+      {
+        "kind": "fn",
+        "name": "lookup",
+        "ref": "fn#a82d"
+      },
+      {
+        "kind": "fn",
+        "name": "wrong_err",
+        "ref": "fn#43d3"
+      },
+      {
+        "kind": "fn",
+        "name": "bad_field",
+        "ref": "fn#225f"
+      },
+      {
+        "kind": "fn",
+        "name": "ambiguous",
+        "ref": "fn#1398"
+      },
+      {
+        "kind": "fn",
+        "name": "bad_call",
+        "ref": "fn#3de4"
+      },
+      {
+        "kind": "fn",
+        "name": "wrong_arity",
+        "ref": "fn#dcb1"
+      },
+      {
+        "kind": "fn",
+        "name": "bad_cond",
+        "ref": "fn#71cb"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0306",
+        "expected": "Text",
+        "fix_hint": "convert with int.to_text(...)",
+        "found": "Int",
+        "location": {
+          "fn": "label",
+          "line": 10
+        },
+        "message": "type mismatch in return: expected Text, found Int",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "Int",
+        "found": "Text",
+        "location": {
+          "fn": "add_text",
+          "line": 16
+        },
+        "message": "type mismatch in `+`: expected Int, found Text",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "Int",
+        "fix_hint": "unwrap with option.unwrap_or(default) or a match",
+        "found": "Option<Int>",
+        "location": {
+          "fn": "first",
+          "line": 22
+        },
+        "message": "type mismatch in return: expected Int, found Option<Int>",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "OtherError",
+        "fix_hint": "the error types must match exactly; convert with result.map_err",
+        "found": "AppError",
+        "location": {
+          "fn": "wrong_err",
+          "line": 34
+        },
+        "message": "`?` propagates error type AppError but 'wrong_err' returns error type OtherError",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0308",
+        "fix_hint": "fields: balance",
+        "location": {
+          "fn": "bad_field",
+          "line": 41
+        },
+        "message": "type Account has no field 'cash'",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0309",
+        "fix_hint": "bind it with a type annotation: `let x: Money = ...`",
+        "location": {
+          "fn": "ambiguous",
+          "line": 47
+        },
+        "message": "record {cents} could be Money or Cart; the type cannot be inferred here",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "Int",
+        "found": "Account",
+        "location": {
+          "fn": "bad_call",
+          "line": 54
+        },
+        "message": "type mismatch in argument 1 of int.abs: expected Int, found Account",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0303",
+        "location": {
+          "fn": "wrong_arity",
+          "line": 60
+        },
+        "message": "int.max expects 2 argument(s), got 1",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "Bool",
+        "found": "Int",
+        "location": {
+          "fn": "bad_cond",
+          "line": 66
+        },
+        "message": "type mismatch in if condition: expected Bool, found Int",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "W0301",
+        "fix_hint": "run `zehn fmt <file> --write`",
+        "location": {
+          "fn": null,
+          "line": 2
+        },
+        "message": "source is not in canonical form (first difference at line 2)",
+        "phase": "check",
+        "severity": "warning"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false
+  }
+}

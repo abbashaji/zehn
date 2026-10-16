@@ -1,0 +1,52 @@
+{
+  "examples": [
+    {
+      "fn": "area",
+      "fuel": 16,
+      "line": 6,
+      "status": "pass"
+    },
+    {
+      "fn": "area",
+      "fuel": 15,
+      "line": 7,
+      "status": "pass"
+    },
+    {
+      "fn": "area",
+      "fuel": 11,
+      "line": 8,
+      "status": "pass"
+    },
+    {
+      "fn": "describe",
+      "fuel": 8,
+      "line": 21,
+      "status": "pass"
+    },
+    {
+      "fn": "describe",
+      "fuel": 39,
+      "line": 22,
+      "status": "pass"
+    },
+    {
+      "fn": "total_area",
+      "fuel": 48,
+      "line": 35,
+      "status": "pass"
+    },
+    {
+      "fn": "first_area",
+      "fuel": 10,
+      "line": 41,
+      "status": "pass"
+    },
+    {
+      "fn": "first_area",
+      "fuel": 19,
+      "line": 42,
+      "status": "pass"
+    }
+  ]
+}

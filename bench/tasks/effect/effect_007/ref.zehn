@@ -1,0 +1,47 @@
+fn count_line(v: Int) -> Text
+  intent "the line printed for one remaining count"
+  example count_line(3) == "T-minus 3"
+  example count_line(10) == "T-minus 10"
+do
+  return text.concat("T-minus ", int.to_text(v))
+end fn
+
+fn count_from(v: Int, step: Int) -> Int
+  intent "print the counts from v down while they are positive, then liftoff, and return how many counts were printed"
+  uses [console]
+  requires step > 0
+  ensures out >= 0
+  example count_line(1) == "T-minus 1"
+  example count_line(0 - 2) == "T-minus -2"
+do
+  if v <= 0 then
+    console.print("liftoff")
+    return 0
+  else
+    console.print(count_line(v))
+    return 1 + count_from(v - step, step)
+  end if
+end fn
+
+fn bad_step_line(step: Int) -> Text
+  intent "the line printed when the step is not positive"
+  example bad_step_line(0) == "bad step: 0"
+  example bad_step_line(0 - 3) == "bad step: -3"
+do
+  return text.concat("bad step: ", int.to_text(step))
+end fn
+
+fn countdown(start: Int, step: Int) -> Int
+  intent "count down from start in the given step, ending with liftoff, and return how many counts were printed"
+  uses [console]
+  ensures out >= 0
+  example count_line(5) == "T-minus 5"
+  example bad_step_line(0) == "bad step: 0"
+do
+  if step <= 0 then
+    console.print(bad_step_line(step))
+    return 0
+  else
+    return count_from(start, step)
+  end if
+end fn

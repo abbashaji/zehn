@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "four-space indentation is not canonical (a warning, an error under --strict)"
+}

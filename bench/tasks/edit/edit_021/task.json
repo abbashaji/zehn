@@ -1,0 +1,55 @@
+{
+  "id": "edit_021",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Parking fee with free time and daily cap",
+  "description": "Feature request for the parking fee function. It receives the length of the stay in minutes, the rate per started hour in cents and the daily cap in cents, and returns the fee in cents. Today every started hour is charged at the rate, with no free time and no cap. Change it as follows. (1) A stay of 15 minutes or less is free (fee 0); for a longer stay those 15 minutes are not deducted. (2) The stay is split into blocks of 24 hours (1440 minutes) counted from the start; the last block may be shorter. A block costs its started hours times the rate, but never more than the daily cap, so a full block costs the smaller of 24 times the rate and the cap. The fee is the sum over all blocks. (3) A daily cap below 1 is an error with the message \"invalid cap\". Checks are made in this order and the first one that applies decides the error message: minutes below 0: \"invalid minutes\"; rate below 1: \"invalid rate\"; cap below 1: \"invalid cap\".",
+  "entry": "parking_fee",
+  "params": [
+    {
+      "name": "minutes",
+      "type": "Int"
+    },
+    {
+      "name": "rate",
+      "type": "Int"
+    },
+    {
+      "name": "daily_cap",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        120,
+        300,
+        2000
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          600
+        ]
+      }
+    },
+    {
+      "args": [
+        0,
+        300,
+        2000
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          0
+        ]
+      }
+    }
+  ],
+  "notes": "Feature, several steps: free window, blocks of 1440 minutes with a per-block cap (a full block costs min(24*rate, cap)), partial last block, new error with precedence. All Int arithmetic has non-negative operands. Visible examples pass on the start."
+}

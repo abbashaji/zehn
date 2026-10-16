@@ -1,0 +1,37 @@
+{
+  "id": "text_012",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Right-align a column",
+  "description": "Write every number of a list in decimal (negative numbers with their minus sign), pad each one on the left with spaces so that all have the same width, namely the width of the widest of them, and join the padded numbers with a vertical bar \"|\" between them. An empty list gives the empty text.",
+  "entry": "align_column",
+  "params": [
+    {
+      "name": "values",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          5,
+          120,
+          33
+        ]
+      ],
+      "expect": "  5|120| 33"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": ""
+    }
+  ],
+  "notes": "The widest number includes its minus sign. No division or remainder is involved."
+}

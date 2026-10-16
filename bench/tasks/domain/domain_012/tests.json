@@ -1,0 +1,16 @@
+[
+  {"args": [["ann", "bob", "cy"], ["ann", "ann", "bob"]], "expect": {"$": "ok", "args": ["ann"]}},
+  {"args": [["ann", "bob"], ["ann", "bob"]], "expect": {"$": "err", "args": ["no majority: ann leads with 1 of 2"]}},
+  {"args": [["ann", "bob", "cy"], ["ann", "zed", "", "ann", "bob"]], "expect": {"$": "ok", "args": ["ann"]}},
+  {"args": [["ann", "bob", "cy"], ["zed", "", "ANN"]], "expect": {"$": "err", "args": ["no valid ballots"]}},
+  {"args": [["ann", "bob", "cy"], []], "expect": {"$": "err", "args": ["no valid ballots"]}},
+  {"args": [[], ["ann", "bob"]], "expect": {"$": "err", "args": ["no candidates"]}},
+  {"args": [["ann", "bob", "cy"], ["ann", "ann", "bob", "cy"]], "expect": {"$": "err", "args": ["no majority: ann leads with 2 of 4"]}},
+  {"args": [["bob", "ann"], ["ann", "bob", "ann", "bob", "x"]], "expect": {"$": "err", "args": ["no majority: bob leads with 2 of 4"]}},
+  {"args": [["ann"], ["ann", "x"]], "expect": {"$": "ok", "args": ["ann"]}},
+  {"args": [["ann"], ["x"]], "expect": {"$": "err", "args": ["no valid ballots"]}},
+  {"args": [["ann", "bob", "cy"], ["ann", "ann", "ann", "bob", "bob"]], "expect": {"$": "ok", "args": ["ann"]}},
+  {"args": [["ann", "bob", "cy"], ["cy", "cy", "cy", "bob", "ann", "zed", "zed", "zed", "zed"]], "expect": {"$": "ok", "args": ["cy"]}},
+  {"args": [["ann", "bob", "cy"], ["bob"]], "expect": {"$": "ok", "args": ["bob"]}},
+  {"args": [["ann", "bob", "cy", "dee"], ["dee", "cy", "bob", "ann", "dee"]], "expect": {"$": "err", "args": ["no majority: dee leads with 2 of 5"]}}
+]

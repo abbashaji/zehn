@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "a tuple pattern is used on an Int"
+}

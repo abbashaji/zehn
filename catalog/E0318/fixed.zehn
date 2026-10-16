@@ -1,0 +1,5 @@
+fn wrap(a: Int) -> (Int, Int)
+  example wrap(1) == (1, 1)
+do
+  return (a, a)
+end fn

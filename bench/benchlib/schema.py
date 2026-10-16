@@ -428,9 +428,11 @@ def load_task(task_dir: str, fixture: bool = False) -> Dict[str, Any]:
 def find_task_dirs(root: str) -> List[Tuple[str, bool]]:
     """(directory, fixture) for every task under `root`. Accepts root/<category>/<task_id>/ and
     root/<task_id>/ (so a fixture folder can be used as a root). Names starting with `_` below the
-    root are skipped; a root whose own name starts with `_` marks its tasks as fixtures."""
+    root are skipped; a root whose own name starts with `_`, or that lies under a folder named `experiments`, marks its tasks as
+    fixtures (their id prefix need not equal a category)."""
     root = os.path.normpath(root)
-    fixture = os.path.basename(root).startswith("_")
+    fixture = (os.path.basename(root).startswith("_")
+               or "experiments" in root.replace("\\", "/").split("/"))
     found: List[Tuple[str, bool]] = []
     if not os.path.isdir(root):
         raise TaskError("tasks dir not found: %s" % root)

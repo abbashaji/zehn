@@ -1,0 +1,66 @@
+type Loan = { id: Int, due: Int, renewals: Int }
+
+fn find_loan(loans: List<Loan>, id: Int, i: Int) -> Option<Loan>
+  intent "the loan with this id, searching from index i on"
+  example find_loan([], 1, 0) == none
+  example find_loan([{id: 1, due: 10, renewals: 0}, {id: 2, due: 20, renewals: 1}], 2, 0) == some({id: 2, due: 20, renewals: 1})
+do
+  match list.get(loans, i) do
+    case none =>
+      return none
+    case some(loan) =>
+      if loan.id == id then
+        return some(loan)
+      end if
+      return find_loan(loans, id, i + 1)
+  end match
+end fn
+
+fn extended(loan: Loan, id: Int) -> Loan
+  intent "the loan renewed by 14 days when it has this id, otherwise unchanged"
+  example extended({id: 1, due: 10, renewals: 0}, 1) == {id: 1, due: 24, renewals: 1}
+  example extended({id: 2, due: 10, renewals: 0}, 1) == {id: 2, due: 10, renewals: 0}
+do
+  if loan.id == id then
+    return {id: loan.id, due: loan.due + 14, renewals: loan.renewals + 1}
+  end if
+  return loan
+end fn
+
+fn renew_all(loans: List<Loan>, id: Int, i: Int, done: List<Loan>) -> List<Loan>
+  intent "the loans from index i on appended to done, renewing the one with this id"
+  example renew_all([], 1, 0, []) == []
+  example renew_all([{id: 1, due: 10, renewals: 0}, {id: 2, due: 10, renewals: 0}], 2, 0, []) == [{id: 1, due: 10, renewals: 0}, {id: 2, due: 24, renewals: 1}]
+do
+  match list.get(loans, i) do
+    case none =>
+      return done
+    case some(loan) =>
+      return renew_all(loans, id, i + 1, list.append(done, extended(loan, id)))
+  end match
+end fn
+
+fn renew(loans: List<Loan>, id: Int, today: Int, reserved: List<Int>, max_renewals: Int) -> Result<List<Loan>, Text>
+  intent "renew the loan with this id by 14 days; checks run in a fixed order"
+  example renew([{id: 1, due: 10, renewals: 0}], 1, 5, [], 2) == ok([{id: 1, due: 24, renewals: 1}])
+  example renew([{id: 1, due: 10, renewals: 0}], 2, 5, [], 2) == err("unknown loan")
+  example renew([{id: 1, due: 10, renewals: 0}], 1, 11, [], 2) == err("overdue")
+  example renew([{id: 1, due: 10, renewals: 0}], 1, 10, [1], 2) == err("reserved")
+  example renew([{id: 1, due: 10, renewals: 2}], 1, 10, [], 2) == err("renewal limit")
+do
+  match find_loan(loans, id, 0) do
+    case none =>
+      return err("unknown loan")
+    case some(loan) =>
+      if today > loan.due then
+        return err("overdue")
+      end if
+      if list.contains(reserved, id) then
+        return err("reserved")
+      end if
+      if loan.renewals >= max_renewals then
+        return err("renewal limit")
+      end if
+      return ok(renew_all(loans, id, 0, []))
+  end match
+end fn

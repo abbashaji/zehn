@@ -1,0 +1,17 @@
+[
+  {"args": ["<a><b>x</b></a>"], "expect": {"$": "ok", "args": [2]}},
+  {"args": ["<a></b>"], "expect": {"$": "err", "args": ["mismatched tag: expected a, found b"]}},
+  {"args": ["no tags"], "expect": {"$": "ok", "args": [0]}},
+  {"args": [""], "expect": {"$": "ok", "args": [0]}},
+  {"args": ["<a>x</a><b>y</b>"], "expect": {"$": "ok", "args": [1]}},
+  {"args": ["<a><b><c></c></b><d></d></a>"], "expect": {"$": "ok", "args": [3]}},
+  {"args": ["</a>"], "expect": {"$": "err", "args": ["unexpected closing tag: a"]}},
+  {"args": ["<a><b></a></b>"], "expect": {"$": "err", "args": ["mismatched tag: expected b, found a"]}},
+  {"args": ["<a><b>"], "expect": {"$": "err", "args": ["unclosed tag: b"]}},
+  {"args": ["<a>x</a></a>"], "expect": {"$": "err", "args": ["unexpected closing tag: a"]}},
+  {"args": ["<a><a></a>"], "expect": {"$": "err", "args": ["unclosed tag: a"]}},
+  {"args": ["text <p>hi <em>there</em> you</p> end"], "expect": {"$": "ok", "args": [2]}},
+  {"args": ["<a></a><b>"], "expect": {"$": "err", "args": ["unclosed tag: b"]}},
+  {"args": ["<a><b></b><c>"], "expect": {"$": "err", "args": ["unclosed tag: c"]}},
+  {"args": ["<a><b></c>"], "expect": {"$": "err", "args": ["mismatched tag: expected b, found c"]}}
+]

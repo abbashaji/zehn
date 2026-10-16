@@ -1,0 +1,10 @@
+fn floor_zero(n: Int) -> Int
+  ensures out >= 0
+  example floor_zero(-5) == 0
+do
+  if n < 0 then
+    return 0
+  else
+    return n
+  end if
+end fn

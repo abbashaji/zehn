@@ -1,0 +1,23 @@
+[
+  {"args": [[{"id": 1, "burst": 5}, {"id": 2, "burst": 2}, {"id": 3, "burst": 4}], 3], "expect": {"$": "ok", "args": [[2, 1, 3]]}},
+  {"args": [[{"id": 1, "burst": 2}], 0], "expect": {"$": "err", "args": ["invalid quantum"]}},
+  {"args": [[], 3], "expect": {"$": "ok", "args": [[]]}},
+  {"args": [[{"id": 1, "burst": 6}, {"id": 2, "burst": 3}, {"id": 3, "burst": 2}], 3], "expect": {"$": "ok", "args": [[2, 3, 1]]}},
+  {"args": [[{"id": 1, "burst": 4}], 4], "expect": {"$": "ok", "args": [[1]]}},
+  {"args": [[{"id": 1, "burst": 4}, {"id": 2, "burst": 1}], 4], "expect": {"$": "ok", "args": [[1, 2]]}},
+  {"args": [[{"id": 1, "burst": 3}, {"id": 2, "burst": 1}, {"id": 3, "burst": 2}], 1], "expect": {"$": "ok", "args": [[2, 3, 1]]}},
+  {"args": [[{"id": 5, "burst": 10}, {"id": 6, "burst": 20}, {"id": 7, "burst": 1}], 100], "expect": {"$": "ok", "args": [[5, 6, 7]]}},
+  {"args": [[{"id": 9, "burst": 7}, {"id": 4, "burst": 3}, {"id": 8, "burst": 6}, {"id": 2, "burst": 9}], 3], "expect": {"$": "ok", "args": [[4, 8, 9, 2]]}},
+  {"args": [[{"id": 1, "burst": 8}, {"id": 2, "burst": 8}, {"id": 3, "burst": 8}], 4], "expect": {"$": "ok", "args": [[1, 2, 3]]}},
+  {"args": [[{"id": 1, "burst": 2}, {"id": 2, "burst": 4}, {"id": 3, "burst": 6}], 2], "expect": {"$": "ok", "args": [[1, 2, 3]]}},
+  {"args": [[{"id": 10, "burst": 1}, {"id": 20, "burst": 1}, {"id": 30, "burst": 1}], 1], "expect": {"$": "ok", "args": [[10, 20, 30]]}},
+  {"args": [[{"id": 1, "burst": 5}, {"id": 2, "burst": 5}], 5], "expect": {"$": "ok", "args": [[1, 2]]}},
+  {"args": [[{"id": 3, "burst": 12}, {"id": 1, "burst": 5}], 5], "expect": {"$": "ok", "args": [[1, 3]]}},
+  {"args": [[{"id": 1, "burst": 2}], -1], "expect": {"$": "err", "args": ["invalid quantum"]}},
+  {"args": [[{"id": 1, "burst": 0}], 3], "expect": {"$": "err", "args": ["invalid burst"]}},
+  {"args": [[{"id": 1, "burst": 2}, {"id": 2, "burst": -4}], 3], "expect": {"$": "err", "args": ["invalid burst"]}},
+  {"args": [[{"id": 1, "burst": 0}], 0], "expect": {"$": "err", "args": ["invalid quantum"]}},
+  {"args": [[{"id": 1, "burst": -1}], -1], "expect": {"$": "err", "args": ["invalid quantum"]}},
+  {"args": [[{"id": 4, "burst": 9}, {"id": 2, "burst": 3}, {"id": 7, "burst": 6}], 3], "expect": {"$": "ok", "args": [[2, 7, 4]]}},
+  {"args": [[{"id": 1, "burst": 1}], 7], "expect": {"$": "ok", "args": [[1]]}}
+]

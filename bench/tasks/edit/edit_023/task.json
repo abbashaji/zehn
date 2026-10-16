@@ -1,0 +1,56 @@
+{
+  "id": "edit_023",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Tag cleaner with a limit",
+  "description": "Feature request for the tag cleaner of a blog. It receives a list of tags and the maximum number of tags allowed, and returns the cleaned list. Today it only removes tags that repeat exactly. Extend it. (1) Empty tags (the empty text) are dropped. (2) A tag counts as a repeat of an earlier tag when the two are equal ignoring letter case (\"Go\" and \"GO\"); the first spelling is kept and the order of the remaining tags is unchanged. (3) When more than limit tags are left after cleaning, the result is an error with the message \"too many tags\"; exactly limit tags is fine. (4) A limit below 1 is an error with the message \"invalid limit\"; this check is made first, before anything else, even for an empty list. Tags contain only ASCII letters, digits and spaces, and tags are never trimmed (\"rust\" and \"rust \" are different tags).",
+  "entry": "clean_tags",
+  "params": [
+    {
+      "name": "tags",
+      "type": "List<Text>"
+    },
+    {
+      "name": "limit",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Text>, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "rust",
+          "go",
+          "rust"
+        ],
+        5
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            "rust",
+            "go"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [],
+        3
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          []
+        ]
+      }
+    }
+  ],
+  "notes": "Feature, four rules: drop empties, case-insensitive dedupe keeping the first spelling, count limit applied after cleaning, invalid limit first. Visible examples pass on the start (exact dedupe, no limit)."
+}

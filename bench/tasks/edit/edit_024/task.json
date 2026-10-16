@@ -1,0 +1,50 @@
+{
+  "id": "edit_024",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Merge two sorted lists without repeats",
+  "description": "Bug report for a helper that merges two lists of whole numbers that are each sorted in ascending order. The result must be one ascending list in which every value appears exactly once (so a value that occurs in both lists, or several times in one list, appears once). Symptoms: values are missing from the result when the first list is longer than the second, and values that occur in both lists appear twice. Fix the program. Values may be negative and either list may be empty.",
+  "entry": "merge_unique",
+  "params": [
+    {
+      "name": "a",
+      "type": "List<Int>"
+    },
+    {
+      "name": "b",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "expect": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "args": [
+        [],
+        []
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Three defects in one function: the rest of the first list is dropped, values in both lists are kept twice, repeats inside one list are kept. The visible examples avoid them (the second list ends last, no repeats)."
+}

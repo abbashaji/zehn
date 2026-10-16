@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "int.max takes two arguments, the call passes one"
+}

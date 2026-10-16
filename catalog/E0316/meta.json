@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "let takes a tuple pattern; tuples are taken apart with match"
+}

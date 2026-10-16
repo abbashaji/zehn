@@ -1,0 +1,6 @@
+fn greet(name: Text) -> Unit
+  uses [console]
+  example greet("Ada") with time.now = mock [1]
+do
+  return console.print(text.concat("hello, ", name))
+end fn

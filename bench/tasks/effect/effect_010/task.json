@@ -1,0 +1,59 @@
+{
+  "id": "effect_010",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Paged listing",
+  "description": "Print the items in pages of size items each. Every page starts with the header line `-- page P of Q --` (P counts from 1, Q is the total number of pages) followed by that page's items, one per line, exactly as given; the last page may hold fewer items. An empty list prints only the line `(no items)` and counts as 0 pages. If size is less than 1, return the error `page size must be at least 1` and print nothing at all (this check comes first, even for an empty list). Otherwise return the number of pages as a success value.",
+  "entry": "print_pages",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Text>"
+    },
+    {
+      "name": "size",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          2
+        ]
+      },
+      "stdout": "-- page 1 of 2 --\na\nb\n-- page 2 of 2 --\nc\n"
+    },
+    {
+      "args": [
+        [
+          "a"
+        ],
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "page size must be at least 1"
+        ]
+      },
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 2. Ceiling division on positive numbers only (items count >= 1, size >= 1); the total Q must be known before the first header is printed; the bad-size error wins over the empty list; size larger than the list gives one page; empty items keep their (blank) line; page numbers go past 9. Largest size 9e15."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "numneg_018",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Euclidean quotient",
+  "description": "Write a = b*q + r with the remainder r satisfying 0 <= r < |b| (never negative, whatever the signs of a and b); return the quotient q. For example a = -7, b = 2 gives q = -4 (r = 1), a = 7, b = -2 gives q = -3 (r = 1), and a = -7, b = -2 gives q = 4 (r = 1). b is never 0 and may be negative.",
+  "entry": "euclid_quotient",
+  "params": [
+    {
+      "name": "a",
+      "type": "Int"
+    },
+    {
+      "name": "b",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        7,
+        2
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        8,
+        4
+      ],
+      "expect": 2
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

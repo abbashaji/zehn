@@ -1,0 +1,22 @@
+[
+  {"args": [["push", "push", "add"], [2, 3, 0]], "expect": {"$": "ok", "args": [5]}},
+  {"args": [["push"], [1, 2]], "expect": {"$": "err", "args": ["length mismatch"]}},
+  {"args": [["push", "push", "sub"], [10, 4, 0]], "expect": {"$": "ok", "args": [6]}},
+  {"args": [["push", "push", "sub"], [4, 10, 0]], "expect": {"$": "ok", "args": [-6]}},
+  {"args": [["push", "dup", "mul"], [7, 0, 0]], "expect": {"$": "ok", "args": [49]}},
+  {"args": [["push", "push", "swap", "sub"], [1, 5, 0, 0]], "expect": {"$": "ok", "args": [4]}},
+  {"args": [["push", "push", "drop"], [1, 2, 0]], "expect": {"$": "ok", "args": [1]}},
+  {"args": [["add"], [0]], "expect": {"$": "err", "args": ["stack underflow at 0"]}},
+  {"args": [["push", "add"], [1, 0]], "expect": {"$": "err", "args": ["stack underflow at 1"]}},
+  {"args": [["push", "jump"], [1, 0]], "expect": {"$": "err", "args": ["unknown op at 1"]}},
+  {"args": [[], []], "expect": {"$": "err", "args": ["empty stack"]}},
+  {"args": [["push", "drop"], [1, 0]], "expect": {"$": "err", "args": ["empty stack"]}},
+  {"args": [["add", "nope"], [0, 0]], "expect": {"$": "err", "args": ["stack underflow at 0"]}},
+  {"args": [["nope", "add"], [0, 0]], "expect": {"$": "err", "args": ["unknown op at 0"]}},
+  {"args": [["push", "push", "mul"], [94906264, 94906264, 0]], "expect": {"$": "ok", "args": [9007198946437696]}},
+  {"args": [["push", "push", "push", "add", "mul"], [2, 3, 4, 0, 0]], "expect": {"$": "ok", "args": [14]}},
+  {"args": [["swap"], [0]], "expect": {"$": "err", "args": ["stack underflow at 0"]}},
+  {"args": [["push", "swap"], [1, 0]], "expect": {"$": "err", "args": ["stack underflow at 1"]}},
+  {"args": [["drop"], [0]], "expect": {"$": "err", "args": ["stack underflow at 0"]}},
+  {"args": [["push", "push", "push", "swap", "sub", "mul"], [3, 4, 5, 0, 0, 0]], "expect": {"$": "ok", "args": [3]}}
+]

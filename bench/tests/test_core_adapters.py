@@ -138,6 +138,26 @@ class AdapterTests(unittest.TestCase):
             self.assertEqual(adapters.get("python_plain").run_hidden(task, bad, tests, d)["passed"], 0)
             self.assertEqual(adapters.get("zehn").run_hidden(task, zh, tests, d)["passed"], 2)
 
+    def test_zehn_dialect_variant_reaches_fmt_and_the_hidden_test_runner(self):
+        # merge of TASK 06a: a program that uses a dialect's syntax must be formatted, checked and run
+        # under that dialect, or the A/B scores the variant against a parser that rejects its own syntax
+        src = ("fn double(n: Int) -> Int\n  example double(4) == 8\ndo\n  return n * 2\nend fn\n\n"
+               "fn age(born: Int) -> Int\n  uses [time.now]\n  example age(1900) == 126 with time.now = mock [2026]\n"
+               "do\n  return time.now() - born\nend fn\n")
+        task = dict(TASK)
+        task["entry"], task["params"], task["returns"], task["effects"] = "double", [{"name": "n", "type": "Int"}], "Int", []
+        tests = [{"args": [4], "expect": 8}, {"args": [0], "expect": 0}]
+        with tempfile.TemporaryDirectory() as d:
+            plain = adapters.get("zehn")
+            self.assertEqual(plain.run_hidden(task, src, tests, d)["passed"], 0)       # default dialect: E0201
+            self.assertIsNone(plain._canonical(src, d))
+            mock = adapters.get("zehn")
+            mock.set_variant([("effect_examples", "mock")])
+            self.assertEqual(mock.run_hidden(task, src, tests, d)["passed"], 2)
+            self.assertEqual(mock._canonical(src, d), src)
+            chk = mock.tool_check(task, src, d)
+            self.assertTrue(chk["ok"], chk)
+
 
 if __name__ == "__main__":
     unittest.main()

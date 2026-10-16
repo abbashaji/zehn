@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "naive double recursion needs hundreds of millions of steps for fib(40)"
+}

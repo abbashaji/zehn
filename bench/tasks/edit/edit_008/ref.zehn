@@ -1,0 +1,28 @@
+fn plain_fee(days_late: Int, daily: Int) -> Int
+  intent "fee without a cap: the first 3 days are free, every further day costs the daily amount"
+  example plain_fee(3, 50) == 0
+  example plain_fee(10, 50) == 350
+do
+  if days_late <= 3 then
+    return 0
+  end if
+  return (days_late - 3) * daily
+end fn
+
+fn late_fee(days_late: Int, daily: Int, cap: Option<Int>) -> Int
+  intent "plain fee, limited to the cap when there is one; a cap below 0 counts as 0"
+  ensures out >= 0
+  example late_fee(2, 50, none) == 0
+  example late_fee(10, 50, none) == 350
+  example late_fee(10, 50, some(200)) == 200
+  example late_fee(10, 50, some(-5)) == 0
+  example late_fee(10, 50, some(1000)) == 350
+do
+  let fee = plain_fee(days_late, daily)
+  match cap do
+    case none =>
+      return fee
+    case some(c) =>
+      return int.min(fee, int.max(c, 0))
+  end match
+end fn

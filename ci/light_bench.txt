@@ -1,0 +1,10 @@
+pure_001
+pure_005
+text_001
+text_005
+domain_001
+domain_005
+effect_001
+effect_005
+edit_001
+edit_005

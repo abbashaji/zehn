@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "total",
+      "ref": "fn#c994"
+    },
+    {
+      "kind": "fn",
+      "name": "safe_total",
+      "ref": "fn#19a7"
+    }
+  ]
+}

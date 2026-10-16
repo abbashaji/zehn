@@ -1,0 +1,43 @@
+{
+  "id": "text_010",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Thousands separators",
+  "description": "Write a whole number in decimal with a comma between every group of three digits, counted from the right: 1234567 is \"1,234,567\" and 1005000 is \"1,005,000\" (a group in the middle keeps its zeros). Numbers below 1000 get no comma and 0 is \"0\". A negative number is an error with the message \"negative number: N\", where N is the number written in the usual way with its minus sign.",
+  "entry": "with_commas",
+  "params": [
+    {
+      "name": "n",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        1234567
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "1,234,567"
+        ]
+      }
+    },
+    {
+      "args": [
+        -5
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "negative number: -5"
+        ]
+      }
+    }
+  ],
+  "notes": "Zero-padding of inner groups (1,005,000) is the trap. Negative inputs only reach the error branch, so no division or remainder ever sees a negative operand. Largest test value is below 2^53."
+}

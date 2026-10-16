@@ -1,0 +1,178 @@
+{
+  "examples": [
+    {
+      "fn": "swap",
+      "fuel": 14,
+      "line": 6,
+      "status": "pass"
+    },
+    {
+      "fn": "swap",
+      "fuel": 14,
+      "line": 7,
+      "status": "pass"
+    },
+    {
+      "fn": "min_max",
+      "fuel": 28,
+      "line": 18,
+      "status": "pass"
+    },
+    {
+      "fn": "min_max",
+      "fuel": 28,
+      "line": 19,
+      "status": "pass"
+    },
+    {
+      "fn": "out_lo",
+      "fuel": 10,
+      "line": 29,
+      "status": "pass"
+    },
+    {
+      "fn": "out_hi",
+      "fuel": 10,
+      "line": 38,
+      "status": "pass"
+    },
+    {
+      "fn": "fizz",
+      "fuel": 14,
+      "line": 48,
+      "status": "pass"
+    },
+    {
+      "fn": "fizz",
+      "fuel": 14,
+      "line": 49,
+      "status": "pass"
+    },
+    {
+      "fn": "fizz",
+      "fuel": 14,
+      "line": 50,
+      "status": "pass"
+    },
+    {
+      "fn": "fizz",
+      "fuel": 15,
+      "line": 51,
+      "status": "pass"
+    },
+    {
+      "fn": "add_options",
+      "fuel": 15,
+      "line": 67,
+      "status": "pass"
+    },
+    {
+      "fn": "add_options",
+      "fuel": 12,
+      "line": 68,
+      "status": "pass"
+    },
+    {
+      "fn": "add_options",
+      "fuel": 12,
+      "line": 69,
+      "status": "pass"
+    },
+    {
+      "fn": "add_options",
+      "fuel": 11,
+      "line": 70,
+      "status": "pass"
+    },
+    {
+      "fn": "span",
+      "fuel": 36,
+      "line": 86,
+      "status": "pass"
+    },
+    {
+      "fn": "span",
+      "fuel": 36,
+      "line": 87,
+      "status": "pass"
+    },
+    {
+      "fn": "abs_diff",
+      "fuel": 13,
+      "line": 96,
+      "status": "pass"
+    },
+    {
+      "fn": "abs_diff",
+      "fuel": 13,
+      "line": 97,
+      "status": "pass"
+    },
+    {
+      "fn": "div_mod",
+      "fuel": 21,
+      "line": 108,
+      "status": "pass"
+    },
+    {
+      "fn": "div_mod",
+      "fuel": 13,
+      "line": 109,
+      "status": "pass"
+    },
+    {
+      "fn": "apply_move",
+      "fuel": 25,
+      "line": 120,
+      "status": "pass"
+    },
+    {
+      "fn": "apply_move",
+      "fuel": 13,
+      "line": 121,
+      "status": "pass"
+    },
+    {
+      "fn": "sum_pairs",
+      "fuel": 30,
+      "line": 136,
+      "status": "pass"
+    },
+    {
+      "fn": "sum_pairs",
+      "fuel": 8,
+      "line": 137,
+      "status": "pass"
+    },
+    {
+      "fn": "pair_sum",
+      "fuel": 12,
+      "line": 143,
+      "status": "pass"
+    },
+    {
+      "fn": "labelled",
+      "fuel": 29,
+      "line": 153,
+      "status": "pass"
+    },
+    {
+      "fn": "labelled",
+      "fuel": 29,
+      "line": 154,
+      "status": "pass"
+    },
+    {
+      "fn": "if_even",
+      "fuel": 8,
+      "line": 163,
+      "status": "pass"
+    },
+    {
+      "fn": "if_even",
+      "fuel": 8,
+      "line": 164,
+      "status": "pass"
+    }
+  ]
+}

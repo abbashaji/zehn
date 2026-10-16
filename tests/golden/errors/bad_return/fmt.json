@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "type Shape = Circle(Int) | Square(Int) | Dot\n\nfn sign(n: Int) -> Int\n  example sign(5) == 1\ndo\n  if n > 0 then\n    return 1\n  end if\nend fn\n\nfn pick(n: Int) -> Int\n  example pick(1) == 1\ndo\n  if n > 0 then\n    return 1\n  else\n    let other = 2\n  end if\nend fn\n\nfn area(s: Shape) -> Int\n  example area(Dot) == 0\ndo\n  match s do\n    case Circle(r) =>\n      return r * r * 3\n    case Square(w) =>\n      let side = w\n    case Dot =>\n      return 0\n  end match\nend fn\n\nfn dead(n: Int) -> Int\n  example dead(1) == 1\ndo\n  return n\n  let never = 1\nend fn\n"
+}

@@ -1,0 +1,46 @@
+type Match = { home: Text, away: Text, home_pts: Int, away_pts: Int, home_tries: Int, away_tries: Int }
+
+fn match_points(own: Int, other: Int) -> Int
+  intent "league points one team earns in one match: 4 for a win, 2 for a draw"
+  example match_points(20, 10) == 4
+  example match_points(10, 20) == 0
+  example match_points(15, 15) == 2
+do
+  if own > other then
+    return 4
+  end if
+  if own == other then
+    return 2
+  end if
+  return 0
+end fn
+
+fn team_total(matches: List<Match>, team: Text, i: Int, played: Int, points: Int) -> Result<Int, Text>
+  intent "league points of the team over the matches from index i on, counting played matches"
+  example team_total([], "Ash", 0, 0, 0) == err("unknown team")
+  example team_total([], "Ash", 0, 2, 9) == ok(9)
+do
+  match list.get(matches, i) do
+    case none =>
+      if played == 0 then
+        return err("unknown team")
+      end if
+      return ok(points)
+    case some(m) =>
+      if m.home == team then
+        return team_total(matches, team, i + 1, played + 1, points + match_points(m.home_pts, m.away_pts))
+      end if
+      if m.away == team then
+        return team_total(matches, team, i + 1, played + 1, points + match_points(m.away_pts, m.home_pts))
+      end if
+      return team_total(matches, team, i + 1, played, points)
+  end match
+end fn
+
+fn league_points(matches: List<Match>, team: Text) -> Result<Int, Text>
+  intent "league points of a team over all matches in which it played"
+  example league_points([{home: "Ash", away: "Birch", home_pts: 20, away_pts: 10, home_tries: 2, away_tries: 1}], "Ash") == ok(4)
+  example league_points([], "Ash") == err("unknown team")
+do
+  return team_total(matches, team, 0, 0, 0)
+end fn

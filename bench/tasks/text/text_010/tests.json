@@ -1,0 +1,14 @@
+[
+  {"args": [1234567], "expect": {"$": "ok", "args": ["1,234,567"]}},
+  {"args": [-5], "expect": {"$": "err", "args": ["negative number: -5"]}},
+  {"args": [0], "expect": {"$": "ok", "args": ["0"]}},
+  {"args": [7], "expect": {"$": "ok", "args": ["7"]}},
+  {"args": [999], "expect": {"$": "ok", "args": ["999"]}},
+  {"args": [1000], "expect": {"$": "ok", "args": ["1,000"]}},
+  {"args": [1005000], "expect": {"$": "ok", "args": ["1,005,000"]}},
+  {"args": [12345], "expect": {"$": "ok", "args": ["12,345"]}},
+  {"args": [100000], "expect": {"$": "ok", "args": ["100,000"]}},
+  {"args": [1000000000], "expect": {"$": "ok", "args": ["1,000,000,000"]}},
+  {"args": [9007199254740], "expect": {"$": "ok", "args": ["9,007,199,254,740"]}},
+  {"args": [-1000], "expect": {"$": "err", "args": ["negative number: -1000"]}}
+]

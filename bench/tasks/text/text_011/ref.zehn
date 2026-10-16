@@ -1,0 +1,36 @@
+fn sep_after(lines: List<Text>, i: Int) -> Text
+  intent "a newline unless line i is the last line"
+  example sep_after(["a", "b"], 0) == "\n"
+  example sep_after(["a", "b"], 1) == ""
+do
+  if i + 1 >= list.len(lines) then
+    return ""
+  end if
+  return "\n"
+end fn
+
+fn number_from(lines: List<Text>, i: Int, n: Int) -> Text
+  intent "lines at index i and later, each non-empty one prefixed with its running number starting at n"
+  example number_from(["a", "", "b"], 0, 1) == "1. a\n\n2. b"
+  example number_from([], 0, 1) == ""
+do
+  match list.get(lines, i) do
+    case none =>
+      return ""
+    case some(l) =>
+      if l == "" then
+        return text.concat(sep_after(lines, i), number_from(lines, i + 1, n))
+      end if
+      let numbered = text.concat(text.concat(int.to_text(n), ". "), l)
+      return text.concat(text.concat(numbered, sep_after(lines, i)), number_from(lines, i + 1, n + 1))
+  end match
+end fn
+
+fn number_lines(body: Text) -> Text
+  intent "prefix every non-empty line with its number among the non-empty lines (1. 2. ...), leaving empty lines and the line structure unchanged"
+  example number_lines("a\nb") == "1. a\n2. b"
+  example number_lines("a\n\nb\n") == "1. a\n\n2. b\n"
+  example number_lines("") == ""
+do
+  return number_from(text.split_on(body, "\n"), 0, 1)
+end fn

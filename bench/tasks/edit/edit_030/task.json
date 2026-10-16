@@ -1,0 +1,85 @@
+{
+  "id": "edit_030",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Round-robin finishing order",
+  "description": "Bug report for a round-robin scheduler. The function receives a list of jobs, each with an id and a burst (the processing time it still needs), and a time slice called quantum. It returns the ids of the jobs in the order in which they finish. The jobs wait in a queue in the order of the list. The scheduler takes the first job from the queue and runs it for at most one quantum, that is for the quantum or for the rest of its burst if that is shorter. If time is left over for the job it goes to the back of the queue, otherwise it is finished and its id is appended to the result. This repeats until the queue is empty. Two symptoms: a job whose remaining time is exactly one quantum is put back into the queue and only finishes one round later, so the finishing order is wrong; and a job with a burst of 0 or less is accepted although it should be refused. Fix the program. The checks are made in this order and the first one that applies decides the error message: quantum of 0 or less: \"invalid quantum\"; any job with a burst of 0 or less: \"invalid burst\". Job ids are unique. No time passes between jobs and nothing else is reordered.",
+  "entry": "finish_order",
+  "params": [
+    {
+      "name": "jobs",
+      "type": "List<Job>"
+    },
+    {
+      "name": "quantum",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Int>, Text>",
+  "types": [
+    {
+      "name": "Job",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "burst",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "burst": 5
+          },
+          {
+            "id": 2,
+            "burst": 2
+          },
+          {
+            "id": 3,
+            "burst": 4
+          }
+        ],
+        3
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            2,
+            1,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "burst": 2
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid quantum"
+        ]
+      }
+    }
+  ],
+  "notes": "Two bugs: the finish test is burst < quantum (should be <=), so a job needing exactly one quantum is requeued with 0 left; and the burst validation is missing. Visible examples are chosen so that the start passes them (no burst equal to a multiple of the quantum, no invalid burst). In the Zehn version the queue is rebuilt without list slicing (no such function exists), which makes this a longer program than the others."
+}

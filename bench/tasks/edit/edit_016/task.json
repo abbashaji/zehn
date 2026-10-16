@@ -1,0 +1,43 @@
+{
+  "id": "edit_016",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Parcel shipping fee by weight",
+  "description": "Bug report for the parcel shipping fee function, which takes the weight of a parcel in grams and returns the fee in cents. Parcels of exactly 1000 g and of exactly 5000 g are charged too much because the weight limits of the bands are treated as exclusive. Fix the program. The complete rule is: a weight below 1 gram is an error with the message \"invalid weight\"; 1 to 1000 grams cost 500; 1001 to 5000 grams cost 900; more than 5000 grams cost 1500.",
+  "entry": "shipping_fee",
+  "params": [
+    {
+      "name": "grams",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        800
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          500
+        ]
+      }
+    },
+    {
+      "args": [
+        3000
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          900
+        ]
+      }
+    }
+  ],
+  "notes": "Two bugs of the same kind: both band limits use < instead of <=. Only the exact limits 1000 and 5000 fail; the visible examples (800, 3000) already pass on the start."
+}

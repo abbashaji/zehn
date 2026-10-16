@@ -1,0 +1,26 @@
+{
+  "a": "default",
+  "b": "effect_examples=mock",
+  "tasks_dir": "bench/tasks",
+  "only": [
+    "effect_001",
+    "effect_002",
+    "effect_003",
+    "effect_004",
+    "effect_005",
+    "effect_006",
+    "effect_007",
+    "effect_008",
+    "effect_009",
+    "effect_010",
+    "effect_011",
+    "effect_012",
+    "effect_013",
+    "effect_014",
+    "effect_015",
+    "effect_016",
+    "effect_017"
+  ],
+  "repeats": 5,
+  "simpler": "a"
+}

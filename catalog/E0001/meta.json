@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "an option value that is not a number is a usage error (exit code 2)",
+  "cli": [
+    "check",
+    "{file}",
+    "--fuel",
+    "many"
+  ],
+  "cli_fixed": [
+    "check",
+    "{file}",
+    "--fuel",
+    "5000"
+  ]
+}

@@ -1,0 +1,6 @@
+fn double(n: Int) -> Int
+  intent "three times n"
+  example double(2) == 6
+do
+  return n * 3
+end fn

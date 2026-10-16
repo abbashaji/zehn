@@ -1,0 +1,18 @@
+[
+  {"args": [2023, 2], "expect": {"$": "ok", "args": [28]}},
+  {"args": [2024, 1], "expect": {"$": "ok", "args": [31]}},
+  {"args": [2024, 2], "expect": {"$": "ok", "args": [29]}},
+  {"args": [1900, 2], "expect": {"$": "ok", "args": [28]}},
+  {"args": [2000, 2], "expect": {"$": "ok", "args": [29]}},
+  {"args": [2100, 2], "expect": {"$": "ok", "args": [28]}},
+  {"args": [2400, 2], "expect": {"$": "ok", "args": [29]}},
+  {"args": [4, 2], "expect": {"$": "ok", "args": [29]}},
+  {"args": [1, 2], "expect": {"$": "ok", "args": [28]}},
+  {"args": [2024, 4], "expect": {"$": "ok", "args": [30]}},
+  {"args": [2024, 12], "expect": {"$": "ok", "args": [31]}},
+  {"args": [2023, 9], "expect": {"$": "ok", "args": [30]}},
+  {"args": [1900, 1], "expect": {"$": "ok", "args": [31]}},
+  {"args": [2024, 0], "expect": {"$": "err", "args": ["invalid month"]}},
+  {"args": [2024, 13], "expect": {"$": "err", "args": ["invalid month"]}},
+  {"args": [2024, -1], "expect": {"$": "err", "args": ["invalid month"]}}
+]

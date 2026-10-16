@@ -1,0 +1,5 @@
+fn stamp() -> Int
+  uses [time.now]
+do
+  return time.now()
+end fn

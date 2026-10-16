@@ -1,0 +1,64 @@
+{
+  "examples": [
+    {
+      "fn": "label",
+      "fuel": 12,
+      "line": 8,
+      "status": "fail"
+    },
+    {
+      "fn": "add_text",
+      "fuel": 8,
+      "line": 14,
+      "status": "fail"
+    },
+    {
+      "fn": "first",
+      "fuel": 18,
+      "line": 20,
+      "status": "fail"
+    },
+    {
+      "fn": "lookup",
+      "fuel": 8,
+      "line": 26,
+      "status": "pass"
+    },
+    {
+      "fn": "wrong_err",
+      "fuel": 15,
+      "line": 32,
+      "status": "pass"
+    },
+    {
+      "fn": "bad_field",
+      "fuel": 7,
+      "line": 39,
+      "status": "fail"
+    },
+    {
+      "fn": "ambiguous",
+      "fuel": 8,
+      "line": 45,
+      "status": "pass"
+    },
+    {
+      "fn": "bad_call",
+      "fuel": 7,
+      "line": 52,
+      "status": "fail"
+    },
+    {
+      "fn": "wrong_arity",
+      "fuel": 6,
+      "line": 58,
+      "status": "fail"
+    },
+    {
+      "fn": "bad_cond",
+      "fuel": 5,
+      "line": 64,
+      "status": "fail"
+    }
+  ]
+}

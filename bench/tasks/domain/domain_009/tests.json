@@ -1,0 +1,18 @@
+[
+  {"args": [0, 0], "expect": {"$": "ok", "args": [0]}},
+  {"args": [0, 15], "expect": {"$": "ok", "args": [0]}},
+  {"args": [0, 16], "expect": {"$": "ok", "args": [300]}},
+  {"args": [10, 85], "expect": {"$": "ok", "args": [300]}},
+  {"args": [10, 86], "expect": {"$": "ok", "args": [600]}},
+  {"args": [0, 1440], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [0, 1441], "expect": {"$": "ok", "args": [1800]}},
+  {"args": [100, 2980], "expect": {"$": "ok", "args": [3000]}},
+  {"args": [0, 2000], "expect": {"$": "ok", "args": [3000]}},
+  {"args": [0, 1500], "expect": {"$": "ok", "args": [1800]}},
+  {"args": [0, 4400], "expect": {"$": "ok", "args": [5100]}},
+  {"args": [5, 4], "expect": {"$": "err", "args": ["exit before entry"]}},
+  {"args": [-1, 10], "expect": {"$": "err", "args": ["invalid entry time"]}},
+  {"args": [-1, -5], "expect": {"$": "err", "args": ["invalid entry time"]}},
+  {"args": [1000, 1075], "expect": {"$": "ok", "args": [300]}},
+  {"args": [7, 7], "expect": {"$": "ok", "args": [0]}}
+]

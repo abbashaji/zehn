@@ -1,0 +1,5 @@
+fn origin() -> (Int, Int)
+  example origin() == (0, 0)
+do
+  return (0, 0)
+end fn

@@ -1,0 +1,36 @@
+fn take_from(items: List<Int>, i: Int, count: Int) -> List<Int>
+  intent "the count elements of items that start at index i (fewer if the list ends first)"
+  requires i >= 0
+  requires count >= 0
+  example take_from([1, 2, 3, 4], 1, 2) == [2, 3]
+  example take_from([1, 2], 1, 5) == [2]
+  example take_from([1, 2], 0, 0) == []
+do
+  if count == 0 then
+    return []
+  else
+    match list.get(items, i) do
+      case none =>
+        return []
+      case some(x) =>
+        return list.concat([x], take_from(items, i + 1, count - 1))
+    end match
+  end if
+end fn
+
+fn rotate_left(items: List<Int>, k: Int) -> List<Int>
+  intent "the list with its first k positions moved to the back, keeping their order; k may be larger than the length"
+  requires k >= 0
+  ensures list.len(out) == list.len(items)
+  example rotate_left([1, 2, 3, 4, 5], 2) == [3, 4, 5, 1, 2]
+  example rotate_left([1, 2, 3], 4) == [2, 3, 1]
+  example rotate_left([], 7) == []
+do
+  let n = list.len(items)
+  if n == 0 then
+    return []
+  else
+    let shift = k % n
+    return list.concat(take_from(items, shift, n - shift), take_from(items, 0, shift))
+  end if
+end fn

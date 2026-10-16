@@ -1,0 +1,39 @@
+{
+  "id": "numneg_001",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Bucket index",
+  "description": "Integers are grouped into consecutive buckets of equal size: bucket 0 holds 0 to width-1, bucket 1 holds width to 2*width-1, bucket -1 holds -width to -1, bucket -2 holds -2*width to -width-1, and so on. Return the index of the bucket that holds value. width is always positive. The index is the quotient value / width rounded down toward negative infinity.",
+  "entry": "bucket_index",
+  "params": [
+    {
+      "name": "value",
+      "type": "Int"
+    },
+    {
+      "name": "width",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        7,
+        5
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        -10,
+        5
+      ],
+      "expect": -2
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states floor semantics (round toward negative infinity) in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

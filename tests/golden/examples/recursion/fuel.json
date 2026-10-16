@@ -1,0 +1,58 @@
+{
+  "examples": [
+    {
+      "fn": "gcd",
+      "fuel": 77,
+      "line": 9,
+      "status": "pass"
+    },
+    {
+      "fn": "gcd",
+      "fuel": 20,
+      "line": 10,
+      "status": "pass"
+    },
+    {
+      "fn": "sum_to",
+      "fuel": 13,
+      "line": 22,
+      "status": "pass"
+    },
+    {
+      "fn": "sum_to",
+      "fuel": 14013,
+      "line": 23,
+      "status": "pass"
+    },
+    {
+      "fn": "fib_from",
+      "fuel": 175,
+      "line": 35,
+      "status": "pass"
+    },
+    {
+      "fn": "fib",
+      "fuel": 821,
+      "line": 47,
+      "status": "pass"
+    },
+    {
+      "fn": "sign",
+      "fuel": 13,
+      "line": 54,
+      "status": "pass"
+    },
+    {
+      "fn": "sign",
+      "fuel": 14,
+      "line": 55,
+      "status": "pass"
+    },
+    {
+      "fn": "sign",
+      "fuel": 14,
+      "line": 56,
+      "status": "pass"
+    }
+  ]
+}

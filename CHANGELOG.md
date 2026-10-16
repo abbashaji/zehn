@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4 (in progress)
+
+Phase 1 so far: five branches merged on top of v0.3 (TASK_06a to 06e, merged by TASK_06m). The spec header stays v0.3 until TASK_08. Nothing here changes how a v0.3 program behaves in the default dialect.
+
+- **06a, mocked examples of effectful functions** (dialect `effect_examples=mock`, default `off`): `example E with <effect> = mock [..] prints [..]`; errors `E0605` (clauses do not match the effects the example needs, static pass `effect_examples` at order 420), `E0606` (mock list exhausted, run time), `E0607` (mock result of the wrong type); `zehn fmt` sorts the clauses; ADR-0019 (unmeasured), A/B experiment prepared in `bench/experiments/effect_examples/` (not run); 30 tests.
+- **06b, unconditional recursion is a static error** (`E0311`, pass `recursion`, order 400): a call graph of certain calls, every cycle reported once, zero false positives by contract; `errors/bad_termination.zehn` now stops at `E0311`, its run-time twin is `errors/bad_termination_runtime.zehn` (`E0801` / `E0802`); ADR-0020; 42 tests including a 400-program soundness check.
+- **06c, explicit Int division**: `int.div_floor`, `int.div_trunc`, `int.rem_euclid`; dialect `int_ops=operators|explicit` (default `operators`), under `explicit` the operators `/` and `%` are `E0312` (pass `int_ops`, order 410); experiment pack `bench/experiments/int_division/` (20 `numneg` tasks; `verify-refs --variant`); ADR-0017 (unmeasured, ADR-0010 stays open until TASK_08); 26 tests.
+- **06d, diagnostics catalog and schema**: `catalog/<CODE>/` with `broken.zehn`, `fixed.zehn`, `meta.json` for all 43 codes, `zehn explain` text for `E0001` and the weak texts rewritten, `"schema": 1` in `check --json` with `docs/diagnostics.schema.json` and `docs/DIAGNOSTICS.md`, `tools/gen_error_docs.py` writes `docs/ERRORS.md`; ADR-0018; 18 tests.
+- **06e, CI**: `sh ci/run_ci.sh` (compile, `tests/`, `bench/tests`, `fmt --check` of `examples/` and the dialect examples, offline light benchmark replay of `ci/light_bench.txt`, optional model step); `.github/workflows/ci.yml` only calls it (never executed here).
+
+Merge notes: the pass registry is now `100 names, 200 types, 300 returns, 400 recursion, 410 int_ops, 420 effect_examples`; the new codes are `E0311`, `E0312`, `E0605` to `E0607`; the bench adapter and hidden-test runner now pass `--dialect` to `fmt` and to the run step (a gap found by 06a); 251 tests in `tests/` (135 + 116 new), 235 in `bench/tests`.
+
 ## v0.3
 
 Closes the two "silent hole" items from the v0.2 known-limits list: a function that can fall off its end, and runs that never finish.

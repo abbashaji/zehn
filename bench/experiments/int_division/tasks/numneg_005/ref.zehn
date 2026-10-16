@@ -1,0 +1,8 @@
+fn floor_ratio(a: Int, b: Int) -> Int
+  intent "a divided by b rounded down toward negative infinity"
+  requires b != 0
+  example floor_ratio(8, 2) == 4
+  example floor_ratio(-9, 3) == -3
+do
+  return int.div_floor(a, b)
+end fn

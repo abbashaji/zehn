@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`let n` reuses the parameter name `n`; shadowing is not allowed"
+}

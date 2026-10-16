@@ -1,0 +1,49 @@
+{
+  "id": "edit_017",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Days in a month with leap years",
+  "description": "Feature request for the calendar helper that returns the number of days in a month of a given year (years are 1 or more, months are numbered 1 to 12). Today February always has 28 days. Make it handle leap years: a year is a leap year when it is divisible by 4, except that century years (divisible by 100) are not leap years unless they are also divisible by 400. February of a leap year has 29 days. Everything else stays as it is: a month outside 1 to 12 is an error with the message \"invalid month\"; April, June, September and November have 30 days; the other months have 31.",
+  "entry": "days_in_month",
+  "params": [
+    {
+      "name": "year",
+      "type": "Int"
+    },
+    {
+      "name": "month",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        2023,
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          28
+        ]
+      }
+    },
+    {
+      "args": [
+        2024,
+        1
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          31
+        ]
+      }
+    }
+  ],
+  "notes": "Feature: the three-part leap rule (4 / 100 / 400). Start returns 28 for every February. Hidden tests cover 2024, 2000, 2400, 4 (leap) and 1900, 2100, 2023, 1 (not leap). Visible examples pass on the start."
+}

@@ -1,0 +1,20 @@
+[
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 1200], "expect": {"$": "ok", "args": [[{"denom": 500, "count": 0}, {"denom": 200, "count": 2}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}]]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 90], "expect": {"$": "ok", "args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 3}, {"denom": 10, "count": 6}]]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 5], "expect": {"$": "err", "args": ["cannot make change: 5 short"]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 0], "expect": {"$": "err", "args": ["invalid amount"]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], -50], "expect": {"$": "err", "args": ["invalid amount"]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 2000], "expect": {"$": "ok", "args": [[{"denom": 500, "count": 0}, {"denom": 200, "count": 0}, {"denom": 100, "count": 1}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}]]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 2001], "expect": {"$": "err", "args": ["cannot make change: 1 short"]}},
+  {"args": [[{"denom": 10, "count": 10}, {"denom": 100, "count": 5}, {"denom": 50, "count": 1}], 100], "expect": {"$": "ok", "args": [[{"denom": 10, "count": 0}, {"denom": 100, "count": 5}, {"denom": 50, "count": 1}]]}},
+  {"args": [[{"denom": 500, "count": 0}, {"denom": 100, "count": 2}], 200], "expect": {"$": "ok", "args": [[{"denom": 500, "count": 0}, {"denom": 100, "count": 0}]]}},
+  {"args": [[{"denom": 50, "count": 1}, {"denom": 20, "count": 3}], 60], "expect": {"$": "err", "args": ["cannot make change: 10 short"]}},
+  {"args": [[{"denom": 0, "count": 3}], 5], "expect": {"$": "err", "args": ["invalid drawer"]}},
+  {"args": [[{"denom": 100, "count": -1}], 100], "expect": {"$": "err", "args": ["invalid drawer"]}},
+  {"args": [[{"denom": 0, "count": 3}], 0], "expect": {"$": "err", "args": ["invalid drawer"]}},
+  {"args": [[], 10], "expect": {"$": "err", "args": ["cannot make change: 10 short"]}},
+  {"args": [[{"denom": 100, "count": 1}, {"denom": 100, "count": 2}], 250], "expect": {"$": "err", "args": ["cannot make change: 50 short"]}},
+  {"args": [[{"denom": 100, "count": 1}, {"denom": 100, "count": 2}], 150], "expect": {"$": "err", "args": ["cannot make change: 50 short"]}},
+  {"args": [[{"denom": 1, "count": 1000000}, {"denom": 5, "count": 3}], 999999], "expect": {"$": "ok", "args": [[{"denom": 1, "count": 1}, {"denom": 5, "count": 3}]]}},
+  {"args": [[{"denom": 500, "count": 2}, {"denom": 200, "count": 3}, {"denom": 100, "count": 5}, {"denom": 50, "count": 4}, {"denom": 10, "count": 10}], 3790], "expect": {"$": "err", "args": ["cannot make change: 1390 short"]}}
+]

@@ -1,0 +1,36 @@
+type Run = { value: Int, count: Int }
+
+fn runs_from(readings: List<Int>, limit: Int, i: Int, value: Int, count: Int, done: List<Run>) -> List<Run>
+  intent "runs of the readings from index i on; value and count describe the open run (count 0 means none), done holds the closed runs"
+  example runs_from([], 3, 0, 0, 0, []) == []
+  example runs_from([1, 1], 3, 0, 0, 0, []) == [{value: 1, count: 2}]
+  example runs_from([1, 2], 3, 0, 0, 0, []) == [{value: 1, count: 1}, {value: 2, count: 1}]
+do
+  match list.get(readings, i) do
+    case none =>
+      if count == 0 then
+        return done
+      end if
+      return list.append(done, {value: value, count: count})
+    case some(x) =>
+      if count > 0 and x == value and count < limit then
+        return runs_from(readings, limit, i + 1, value, count + 1, done)
+      end if
+      if count > 0 then
+        return runs_from(readings, limit, i + 1, x, 1, list.append(done, {value: value, count: count}))
+      end if
+      return runs_from(readings, limit, i + 1, x, 1, done)
+  end match
+end fn
+
+fn compress(readings: List<Int>, limit: Int) -> Result<List<Run>, Text>
+  intent "merge equal neighbours into runs of at most limit readings"
+  example compress([4, 4, 4, 9, 9], 5) == ok([{value: 4, count: 3}, {value: 9, count: 2}])
+  example compress([1, 1, 1, 1, 1], 2) == ok([{value: 1, count: 2}, {value: 1, count: 2}, {value: 1, count: 1}])
+  example compress([1, 1], 0) == err("invalid limit")
+do
+  if limit < 1 then
+    return err("invalid limit")
+  end if
+  return ok(runs_from(readings, limit, 0, 0, 0, []))
+end fn

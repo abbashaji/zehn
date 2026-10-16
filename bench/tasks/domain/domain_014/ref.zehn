@@ -1,0 +1,85 @@
+type Card = { id: Text, balance: Int, expires: Int }
+
+fn usable(card: Card, today: Int) -> Bool
+  intent "whether the card has money and is not expired on this day (its expiry day still counts)"
+  example usable({id: "a", balance: 10, expires: 5}, 5) == true
+  example usable({id: "a", balance: 10, expires: 5}, 6) == false
+  example usable({id: "a", balance: 0, expires: 5}, 1) == false
+do
+  return card.balance > 0 and card.expires >= today
+end fn
+
+fn usable_total(cards: List<Card>, today: Int, i: Int) -> Int
+  intent "sum of the balances of the usable cards from index i on"
+  example usable_total([{id: "a", balance: 10, expires: 5}, {id: "b", balance: 7, expires: 1}], 3, 0) == 10
+  example usable_total([], 3, 0) == 0
+do
+  match list.get(cards, i) do
+    case none =>
+      return 0
+    case some(c) =>
+      let rest = usable_total(cards, today, i + 1)
+      if usable(c, today) then
+        return rest + c.balance
+      end if
+      return rest
+  end match
+end fn
+
+fn used_count(cards: List<Card>, today: Int, i: Int, owed: Int) -> Int
+  intent "number of cards from index i on that pay something while owed is still to be paid"
+  example used_count([{id: "a", balance: 10, expires: 5}, {id: "b", balance: 7, expires: 5}], 1, 0, 12) == 2
+  example used_count([{id: "a", balance: 10, expires: 5}, {id: "b", balance: 7, expires: 5}], 1, 0, 10) == 1
+do
+  if owed <= 0 then
+    return 0
+  end if
+  match list.get(cards, i) do
+    case none =>
+      return 0
+    case some(c) =>
+      if usable(c, today) then
+        return 1 + used_count(cards, today, i + 1, owed - int.min(c.balance, owed))
+      end if
+      return used_count(cards, today, i + 1, owed)
+  end match
+end fn
+
+fn spend(cards: List<Card>, today: Int, i: Int, owed: Int) -> List<Card>
+  intent "the cards from index i on after paying owed with the usable ones in order"
+  example spend([{id: "a", balance: 10, expires: 5}, {id: "b", balance: 7, expires: 5}], 1, 0, 12) == [{id: "a", balance: 0, expires: 5}, {id: "b", balance: 5, expires: 5}]
+  example spend([{id: "a", balance: 10, expires: 0}, {id: "b", balance: 7, expires: 5}], 1, 0, 3) == [{id: "a", balance: 10, expires: 0}, {id: "b", balance: 4, expires: 5}]
+do
+  match list.get(cards, i) do
+    case none =>
+      return []
+    case some(c) =>
+      if owed > 0 and usable(c, today) then
+        let paid = int.min(c.balance, owed)
+        let rest = spend(cards, today, i + 1, owed - paid)
+        return list.concat([{id: c.id, balance: c.balance - paid, expires: c.expires}], rest)
+      end if
+      return list.concat([c], spend(cards, today, i + 1, owed))
+  end match
+end fn
+
+fn pay_bill(cards: List<Card>, bill: Int, today: Int) -> Result<List<Card>, Text>
+  intent "pay a bill with gift cards in list order; refuse when the cards cannot cover it or more than 3 would be needed"
+  example pay_bill([{id: "a", balance: 10, expires: 5}], 4, 1) == ok([{id: "a", balance: 6, expires: 5}])
+  example pay_bill([{id: "a", balance: 10, expires: 5}], 0, 1) == err("invalid bill")
+  example pay_bill([{id: "a", balance: 10, expires: 5}], 11, 1) == err("short by 1")
+  example pay_bill([{id: "a", balance: 1, expires: 5}, {id: "b", balance: 1, expires: 5}, {id: "c", balance: 1, expires: 5}, {id: "d", balance: 1, expires: 5}], 4, 1) == err("too many cards: needs 4")
+do
+  if bill <= 0 then
+    return err("invalid bill")
+  end if
+  let total = usable_total(cards, today, 0)
+  if total < bill then
+    return err(text.concat("short by ", int.to_text(bill - total)))
+  end if
+  let used = used_count(cards, today, 0, bill)
+  if used > 3 then
+    return err(text.concat("too many cards: needs ", int.to_text(used)))
+  end if
+  return ok(spend(cards, today, 0, bill))
+end fn

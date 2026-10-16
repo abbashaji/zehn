@@ -1,0 +1,57 @@
+{
+  "id": "domain_010",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Order status after a series of events",
+  "description": "An order has a status, which is one of the texts \"new\", \"paid\", \"packed\", \"shipped\", \"delivered\", \"cancelled\" or \"refunded\". Events change the status. The known events are \"pay\", \"pack\", \"ship\", \"deliver\", \"cancel\" and \"refund\", and each is allowed only from some statuses: pay from new gives paid; pack from paid gives packed; ship from packed gives shipped; deliver from shipped gives delivered; cancel from new, paid or packed gives cancelled; refund from delivered gives refunded. Every other combination is not allowed, and cancelled and refunded orders accept no event at all. Write apply_events, which takes the starting status and a list of event names and returns the status after all events, applied in order. Steps are counted from 1. Checks happen in this order, and the first failing one decides the result: a starting status that is not one of the seven names gives the error \"unknown status: \" followed by the status text (even if the list of events is empty); then the events are processed from the front, and for each event first an event name that is not one of the six known events gives \"step \", the step number and \": unknown event \" followed by the event name; then an event that is not allowed from the current status gives \"step \", the step number, \": cannot \", the event name, \" when \" and the current status (for example \"step 2: cannot pay when paid\"). An empty list of events returns the starting status.",
+  "entry": "apply_events",
+  "params": [
+    {
+      "name": "status",
+      "type": "Text"
+    },
+    {
+      "name": "events",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "new",
+        [
+          "pay",
+          "pack",
+          "ship",
+          "deliver"
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "delivered"
+        ]
+      }
+    },
+    {
+      "args": [
+        "new",
+        [
+          "pay",
+          "pay"
+        ]
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "step 2: cannot pay when paid"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: a state machine with a transition table and positional error messages. Pitfalls: the starting status is validated even with no events; an unknown event name is reported before the transition check, and only for the step it is reached (an unknown event after an invalid transition is never seen); terminal states reject everything, including a repeated cancel; steps count from 1."
+}

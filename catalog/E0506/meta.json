@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`zehn run` passes JSON that is not checked against the type: `Blue` is not a Color",
+  "cli": [
+    "run",
+    "{file}",
+    "code",
+    "[{\"$\": \"Blue\"}]"
+  ],
+  "cli_fixed": [
+    "run",
+    "{file}",
+    "code",
+    "[{\"$\": \"Green\"}]"
+  ]
+}

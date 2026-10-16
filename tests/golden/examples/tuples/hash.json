@@ -1,0 +1,80 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Move",
+      "ref": "type#bb9f"
+    },
+    {
+      "kind": "fn",
+      "name": "swap",
+      "ref": "fn#1a19"
+    },
+    {
+      "kind": "fn",
+      "name": "min_max",
+      "ref": "fn#83bc"
+    },
+    {
+      "kind": "fn",
+      "name": "out_lo",
+      "ref": "fn#34fa"
+    },
+    {
+      "kind": "fn",
+      "name": "out_hi",
+      "ref": "fn#9c2a"
+    },
+    {
+      "kind": "fn",
+      "name": "fizz",
+      "ref": "fn#2727"
+    },
+    {
+      "kind": "fn",
+      "name": "add_options",
+      "ref": "fn#b237"
+    },
+    {
+      "kind": "fn",
+      "name": "span",
+      "ref": "fn#39f2"
+    },
+    {
+      "kind": "fn",
+      "name": "abs_diff",
+      "ref": "fn#86fe"
+    },
+    {
+      "kind": "fn",
+      "name": "div_mod",
+      "ref": "fn#e04e"
+    },
+    {
+      "kind": "fn",
+      "name": "apply_move",
+      "ref": "fn#cfcf"
+    },
+    {
+      "kind": "fn",
+      "name": "sum_pairs",
+      "ref": "fn#38a8"
+    },
+    {
+      "kind": "fn",
+      "name": "pair_sum",
+      "ref": "fn#0ce0"
+    },
+    {
+      "kind": "fn",
+      "name": "labelled",
+      "ref": "fn#1b6e"
+    },
+    {
+      "kind": "fn",
+      "name": "if_even",
+      "ref": "fn#79c7"
+    }
+  ]
+}

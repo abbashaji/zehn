@@ -1,0 +1,68 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "log_line",
+        "ref": "fn#ad03"
+      },
+      {
+        "kind": "fn",
+        "name": "greet",
+        "ref": "fn#5756"
+      },
+      {
+        "kind": "fn",
+        "name": "stamp",
+        "ref": "fn#d0c5"
+      },
+      {
+        "kind": "fn",
+        "name": "pure_len",
+        "ref": "fn#94d3"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "log_line",
+          "line": 2
+        },
+        "message": "function 'log_line' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "greet",
+          "line": 8
+        },
+        "message": "function 'greet' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "stamp",
+          "line": 14
+        },
+        "message": "function 'stamp' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false
+  }
+}

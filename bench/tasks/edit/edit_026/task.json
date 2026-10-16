@@ -1,0 +1,61 @@
+{
+  "id": "edit_026",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Parking fee with grace time and daily cap",
+  "description": "Feature request for the parking fee function. It receives the parked minutes, the hourly rate in cents, a grace time in minutes and a daily cap in cents, and returns the fee in cents. Today it charges the rate for every started hour and ignores grace time and cap. Change it so that: (1) a stay of at most `grace` minutes is free; a longer stay is charged from the first minute, the grace time is not deducted; (2) the fee is calculated per block of 1440 minutes (24 hours): every full block costs the rate times 24 but never more than the cap, and the remaining minutes (fewer than 1440, possibly none) cost the rate for every started hour but never more than the cap. The checks are made in this order and the first one that applies decides the error message: negative minutes: \"invalid duration\"; negative rate: \"invalid rate\"; negative grace or negative cap: \"invalid limit\". Without a grace time and with a cap that is never reached, the result is the same as today.",
+  "entry": "parking_fee",
+  "params": [
+    {
+      "name": "minutes",
+      "type": "Int"
+    },
+    {
+      "name": "rate",
+      "type": "Int"
+    },
+    {
+      "name": "grace",
+      "type": "Int"
+    },
+    {
+      "name": "cap",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        90,
+        200,
+        15,
+        5000
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          400
+        ]
+      }
+    },
+    {
+      "args": [
+        -5,
+        200,
+        15,
+        1000
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid duration"
+        ]
+      }
+    }
+  ],
+  "notes": "Feature, two rules that interact: grace makes the whole stay free when minutes <= grace (but nothing is deducted otherwise); the cap applies per 24 h block and the full-block price is min(24 * rate, cap), which matters when the cap is above 24 * rate (tests include that). Start ignores grace and cap and has the first two errors only. Visible examples are chosen so that the start passes them. All operands of / and % are non-negative."
+}

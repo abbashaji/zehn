@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zehn.invalid/schema/diagnostics-1.json",
+  "title": "zehn check --json, schema 1",
+  "description": "The envelope printed by `zehn check <file> --json` and the diagnostic object inside it. Within schema 1 keys are only ever added (docs/DIAGNOSTICS.md); every object therefore allows additional properties, and a consumer must ignore keys it does not know.",
+  "type": "object",
+  "required": ["schema", "ok", "diagnostics", "definitions", "examples"],
+  "properties": {
+    "schema": {
+      "description": "Version of this contract. Always the first key. Changes only when a key is removed, renamed or changes type.",
+      "const": 1
+    },
+    "ok": {
+      "description": "True when there is no error: no diagnostic with severity error and no failed example.",
+      "type": "boolean"
+    },
+    "diagnostics": {
+      "description": "Static diagnostics (parse, names, types, effects, return paths, layout, drift). Failed examples are reported under examples.results, not here.",
+      "type": "array",
+      "items": {"$ref": "#/definitions/diagnostic"}
+    },
+    "definitions": {
+      "description": "The current content-hash ref of every top-level definition (empty when the file does not parse).",
+      "type": "array",
+      "items": {"$ref": "#/definitions/definition"}
+    },
+    "examples": {
+      "type": "object",
+      "required": ["passed", "failed", "results"],
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "results": {"type": "array", "items": {"$ref": "#/definitions/example_result"}}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "diagnostic": {
+      "description": "One finding. `code` is stable forever: a code is never reused for another meaning.",
+      "type": "object",
+      "required": ["code", "severity", "phase", "message"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[EW][0-9]{4}$"},
+        "severity": {"type": "string", "enum": ["error", "warning"]},
+        "phase": {
+          "description": "Where the finding arose. Known values: lex, parse, check, runtime, usage, patch. New values may appear.",
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {"type": "string"},
+        "location": {"$ref": "#/definitions/location"},
+        "fix_hint": {"type": "string"},
+        "blame": {
+          "description": "Who has to change: the caller, the callee (implementation) or the host (capability grants).",
+          "type": "string",
+          "enum": ["caller", "callee", "host"]
+        },
+        "values": {
+          "description": "Named values behind the failure, rendered as text (for example left and right of a failed example).",
+          "type": "object"
+        },
+        "falls_through": {
+          "description": "E0310: every path that reaches the end of the body without return.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["line", "where"],
+            "properties": {"line": {"type": "integer"}, "where": {"type": "string"}},
+            "additionalProperties": true
+          }
+        },
+        "call_stack": {
+          "description": "E0801, E0802: summary of the active calls when the limit was hit.",
+          "type": "object",
+          "required": ["depth", "innermost"],
+          "properties": {
+            "depth": {"type": "integer", "minimum": 0},
+            "innermost": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["fn", "times"],
+                "properties": {"fn": {"type": "string"}, "times": {"type": "integer", "minimum": 1}},
+                "additionalProperties": true
+              }
+            },
+            "most_frequent": {"type": ["string", "null"]},
+            "most_frequent_count": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": true
+        },
+        "via_example": {
+          "description": "A runtime diagnostic raised while an example was running names that example.",
+          "type": "object",
+          "required": ["fn", "line", "text"],
+          "properties": {
+            "fn": {"type": "string"},
+            "line": {"type": "integer"},
+            "text": {"type": "string"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "fn": {"type": ["string", "null"]},
+        "line": {"type": "integer", "minimum": 1},
+        "clause": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "definition": {
+      "type": "object",
+      "required": ["ref", "kind", "name"],
+      "properties": {
+        "ref": {"type": "string", "pattern": "^(fn|type)#[0-9a-f]{4,}$"},
+        "kind": {"type": "string", "enum": ["fn", "type"]},
+        "name": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "example_result": {
+      "type": "object",
+      "required": ["fn", "line", "example", "status"],
+      "properties": {
+        "fn": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "example": {"type": "string"},
+        "status": {"type": "string", "enum": ["pass", "fail"]},
+        "diag": {"$ref": "#/definitions/diagnostic"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

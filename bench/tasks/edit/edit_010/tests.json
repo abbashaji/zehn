@@ -1,0 +1,22 @@
+[
+  {"args": [[80, 90, 100], 0], "expect": {"$": "some", "args": [90]}},
+  {"args": [[], 2], "expect": {"$": "none"}},
+  {"args": [[80, 90, 100], 1], "expect": {"$": "some", "args": [95]}},
+  {"args": [[100, 60, 80, 90], 1], "expect": {"$": "some", "args": [90]}},
+  {"args": [[100, 60, 80, 90], 2], "expect": {"$": "some", "args": [95]}},
+  {"args": [[100, 60, 80, 90], 3], "expect": {"$": "some", "args": [100]}},
+  {"args": [[100, 60, 80, 90], 4], "expect": {"$": "some", "args": [100]}},
+  {"args": [[100, 60, 80, 90], 99], "expect": {"$": "some", "args": [100]}},
+  {"args": [[70], 1], "expect": {"$": "some", "args": [70]}},
+  {"args": [[70], 0], "expect": {"$": "some", "args": [70]}},
+  {"args": [[50, 50, 50], 2], "expect": {"$": "some", "args": [50]}},
+  {"args": [[10, 0, 5, 0], 2], "expect": {"$": "some", "args": [7]}},
+  {"args": [[0, 0, 0], 1], "expect": {"$": "some", "args": [0]}},
+  {"args": [[99, 100, 98, 100, 97], 2], "expect": {"$": "some", "args": [99]}},
+  {"args": [[7, 8], -3], "expect": {"$": "some", "args": [7]}},
+  {"args": [[3, 9, 4, 8], -1], "expect": {"$": "some", "args": [6]}},
+  {"args": [[3, 9, 4, 8], 1], "expect": {"$": "some", "args": [7]}},
+  {"args": [[1, 2, 2, 3, 3, 3], 3], "expect": {"$": "some", "args": [3]}},
+  {"args": [[100, 100, 99], 1], "expect": {"$": "some", "args": [100]}},
+  {"args": [[5, 6], 1], "expect": {"$": "some", "args": [6]}}
+]

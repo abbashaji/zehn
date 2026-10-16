@@ -1,0 +1,42 @@
+fn mentions_all(post: Text, tags: List<Text>, i: Int) -> Bool
+  intent "true when the post contains every tag from index i on; both sides are compared in upper case"
+  example mentions_all("RUST AND PYTHON", ["RUST", "PYTHON"], 0) == true
+  example mentions_all("RUST ONLY", ["RUST", "PYTHON"], 0) == false
+  example mentions_all("ANYTHING", [], 0) == true
+do
+  match list.get(tags, i) do
+    case none =>
+      return true
+    case some(tag) =>
+      if not text.contains(post, text.to_upper(tag)) then
+        return false
+      end if
+      return mentions_all(post, tags, i + 1)
+  end match
+end fn
+
+fn pick(posts: List<Text>, tags: List<Text>, i: Int, done: List<Text>) -> List<Text>
+  intent "the posts from index i on that mention every tag, appended to done in order"
+  example pick([], ["A"], 0, []) == []
+  example pick(["xa", "yb", "ab"], ["A", "B"], 0, []) == ["ab"]
+do
+  match list.get(posts, i) do
+    case none =>
+      return done
+    case some(post) =>
+      if mentions_all(text.to_upper(post), tags, 0) then
+        return pick(posts, tags, i + 1, list.append(done, post))
+      end if
+      return pick(posts, tags, i + 1, done)
+  end match
+end fn
+
+fn matching_posts(posts: List<Text>, tags: List<Text>) -> List<Text>
+  intent "posts that contain every tag, ignoring case, in their original order"
+  example matching_posts(["cat on mat", "dog"], ["cat"]) == ["cat on mat"]
+  example matching_posts(["Rust and Python", "python"], ["RUST", "python"]) == ["Rust and Python"]
+  example matching_posts(["a", "b"], []) == ["a", "b"]
+  example matching_posts([], ["x"]) == []
+do
+  return pick(posts, tags, 0, [])
+end fn

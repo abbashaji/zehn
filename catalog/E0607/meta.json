@@ -1,0 +1,1 @@
+{"strict": true, "dialect": {"effect_examples": "mock"}, "note": "a mock result must have the type the effect function returns (time.now: Int)"}

@@ -1,0 +1,49 @@
+{
+  "id": "text_014",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Wrap words into lines",
+  "description": "Break a text into lines of at most a given width. The words are the space-separated words of the text; empty pieces from extra spaces are not words. Fill the lines greedily from the first word: a word goes onto the current line, with one space before it, if the line then stays within the width; otherwise it starts a new line. A word that is longer than the width stands alone on its own line without being cut. Join the lines with a vertical bar \"|\". A text without words gives the empty text. A width below 1 is an error with the message \"width must be positive\", even for an empty text.",
+  "entry": "wrap_words",
+  "params": [
+    {
+      "name": "body",
+      "type": "Text"
+    },
+    {
+      "name": "width",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "aa bb cc",
+        5
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "aa bb|cc"
+        ]
+      }
+    },
+    {
+      "args": [
+        "a",
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "width must be positive"
+        ]
+      }
+    }
+  ],
+  "notes": "A line of exactly the width is allowed (<=, not <); an over-long word still opens a fresh line for the next word; the width check precedes everything."
+}

@@ -1,0 +1,5 @@
+fn label(n: Int) -> Text
+  example label(1) == "1"
+do
+  return int.to_text(n)
+end fn

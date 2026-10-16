@@ -1,0 +1,45 @@
+{
+  "id": "text_009",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Replace every occurrence",
+  "description": "Replace every occurrence of a pattern inside a source text by a replacement text. Scan from left to right; occurrences never overlap (in \"aaa\" the pattern \"aa\" occurs once, at the start), and text that was just inserted is not searched again. The replacement may be empty. An empty pattern matches nothing, so the source is returned unchanged. Matching is case-sensitive.",
+  "entry": "replace_all",
+  "params": [
+    {
+      "name": "source",
+      "type": "Text"
+    },
+    {
+      "name": "pattern",
+      "type": "Text"
+    },
+    {
+      "name": "replacement",
+      "type": "Text"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "a-b-c",
+        "-",
+        "+"
+      ],
+      "expect": "a+b+c"
+    },
+    {
+      "args": [
+        "abc",
+        "",
+        "x"
+      ],
+      "expect": "abc"
+    }
+  ],
+  "notes": "Non-overlapping left-to-right matching ('aaa' with 'aa') and no rescan of inserted text ('aXa', 'a' -> 'aa') are the traps; sequential character edits go wrong there."
+}

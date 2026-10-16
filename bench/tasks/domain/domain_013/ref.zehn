@@ -1,0 +1,53 @@
+type Slot = { denom: Int, count: Int }
+
+fn drawer_ok(drawer: List<Slot>, i: Int) -> Bool
+  intent "whether every slot from index i on has a positive denomination and a count of at least 0"
+  example drawer_ok([{denom: 100, count: 0}, {denom: 50, count: 2}], 0) == true
+  example drawer_ok([{denom: 100, count: 1}, {denom: 0, count: 2}], 0) == false
+  example drawer_ok([{denom: 100, count: -1}], 0) == false
+do
+  match list.get(drawer, i) do
+    case none =>
+      return true
+    case some(s) =>
+      if s.denom <= 0 or s.count < 0 then
+        return false
+      end if
+      return drawer_ok(drawer, i + 1)
+  end match
+end fn
+
+fn pay_out(drawer: List<Slot>, i: Int, owed: Int) -> Result<List<Slot>, Text>
+  intent "walk the slots from index i on, taking as many pieces as fit into what is owed; the drawer must have valid slots"
+  requires owed >= 0
+  example pay_out([{denom: 100, count: 5}, {denom: 10, count: 9}], 0, 230) == ok([{denom: 100, count: 3}, {denom: 10, count: 6}])
+  example pay_out([{denom: 50, count: 1}, {denom: 20, count: 3}], 0, 60) == err("cannot make change: 10 short")
+do
+  match list.get(drawer, i) do
+    case none =>
+      if owed > 0 then
+        return err(text.concat(text.concat("cannot make change: ", int.to_text(owed)), " short"))
+      end if
+      return ok([])
+    case some(s) =>
+      let taken = int.min(s.count, owed / s.denom)
+      let rest = pay_out(drawer, i + 1, owed - taken * s.denom)?
+      return ok(list.concat([{denom: s.denom, count: s.count - taken}], rest))
+  end match
+end fn
+
+fn make_change(drawer: List<Slot>, amount: Int) -> Result<List<Slot>, Text>
+  intent "pay out an amount from the drawer greedily in slot order, or explain why that is impossible"
+  example make_change([{denom: 100, count: 2}, {denom: 10, count: 9}], 120) == ok([{denom: 100, count: 1}, {denom: 10, count: 7}])
+  example make_change([{denom: 100, count: 2}], 0) == err("invalid amount")
+  example make_change([{denom: 0, count: 2}], 5) == err("invalid drawer")
+  example make_change([], 10) == err("cannot make change: 10 short")
+do
+  if not drawer_ok(drawer, 0) then
+    return err("invalid drawer")
+  end if
+  if amount <= 0 then
+    return err("invalid amount")
+  end if
+  return pay_out(drawer, 0, amount)
+end fn

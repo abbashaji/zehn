@@ -1,0 +1,9 @@
+fn hour_after(hour: Int, delta: Int) -> Int
+  intent "the hour 0 to 23 shown after moving a 24-hour clock by delta hours, wrapping in both directions"
+  requires hour >= 0 and hour <= 23
+  ensures out >= 0 and out <= 23
+  example hour_after(10, 5) == 15
+  example hour_after(22, 5) == 3
+do
+  return int.rem_euclid(hour + delta, 24)
+end fn

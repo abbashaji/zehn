@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`zehn run` passes JSON that is not checked against the type: this record has `cash`, not `balance`",
+  "cli": [
+    "run",
+    "{file}",
+    "balance_of",
+    "[{\"cash\": 5}]"
+  ],
+  "cli_fixed": [
+    "run",
+    "{file}",
+    "balance_of",
+    "[{\"balance\": 5}]"
+  ]
+}

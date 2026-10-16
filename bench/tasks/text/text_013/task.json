@@ -1,0 +1,73 @@
+{
+  "id": "text_013",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Fill a template",
+  "description": "A template contains placeholders written as a name between curly braces, such as \"{name}\". Replace each placeholder by the value of the first binding whose key equals the name; a binding is a pair of a key and a value. Everything else in the template is copied unchanged, and text that was inserted is never searched for placeholders again. The closing brace appears in a template only to end a placeholder. Scan from left to right and report the first problem as an error: a name with no binding gives \"unknown placeholder: NAME\", and an opening brace that is not followed by a closing brace before the next opening brace (or before the end of the template) gives \"unclosed placeholder\". Names are never empty.",
+  "entry": "fill_template",
+  "params": [
+    {
+      "name": "template",
+      "type": "Text"
+    },
+    {
+      "name": "bindings",
+      "type": "List<Binding>"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [
+    {
+      "name": "Binding",
+      "fields": [
+        {
+          "name": "key",
+          "type": "Text"
+        },
+        {
+          "name": "value",
+          "type": "Text"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "Hi {n}!",
+        [
+          {
+            "key": "n",
+            "value": "Bo"
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "Hi Bo!"
+        ]
+      }
+    },
+    {
+      "args": [
+        "Hi {x}",
+        [
+          {
+            "key": "n",
+            "value": "Bo"
+          }
+        ]
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "unknown placeholder: x"
+        ]
+      }
+    }
+  ],
+  "notes": "Single pass is required: inserted values may contain braces and must not be expanded again; with duplicate keys the first binding wins; the left-to-right order decides between an unknown name and a later unclosed brace. '}' never appears outside a placeholder in the tests."
+}

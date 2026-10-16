@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`insert` needs `--with <file>` holding exactly one definition",
+  "cli": [
+    "patch",
+    "{file}",
+    "insert"
+  ],
+  "cli_fixed": [
+    "patch",
+    "{file}",
+    "insert",
+    "--with",
+    "{dir}/with.zehn"
+  ]
+}

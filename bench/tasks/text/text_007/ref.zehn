@@ -1,0 +1,16 @@
+fn longer(best: Int, w: Text) -> Int
+  intent "the larger of the best length so far and the length of word w"
+  example longer(3, "ab") == 3
+  example longer(1, "abc") == 3
+do
+  return int.max(best, text.len(w))
+end fn
+
+fn longest_word(line: Text) -> Int
+  intent "length of the longest space-separated word; 0 when there is none"
+  example longest_word("a bb ccc") == 3
+  example longest_word("") == 0
+  example longest_word("  ab   c ") == 2
+do
+  return list.fold(text.split_on(line, " "), 0, longer)
+end fn

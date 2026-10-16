@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "no definition has the hash prefix 0000",
+  "cli": [
+    "patch",
+    "{file}",
+    "delete",
+    "fn#0000"
+  ],
+  "cli_fixed": [
+    "patch",
+    "{file}",
+    "delete",
+    "fn#b82b4"
+  ]
+}

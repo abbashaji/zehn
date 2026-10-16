@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "the example calls half(3), which violates `requires n % 2 == 0`"
+}

@@ -1,0 +1,6 @@
+fn half(n: Int) -> Int
+  requires n % 2 == 0
+  example half(4) == 2
+do
+  return n / 2
+end fn

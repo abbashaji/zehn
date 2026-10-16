@@ -1,0 +1,102 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Shape",
+        "ref": "type#0f5d"
+      },
+      {
+        "kind": "fn",
+        "name": "sign",
+        "ref": "fn#8158"
+      },
+      {
+        "kind": "fn",
+        "name": "pick",
+        "ref": "fn#7643"
+      },
+      {
+        "kind": "fn",
+        "name": "area",
+        "ref": "fn#5dc3"
+      },
+      {
+        "kind": "fn",
+        "name": "dead",
+        "ref": "fn#5eff"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0310",
+        "falls_through": [
+          {
+            "line": 6,
+            "where": "the `if` at line 6 has no `else`: when its condition is false control continues past it"
+          }
+        ],
+        "fix_hint": "add a `return` on every listed path; an `if` without `else` never covers its false case",
+        "location": {
+          "fn": "sign",
+          "line": 6
+        },
+        "message": "function 'sign' can reach its end without `return` (1 path)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0310",
+        "falls_through": [
+          {
+            "line": 17,
+            "where": "the `else` branch of the `if` at line 14 falls off its end"
+          }
+        ],
+        "fix_hint": "add a `return` on every listed path; an `if` without `else` never covers its false case",
+        "location": {
+          "fn": "pick",
+          "line": 17
+        },
+        "message": "function 'pick' can reach its end without `return` (1 path)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0310",
+        "falls_through": [
+          {
+            "line": 28,
+            "where": "`case Square(w)` of the `match` at line 24 falls off its end"
+          }
+        ],
+        "fix_hint": "add a `return` on every listed path; an `if` without `else` never covers its false case",
+        "location": {
+          "fn": "area",
+          "line": 28
+        },
+        "message": "function 'area' can reach its end without `return` (1 path)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "W0102",
+        "fix_hint": "delete the statement",
+        "location": {
+          "fn": "dead",
+          "line": 38
+        },
+        "message": "unreachable statement: it follows a `return` or a branch that always returns",
+        "phase": "check",
+        "severity": "warning"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "id": "edit_031",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Rugby league points with bonuses",
+  "description": "Feature request for the league table function of a rugby league. It receives the list of played matches and a team name and returns the league points of that team over all matches in which it played, as home team or as away team. A match has the home team, the away team, the points scored by each side and the number of tries scored by each side. Today the function gives 4 points for a win, 2 for a draw and 0 for a defeat. Add the two bonus points of rugby: (1) a try bonus: 1 extra point for a team that scored 4 or more tries in a match, whatever the result; (2) a losing bonus: 1 extra point for a team that lost the match by 7 points or fewer. A team can earn both bonuses in one match. A team that appears in no match is an error with the message \"unknown team\" (team names are case sensitive); this also covers an empty list of matches. A team never plays against itself.",
+  "entry": "league_points",
+  "params": [
+    {
+      "name": "matches",
+      "type": "List<Match>"
+    },
+    {
+      "name": "team",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [
+    {
+      "name": "Match",
+      "fields": [
+        {
+          "name": "home",
+          "type": "Text"
+        },
+        {
+          "name": "away",
+          "type": "Text"
+        },
+        {
+          "name": "home_pts",
+          "type": "Int"
+        },
+        {
+          "name": "away_pts",
+          "type": "Int"
+        },
+        {
+          "name": "home_tries",
+          "type": "Int"
+        },
+        {
+          "name": "away_tries",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "home": "Ash",
+            "away": "Birch",
+            "home_pts": 20,
+            "away_pts": 10,
+            "home_tries": 2,
+            "away_tries": 1
+          }
+        ],
+        "Ash"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          4
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "home": "Ash",
+            "away": "Birch",
+            "home_pts": 20,
+            "away_pts": 10,
+            "home_tries": 2,
+            "away_tries": 1
+          }
+        ],
+        "Fir"
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "unknown team"
+        ]
+      }
+    }
+  ],
+  "notes": "Feature: two bonuses on top of the base points, applied for the home side and the away side separately. Boundaries tested: exactly 4 tries / 3 tries, losing by exactly 7 / 8, a draw with the try bonus, a win with the try bonus, the loser of a 0-0 style match, and unknown teams including case differences. Start has the base points only. Visible examples are chosen so that the start passes them (no bonus applies)."
+}

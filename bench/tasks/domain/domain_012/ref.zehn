@@ -1,0 +1,70 @@
+fn votes_for(ballots: List<Text>, name: Text, i: Int) -> Int
+  intent "number of ballots from index i on that are exactly name"
+  example votes_for(["ann", "bob", "ann"], "ann", 0) == 2
+  example votes_for(["ann", "bob", "ann"], "cy", 0) == 0
+do
+  match list.get(ballots, i) do
+    case none =>
+      return 0
+    case some(b) =>
+      let rest = votes_for(ballots, name, i + 1)
+      if b == name then
+        return rest + 1
+      end if
+      return rest
+  end match
+end fn
+
+fn valid_total(candidates: List<Text>, ballots: List<Text>, i: Int) -> Int
+  intent "number of valid ballots: the votes of the candidates from index i on, added up"
+  example valid_total(["ann", "bob"], ["ann", "zed", "bob", "ann"], 0) == 3
+  example valid_total(["ann"], ["zed", ""], 0) == 0
+do
+  match list.get(candidates, i) do
+    case none =>
+      return 0
+    case some(c) =>
+      return votes_for(ballots, c, 0) + valid_total(candidates, ballots, i + 1)
+  end match
+end fn
+
+fn leader_from(candidates: List<Text>, ballots: List<Text>, i: Int, best: Text, best_votes: Int) -> Text
+  intent "the candidate with the most votes; on a tie the earlier one in the list stays the leader"
+  example leader_from(["ann", "bob"], ["bob", "bob", "ann"], 1, "ann", 1) == "bob"
+  example leader_from(["ann", "bob"], ["bob", "ann"], 1, "ann", 1) == "ann"
+do
+  match list.get(candidates, i) do
+    case none =>
+      return best
+    case some(c) =>
+      let n = votes_for(ballots, c, 0)
+      if n > best_votes then
+        return leader_from(candidates, ballots, i + 1, c, n)
+      end if
+      return leader_from(candidates, ballots, i + 1, best, best_votes)
+  end match
+end fn
+
+fn election_winner(candidates: List<Text>, ballots: List<Text>) -> Result<Text, Text>
+  intent "the candidate with a strict majority of the valid ballots, or the reason there is none"
+  example election_winner(["ann", "bob"], ["ann", "ann", "bob"]) == ok("ann")
+  example election_winner(["ann", "bob"], ["ann", "bob"]) == err("no majority: ann leads with 1 of 2")
+  example election_winner(["ann"], ["x"]) == err("no valid ballots")
+  example election_winner([], ["ann"]) == err("no candidates")
+do
+  match list.get(candidates, 0) do
+    case none =>
+      return err("no candidates")
+    case some(first) =>
+      let total = valid_total(candidates, ballots, 0)
+      if total == 0 then
+        return err("no valid ballots")
+      end if
+      let leader = leader_from(candidates, ballots, 1, first, votes_for(ballots, first, 0))
+      let n = votes_for(ballots, leader, 0)
+      if n * 2 > total then
+        return ok(leader)
+      end if
+      return err(text.concat(text.concat(text.concat("no majority: ", leader), text.concat(" leads with ", int.to_text(n))), text.concat(" of ", int.to_text(total))))
+  end match
+end fn

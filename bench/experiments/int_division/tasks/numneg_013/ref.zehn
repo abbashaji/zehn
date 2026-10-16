@@ -1,0 +1,10 @@
+fn mean_toward_zero(xs: List<Int>) -> Int
+  intent "sum divided by the number of elements, rounded toward zero; 0 for an empty list"
+  example mean_toward_zero([2, 4]) == 3
+  example mean_toward_zero([]) == 0
+do
+  if list.len(xs) == 0 then
+    return 0
+  end if
+  return int.div_trunc(list.sum(xs), list.len(xs))
+end fn

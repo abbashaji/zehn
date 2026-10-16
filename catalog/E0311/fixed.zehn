@@ -1,0 +1,9 @@
+fn total(n: Int) -> Int
+  example total(3) == 3
+do
+  if n <= 0 then
+    return 0
+  else
+    return 1 + total(n - 1)
+  end if
+end fn

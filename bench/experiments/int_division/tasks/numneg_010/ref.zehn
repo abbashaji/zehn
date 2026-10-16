@@ -1,0 +1,8 @@
+fn trunc_remainder(a: Int, b: Int) -> Int
+  intent "a minus b times the quotient rounded toward zero"
+  requires b != 0
+  example trunc_remainder(7, 2) == 1
+  example trunc_remainder(8, -4) == 0
+do
+  return a - b * int.div_trunc(a, b)
+end fn

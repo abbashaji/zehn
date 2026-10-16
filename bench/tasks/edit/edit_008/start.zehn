@@ -1,0 +1,10 @@
+fn late_fee(days_late: Int, daily: Int, cap: Option<Int>) -> Int
+  intent "fee for a late loan: the first 3 days are free, every further day costs the daily amount"
+  example late_fee(2, 50, none) == 0
+  example late_fee(10, 50, none) == 350
+do
+  if days_late <= 3 then
+    return 0
+  end if
+  return (days_late - 3) * daily
+end fn

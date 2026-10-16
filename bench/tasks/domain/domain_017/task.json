@@ -1,0 +1,162 @@
+{
+  "id": "domain_017",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "League table from match results",
+  "description": "A league plays matches, each with a home team, an away team and the goals each side scored. Write standings, which takes the list of matches in the order they were played and returns the league table as a list of rows, one per team that appears in any match. A row has the team name, the number of matches played, the points and the goal difference. A win gives 3 points, a draw 1 point and a loss 0. The goal difference of a team is the goals it scored minus the goals it conceded over all its matches, and it can be negative. The rows are ordered by points, highest first; teams level on points are ordered by goal difference, highest first; teams still level keep the order in which they first appeared in the list of matches, where within one match the home team appears before the away team. Before building the table the matches are checked from the front, and the first match that fails decides the result, with its position counted from 1: a match whose home and away team are the same text gives the error \"match \" followed by the position and \": a team cannot play itself\"; otherwise a match with a negative goal count for either side gives \"match \" followed by the position and \": negative goals\". An empty list of matches gives an empty table.",
+  "entry": "standings",
+  "params": [
+    {
+      "name": "matches",
+      "type": "List<Match>"
+    }
+  ],
+  "returns": "Result<List<Row>, Text>",
+  "types": [
+    {
+      "name": "Match",
+      "fields": [
+        {
+          "name": "home",
+          "type": "Text"
+        },
+        {
+          "name": "away",
+          "type": "Text"
+        },
+        {
+          "name": "home_goals",
+          "type": "Int"
+        },
+        {
+          "name": "away_goals",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "name": "Row",
+      "fields": [
+        {
+          "name": "team",
+          "type": "Text"
+        },
+        {
+          "name": "played",
+          "type": "Int"
+        },
+        {
+          "name": "points",
+          "type": "Int"
+        },
+        {
+          "name": "goal_diff",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "home": "ann",
+            "away": "bob",
+            "home_goals": 2,
+            "away_goals": 1
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "team": "ann",
+              "played": 1,
+              "points": 3,
+              "goal_diff": 1
+            },
+            {
+              "team": "bob",
+              "played": 1,
+              "points": 0,
+              "goal_diff": -1
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "home": "ann",
+            "away": "bob",
+            "home_goals": 2,
+            "away_goals": 1
+          },
+          {
+            "home": "cy",
+            "away": "ann",
+            "home_goals": 0,
+            "away_goals": 0
+          },
+          {
+            "home": "bob",
+            "away": "cy",
+            "home_goals": 3,
+            "away_goals": 3
+          },
+          {
+            "home": "dee",
+            "away": "ann",
+            "home_goals": 1,
+            "away_goals": 4
+          },
+          {
+            "home": "bob",
+            "away": "dee",
+            "home_goals": 0,
+            "away_goals": 0
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "team": "ann",
+              "played": 3,
+              "points": 7,
+              "goal_diff": 4
+            },
+            {
+              "team": "cy",
+              "played": 2,
+              "points": 2,
+              "goal_diff": 0
+            },
+            {
+              "team": "bob",
+              "played": 3,
+              "points": 2,
+              "goal_diff": -1
+            },
+            {
+              "team": "dee",
+              "played": 2,
+              "points": 1,
+              "goal_diff": -3
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: aggregation per key without a map, a multi-key stable ordering and validation with positions. Pitfalls: the sort is stable on first appearance (home before away within a match); points are compared before goal difference and both descending; a negative goal difference sorts below zero; validation covers the whole list before any table is built, so an invalid late match still fails the call; within one match the same-team check precedes the negative-goals check; a team that only ever loses still gets a row."
+}

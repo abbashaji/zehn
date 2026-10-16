@@ -1,0 +1,63 @@
+fn pop(xs: List<Text>, i: Int, acc: List<Text>) -> List<Text>
+  intent "xs without its last element, copying from index i onward onto acc"
+  example pop(["a", "b", "c"], 0, []) == ["a", "b"]
+  example pop(["a"], 0, []) == []
+do
+  match list.get(xs, i) do
+    case none =>
+      return acc
+    case some(x) =>
+      if i + 1 >= list.len(xs) then
+        return acc
+      end if
+      return pop(xs, i + 1, list.append(acc, x))
+  end match
+end fn
+
+fn innermost(open: List<Text>) -> Text
+  intent "the most recently opened tag, or an empty text when none is open"
+  example innermost(["a", "b"]) == "b"
+  example innermost([]) == ""
+do
+  return option.unwrap_or(list.get(open, list.len(open) - 1), "")
+end fn
+
+fn scan(pieces: List<Text>, i: Int, open: List<Text>, deepest: Int) -> Result<Int, Text>
+  intent "check the pieces at index i and later (each reads tag>text after an opening angle bracket) against the stack of open tags"
+  example scan(["a>x", "/a>y"], 0, [], 0) == ok(1)
+  example scan(["/a>"], 0, [], 0) == err("unexpected closing tag: a")
+  example scan([], 0, ["a"], 1) == err("unclosed tag: a")
+do
+  match list.get(pieces, i) do
+    case none =>
+      if list.len(open) > 0 then
+        return err(text.concat("unclosed tag: ", innermost(open)))
+      end if
+      return ok(deepest)
+    case some(p) =>
+      let tag = option.unwrap_or(list.get(text.split_on(p, ">"), 0), "")
+      let bits = text.split_on(tag, "/")
+      if list.len(bits) == 2 then
+        let name = option.unwrap_or(list.get(bits, 1), "")
+        if list.len(open) == 0 then
+          return err(text.concat("unexpected closing tag: ", name))
+        end if
+        let top = innermost(open)
+        if top != name then
+          return err(text.concat(text.concat(text.concat("mismatched tag: expected ", top), ", found "), name))
+        end if
+        return scan(pieces, i + 1, pop(open, 0, []), deepest)
+      end if
+      let grown = list.append(open, tag)
+      return scan(pieces, i + 1, grown, int.max(deepest, list.len(grown)))
+  end match
+end fn
+
+fn max_tag_depth(markup: Text) -> Result<Int, Text>
+  intent "check that tags nest properly and return the deepest nesting; the first problem from the left is an error"
+  example max_tag_depth("<a><b>x</b></a>") == ok(2)
+  example max_tag_depth("no tags") == ok(0)
+  example max_tag_depth("<a></b>") == err("mismatched tag: expected a, found b")
+do
+  return scan(text.split_on(markup, "<"), 1, [], 0)
+end fn

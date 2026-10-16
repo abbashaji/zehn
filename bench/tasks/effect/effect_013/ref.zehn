@@ -1,0 +1,107 @@
+type Row = { name: Text, qty: Int }
+
+fn repeat_text(s: Text, n: Int) -> Text
+  intent "s written n times in a row; empty when n is zero or less"
+  example repeat_text("-", 3) == "---"
+  example repeat_text("ab", 0) == ""
+  example repeat_text("x", 0 - 2) == ""
+do
+  if n <= 0 then
+    return ""
+  else
+    return text.concat(s, repeat_text(s, n - 1))
+  end if
+end fn
+
+fn pad_right(s: Text, w: Int) -> Text
+  intent "s followed by spaces up to width w; s itself when it is already that wide"
+  example pad_right("pen", 5) == "pen  "
+  example pad_right("notebook", 4) == "notebook"
+do
+  return text.concat(s, repeat_text(" ", w - text.len(s)))
+end fn
+
+fn pad_left(s: Text, w: Int) -> Text
+  intent "s preceded by spaces up to width w; s itself when it is already that wide"
+  example pad_left("3", 3) == "  3"
+  example pad_left("1234", 3) == "1234"
+do
+  return text.concat(repeat_text(" ", w - text.len(s)), s)
+end fn
+
+fn name_width(rows: List<Row>, i: Int, best: Int) -> Int
+  intent "the longest name length among the rows from index i on, or best when that is larger"
+  requires i >= 0
+  ensures out >= best
+  example name_width([], 0, 4) == 4
+  example name_width([{name: "notebook", qty: 1}], 0, 4) == 8
+do
+  match list.get(rows, i) do
+    case none =>
+      return best
+    case some(r) =>
+      return name_width(rows, i + 1, int.max(best, text.len(r.name)))
+  end match
+end fn
+
+fn qty_width(rows: List<Row>, i: Int, best: Int) -> Int
+  intent "the longest written quantity among the rows from index i on, or best when that is larger"
+  requires i >= 0
+  ensures out >= best
+  example qty_width([], 0, 3) == 3
+  example qty_width([{name: "a", qty: 12345}], 0, 3) == 5
+do
+  match list.get(rows, i) do
+    case none =>
+      return best
+    case some(r) =>
+      return qty_width(rows, i + 1, int.max(best, text.len(int.to_text(r.qty))))
+  end match
+end fn
+
+fn table_line(left: Text, right: Text, nw: Int, qw: Int) -> Text
+  intent "one table line: the left text padded on the right, a bar, the right text padded on the left"
+  example table_line("pen", "3", 4, 3) == "pen  |   3"
+  example table_line("item", "qty", 4, 3) == "item | qty"
+do
+  return text.concat(pad_right(left, nw), text.concat(" | ", pad_left(right, qw)))
+end fn
+
+fn rule_line(nw: Int, qw: Int) -> Text
+  intent "the dashed line under the header"
+  example rule_line(4, 3) == "-----+----"
+  example rule_line(8, 5) == "---------+------"
+do
+  return text.concat(repeat_text("-", nw), text.concat("-+-", repeat_text("-", qw)))
+end fn
+
+fn rows_from(rows: List<Row>, i: Int, nw: Int, qw: Int) -> Int
+  intent "print the rows from index i on and return the width of a table line"
+  uses [console]
+  requires i >= 0
+  ensures out == nw + 3 + qw
+  example table_line("ab", "12", 4, 3) == "ab   |  12"
+  example table_line("", "0", 4, 3) == "     |   0"
+do
+  match list.get(rows, i) do
+    case none =>
+      return nw + 3 + qw
+    case some(r) =>
+      console.print(table_line(r.name, int.to_text(r.qty), nw, qw))
+      return rows_from(rows, i + 1, nw, qw)
+  end match
+end fn
+
+fn print_table(rows: List<Row>) -> Int
+  intent "print the rows as an aligned table with a header and a rule, and return the width of a table line"
+  uses [console]
+  ensures out >= 10
+  example rule_line(4, 3) == "-----+----"
+  example table_line("item", "qty", 5, 4) == "item  |  qty"
+do
+  let nw = name_width(rows, 0, 4)
+  let qw = qty_width(rows, 0, 3)
+  console.print(table_line("item", "qty", nw, qw))
+  console.print(rule_line(nw, qw))
+  return rows_from(rows, 0, nw, qw)
+end fn

@@ -1,0 +1,145 @@
+type Match = { home: Text, away: Text, home_goals: Int, away_goals: Int }
+
+fn points_for(mine: Int, theirs: Int) -> Int
+  intent "league points for a side that scored mine against theirs: 3 for a win, 1 for a draw, 0 for a loss"
+  ensures out == 0 or out == 1 or out == 3
+  example points_for(2, 1) == 3
+  example points_for(1, 1) == 1
+  example points_for(0, 4) == 0
+do
+  if mine > theirs then
+    return 3
+  else
+    if mine == theirs then
+      return 1
+    else
+      return 0
+    end if
+  end if
+end fn
+
+fn result_line(m: Match) -> Text
+  intent "the line that reports one finished match"
+  example result_line({home: "Ajax", away: "PSV", home_goals: 2, away_goals: 1}) == "Ajax 2-1 PSV"
+  example result_line({home: "A", away: "B", home_goals: 0, away_goals: 0}) == "A 0-0 B"
+do
+  return text.concat(m.home, text.concat(" ", text.concat(int.to_text(m.home_goals), text.concat("-", text.concat(int.to_text(m.away_goals), text.concat(" ", m.away))))))
+end fn
+
+fn add_points(table: Map<Text, Int>, team: Text, pts: Int) -> Map<Text, Int>
+  intent "the table with pts added to the team, which is created at the end when it is new"
+  requires pts >= 0
+  example add_points(map.empty(), "A", 3) == map.set(map.empty(), "A", 3)
+  example add_points(map.set(map.empty(), "A", 3), "A", 1) == map.set(map.empty(), "A", 4)
+do
+  return map.set(table, team, option.unwrap_or(map.get(table, team), 0) + pts)
+end fn
+
+fn tally_from(ms: List<Match>, i: Int, table: Map<Text, Int>) -> Map<Text, Int>
+  intent "report the matches from index i on and return the table with their points added, home side first"
+  uses [console]
+  requires i >= 0
+  example points_for(3, 0) == 3
+  example result_line({home: "X", away: "Y", home_goals: 1, away_goals: 2}) == "X 1-2 Y"
+do
+  match list.get(ms, i) do
+    case none =>
+      return table
+    case some(m) =>
+      console.print(result_line(m))
+      let with_home = add_points(table, m.home, points_for(m.home_goals, m.away_goals))
+      let with_both = add_points(with_home, m.away, points_for(m.away_goals, m.home_goals))
+      return tally_from(ms, i + 1, with_both)
+  end match
+end fn
+
+fn points_of(table: Map<Text, Int>, team: Text) -> Int
+  intent "the points of a team, 0 when it is not in the table"
+  example points_of(map.set(map.empty(), "A", 4), "A") == 4
+  example points_of(map.empty(), "B") == 0
+do
+  return option.unwrap_or(map.get(table, team), 0)
+end fn
+
+fn tail_from(xs: List<Text>, i: Int, acc: List<Text>) -> List<Text>
+  intent "acc followed by the items of xs from index i on"
+  requires i >= 0
+  example tail_from(["a", "b", "c"], 1, ["z"]) == ["z", "b", "c"]
+  example tail_from(["a"], 1, []) == []
+do
+  match list.get(xs, i) do
+    case none =>
+      return acc
+    case some(x) =>
+      return tail_from(xs, i + 1, list.append(acc, x))
+  end match
+end fn
+
+fn insert_ranked(table: Map<Text, Int>, ranked: List<Text>, team: Text, i: Int, acc: List<Text>) -> List<Text>
+  intent "put team into the ranked list, from index i on, before the first team with fewer points, so equal points keep their order"
+  requires i >= 0
+  example insert_ranked(map.set(map.set(map.empty(), "A", 3), "B", 1), ["A", "B"], "C", 0, []) == ["A", "B", "C"]
+  example insert_ranked(map.set(map.set(map.empty(), "A", 1), "B", 3), ["A"], "B", 0, []) == ["B", "A"]
+do
+  match list.get(ranked, i) do
+    case none =>
+      return list.append(acc, team)
+    case some(other) =>
+      if points_of(table, other) < points_of(table, team) then
+        return tail_from(ranked, i, list.append(acc, team))
+      else
+        return insert_ranked(table, ranked, team, i + 1, list.append(acc, other))
+      end if
+  end match
+end fn
+
+fn rank_from(table: Map<Text, Int>, teams: List<Text>, i: Int, ranked: List<Text>) -> List<Text>
+  intent "rank the teams from index i on, one at a time, into the ranked list"
+  requires i >= 0
+  example rank_from(map.set(map.set(map.empty(), "A", 1), "B", 3), ["A", "B"], 0, []) == ["B", "A"]
+  example rank_from(map.empty(), [], 0, []) == []
+do
+  match list.get(teams, i) do
+    case none =>
+      return ranked
+    case some(team) =>
+      return rank_from(table, teams, i + 1, insert_ranked(table, ranked, team, 0, []))
+  end match
+end fn
+
+fn standing_line(rank: Int, team: Text, pts: Int) -> Text
+  intent "the table line for one team"
+  example standing_line(1, "Ajax", 7) == "1. Ajax: 7 pts"
+  example standing_line(12, "PSV", 0) == "12. PSV: 0 pts"
+do
+  return text.concat(int.to_text(rank), text.concat(". ", text.concat(team, text.concat(": ", text.concat(int.to_text(pts), " pts")))))
+end fn
+
+fn print_ranked(table: Map<Text, Int>, ranked: List<Text>, i: Int) -> Int
+  intent "print the table lines for the ranked teams from index i on and return how many lines were printed in total"
+  uses [console]
+  requires i >= 0
+  example standing_line(2, "B", 1) == "2. B: 1 pts"
+  example standing_line(3, "C", 0) == "3. C: 0 pts"
+do
+  match list.get(ranked, i) do
+    case none =>
+      return i
+    case some(team) =>
+      console.print(standing_line(i + 1, team, points_of(table, team)))
+      return print_ranked(table, ranked, i + 1)
+  end match
+end fn
+
+fn print_results(ms: List<Match>) -> Int
+  intent "print every match result, then the league table ranked by points with ties in order of first appearance, and return the number of teams"
+  uses [console]
+  ensures out >= 0 and out <= 2 * list.len(ms)
+  example points_for(1, 0) == 3
+  example standing_line(1, "A", 3) == "1. A: 3 pts"
+do
+  let table = tally_from(ms, 0, map.empty())
+  console.print("-- table --")
+  let ranked = rank_from(table, map.keys(table), 0, [])
+  return print_ranked(table, ranked, 0)
+end fn

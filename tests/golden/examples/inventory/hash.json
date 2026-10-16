@@ -1,0 +1,40 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "StockError",
+      "ref": "type#12b5"
+    },
+    {
+      "kind": "fn",
+      "name": "add_stock",
+      "ref": "fn#627a"
+    },
+    {
+      "kind": "fn",
+      "name": "remove_stock",
+      "ref": "fn#de91"
+    },
+    {
+      "kind": "fn",
+      "name": "double",
+      "ref": "fn#a8e4"
+    },
+    {
+      "kind": "fn",
+      "name": "total_units",
+      "ref": "fn#d7bf"
+    },
+    {
+      "kind": "fn",
+      "name": "doubled_values",
+      "ref": "fn#c72c"
+    },
+    {
+      "kind": "fn",
+      "name": "lower_stock_keys",
+      "ref": "fn#4bd2"
+    }
+  ]
+}

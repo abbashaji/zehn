@@ -1,0 +1,20 @@
+type Loan = { item: Text, due_day: Int, renewals: Int }
+
+fn renew_loan(loan: Loan, today: Int) -> Result<Loan, Text>
+  intent "renew a loan by 14 days from its due day, if it is not overdue, has renewals left and is within 3 days of the due day"
+  example renew_loan({item: "Dune", due_day: 20, renewals: 0}, 20) == ok({item: "Dune", due_day: 34, renewals: 1})
+  example renew_loan({item: "Dune", due_day: 20, renewals: 0}, 21) == err("overdue by 1 days")
+  example renew_loan({item: "Dune", due_day: 20, renewals: 2}, 19) == err("renewal limit reached for Dune")
+  example renew_loan({item: "Dune", due_day: 20, renewals: 0}, 16) == err("too early: renew from day 17")
+do
+  if today > loan.due_day then
+    return err(text.concat(text.concat("overdue by ", int.to_text(today - loan.due_day)), " days"))
+  end if
+  if loan.renewals >= 2 then
+    return err(text.concat("renewal limit reached for ", loan.item))
+  end if
+  if today < loan.due_day - 3 then
+    return err(text.concat("too early: renew from day ", int.to_text(loan.due_day - 3)))
+  end if
+  return ok({item: loan.item, due_day: loan.due_day + 14, renewals: loan.renewals + 1})
+end fn

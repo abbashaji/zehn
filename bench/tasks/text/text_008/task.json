@@ -1,0 +1,45 @@
+{
+  "id": "text_008",
+  "category": "text",
+  "level": 1,
+  "kind": "write",
+  "title": "Contains every keyword",
+  "description": "Decide whether a text contains every keyword of a list. A keyword matches when it occurs anywhere inside the text, also in the middle of a longer word, and upper and lower case letters are treated as the same. The keywords are never empty. An empty keyword list is always satisfied, even for an empty text.",
+  "entry": "contains_all",
+  "params": [
+    {
+      "name": "content",
+      "type": "Text"
+    },
+    {
+      "name": "keywords",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Bool",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "Hello World",
+        [
+          "hello",
+          "WORLD"
+        ]
+      ],
+      "expect": true
+    },
+    {
+      "args": [
+        "Hello World",
+        [
+          "hello",
+          "bye"
+        ]
+      ],
+      "expect": false
+    }
+  ],
+  "notes": "Substring (not whole-word) matching and case folding are the traps; the empty list is vacuously true. Keywords are never empty."
+}

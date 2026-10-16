@@ -1,0 +1,36 @@
+{
+  "id": "numneg_013",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Mean toward zero",
+  "description": "Return the sum of xs divided by the number of elements, with the fraction dropped, that is, rounded toward zero (the mean of [-1, -2] is -1.5 and gives -1; the mean of [1, 2] is 1.5 and gives 1). An empty list gives 0.",
+  "entry": "mean_toward_zero",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          2,
+          4
+        ]
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states truncation toward zero in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

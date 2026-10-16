@@ -1,0 +1,22 @@
+{
+  "id": "pure_011",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Merge overlapping spans",
+  "description": "A span has two integer fields, lo and hi, with lo <= hi. The spans arrive in non-decreasing order of lo. Merge every group of spans that overlap or share an endpoint (the next span's lo is at most the hi of the span built so far) into one span that runs from the smallest lo to the largest hi of the group. Spans that only touch, such as 1..3 and 3..5, are merged; spans such as 1..3 and 4..5 are not, because integers 3 and 4 differ. A span inside another one is absorbed. Return the merged spans in order; an empty list gives an empty list.",
+  "entry": "merge_spans",
+  "params": [
+    {"name": "spans", "type": "List<Span>"}
+  ],
+  "returns": "List<Span>",
+  "types": [
+    {"name": "Span", "fields": [{"name": "lo", "type": "Int"}, {"name": "hi", "type": "Int"}]}
+  ],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[{"lo": 1, "hi": 3}, {"lo": 2, "hi": 6}, {"lo": 8, "hi": 9}]], "expect": [{"lo": 1, "hi": 6}, {"lo": 8, "hi": 9}]},
+    {"args": [[{"lo": 1, "hi": 3}, {"lo": 4, "hi": 5}]], "expect": [{"lo": 1, "hi": 3}, {"lo": 4, "hi": 5}]}
+  ],
+  "notes": "A later span inside an earlier one must not shrink the end (hi is a max, not the last hi). Shared endpoint merges, gap of one does not. Field names lo/hi because `end` is a Zehn keyword."
+}

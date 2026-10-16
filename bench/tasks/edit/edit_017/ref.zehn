@@ -1,0 +1,37 @@
+fn is_leap(year: Int) -> Bool
+  intent "Gregorian leap year: divisible by 4, except century years, unless divisible by 400"
+  example is_leap(2024) == true
+  example is_leap(1900) == false
+  example is_leap(2000) == true
+  example is_leap(2023) == false
+do
+  if year % 400 == 0 then
+    return true
+  end if
+  if year % 100 == 0 then
+    return false
+  end if
+  return year % 4 == 0
+end fn
+
+fn days_in_month(year: Int, month: Int) -> Result<Int, Text>
+  intent "number of days in the month of the given year, February included"
+  example days_in_month(2023, 2) == ok(28)
+  example days_in_month(2024, 2) == ok(29)
+  example days_in_month(2024, 4) == ok(30)
+  example days_in_month(2024, 13) == err("invalid month")
+do
+  if month < 1 or month > 12 then
+    return err("invalid month")
+  end if
+  if month == 2 then
+    if is_leap(year) then
+      return ok(29)
+    end if
+    return ok(28)
+  end if
+  if month == 4 or month == 6 or month == 9 or month == 11 then
+    return ok(30)
+  end if
+  return ok(31)
+end fn

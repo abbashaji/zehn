@@ -1,0 +1,94 @@
+{
+  "id": "edit_015",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Merge nearby time-sheet entries",
+  "description": "Feature request for the time-sheet cleanup function. It receives work shifts sorted by begin time and merges shifts that overlap into one shift (the merged shift starts at the begin of the first and ends at the latest finish of the merged ones). Today it ignores its second parameter, a gap in minutes. Make the gap work: two neighbouring shifts are also merged when the next one begins at most gap minutes after the current merged shift finishes, that is when next begin is less than or equal to the current finish plus gap. With a gap of 0 this means that shifts which merely touch (one finishes exactly when the next begins) are now merged as well. The comparison is always made against the finish of the shift merged so far. The checks are made in this order and the first one that applies decides the error message: gap below 0: \"invalid gap\"; any shift whose begin is not less than its finish: \"invalid shift\"; any shift that begins earlier than the one before it in the list: \"not sorted\" (equal begin times are fine). The result keeps the order. A shift is a half-open range from begin up to finish.",
+  "entry": "merge_shifts",
+  "params": [
+    {
+      "name": "shifts",
+      "type": "List<Shift>"
+    },
+    {
+      "name": "gap",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Shift>, Text>",
+  "types": [
+    {
+      "name": "Shift",
+      "fields": [
+        {
+          "name": "begin",
+          "type": "Int"
+        },
+        {
+          "name": "finish",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "begin": 1,
+            "finish": 3
+          },
+          {
+            "begin": 2,
+            "finish": 5
+          },
+          {
+            "begin": 8,
+            "finish": 9
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "begin": 1,
+              "finish": 5
+            },
+            {
+              "begin": 8,
+              "finish": 9
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "begin": 5,
+            "finish": 7
+          },
+          {
+            "begin": 3,
+            "finish": 4
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "not sorted"
+        ]
+      }
+    }
+  ],
+  "notes": "Feature: gap-aware merge (<= finish + gap, against the merged finish) plus the new invalid-gap check. The start already validates shifts and order, and merges only on overlap (next begin < finish), so touching shifts stay apart in the start. Fields begin/finish because `end` is a Zehn keyword. Visible examples pass in the start (overlap only, gap 0)."
+}

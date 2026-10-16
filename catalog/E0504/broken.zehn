@@ -1,0 +1,7 @@
+type Account = { balance: Int }
+
+fn balance_of(a: Account) -> Int
+  example balance_of({balance: 5}) == 5
+do
+  return a.balance
+end fn

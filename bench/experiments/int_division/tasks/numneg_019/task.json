@@ -1,0 +1,33 @@
+{
+  "id": "numneg_019",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Normalize an angle",
+  "description": "Return the angle deg (in whole degrees, possibly negative or larger than a full turn) as the equivalent angle from 0 to 359: 370 gives 10, -90 gives 270, -360 gives 0. The result is never negative.",
+  "entry": "normalize_angle",
+  "params": [
+    {
+      "name": "deg",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        90
+      ],
+      "expect": 90
+    },
+    {
+      "args": [
+        370
+      ],
+      "expect": 10
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

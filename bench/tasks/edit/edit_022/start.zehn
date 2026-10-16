@@ -1,0 +1,45 @@
+fn lowest(scores: List<Int>, i: Int, best: Int) -> Int
+  intent "smallest of best and the scores from index i on"
+  example lowest([], 0, 7) == 7
+  example lowest([9, 3, 5], 0, 8) == 3
+do
+  match list.get(scores, i) do
+    case none =>
+      return best
+    case some(s) =>
+      return lowest(scores, i + 1, int.min(best, s))
+  end match
+end fn
+
+fn drop_all(scores: List<Int>, target: Int, i: Int, kept: List<Int>) -> List<Int>
+  intent "copy the scores from index i on into kept, skipping every one equal to target"
+  example drop_all([], 1, 0, []) == []
+  example drop_all([3, 1, 1], 1, 0, []) == [3]
+do
+  match list.get(scores, i) do
+    case none =>
+      return kept
+    case some(s) =>
+      if s == target then
+        return drop_all(scores, target, i + 1, kept)
+      end if
+      return drop_all(scores, target, i + 1, list.append(kept, s))
+  end match
+end fn
+
+fn average_without_worst(scores: List<Int>) -> Option<Int>
+  intent "average of the scores after dropping the lowest score; none with fewer than 2 scores"
+  example average_without_worst([50, 80, 90, 70]) == some(80)
+  example average_without_worst([75]) == none
+do
+  if list.len(scores) < 2 then
+    return none
+  end if
+  let worst = lowest(scores, 0, option.unwrap_or(list.get(scores, 0), 0))
+  let rest = drop_all(scores, worst, 0, [])
+  let n = list.len(rest)
+  if n == 0 then
+    return none
+  end if
+  return some(list.sum(rest) / n)
+end fn

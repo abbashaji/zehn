@@ -1,0 +1,49 @@
+{
+  "id": "edit_007",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Days in a month, century years",
+  "description": "Bug report for the calendar helper that returns the number of days in a given month of a given year. February of some years comes out wrong. Fix the program. The complete rule is: a year below 1 is an error with the message \"invalid year\"; otherwise a month below 1 or above 12 is an error with the message \"invalid month\" (the year is checked first). January, March, May, July, August, October and December have 31 days; April, June, September and November have 30; February has 29 days in a leap year and 28 otherwise. A year is a leap year when it is divisible by 4, except that a year divisible by 100 is a leap year only if it is also divisible by 400.",
+  "entry": "days_in_month",
+  "params": [
+    {
+      "name": "year",
+      "type": "Int"
+    },
+    {
+      "name": "month",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        2023,
+        1
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          31
+        ]
+      }
+    },
+    {
+      "args": [
+        2024,
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          29
+        ]
+      }
+    }
+  ],
+  "notes": "Bug: leap test is year % 4 == 0 only, so century years (1900, 2100, 1700) get 29. 2000 and 1600 are leap (400 rule). Tests never divide a negative operand: the year guard runs before any % (year -4 and 0 return early). Invalid year wins over invalid month."
+}

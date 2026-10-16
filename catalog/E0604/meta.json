@@ -1,0 +1,19 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`zehn run` was not given `--grant console`",
+  "cli": [
+    "run",
+    "{file}",
+    "greet",
+    "[\"x\"]"
+  ],
+  "cli_fixed": [
+    "run",
+    "{file}",
+    "greet",
+    "[\"x\"]",
+    "--grant",
+    "console"
+  ]
+}

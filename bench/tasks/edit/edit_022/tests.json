@@ -1,0 +1,18 @@
+[
+  {"args": [[50, 80, 90, 70]], "expect": {"$": "some", "args": [80]}},
+  {"args": [[75]], "expect": {"$": "none"}},
+  {"args": [[]], "expect": {"$": "none"}},
+  {"args": [[10, 20]], "expect": {"$": "none"}},
+  {"args": [[10, 20, 30]], "expect": {"$": "some", "args": [25]}},
+  {"args": [[5, 5, 5]], "expect": {"$": "some", "args": [5]}},
+  {"args": [[0, 1, 2]], "expect": {"$": "some", "args": [2]}},
+  {"args": [[1, 2, 2]], "expect": {"$": "some", "args": [2]}},
+  {"args": [[100, 100, 99]], "expect": {"$": "some", "args": [100]}},
+  {"args": [[0, 0, 0]], "expect": {"$": "some", "args": [0]}},
+  {"args": [[3, 3, 4, 4]], "expect": {"$": "some", "args": [4]}},
+  {"args": [[60, 70, 80, 90, 100]], "expect": {"$": "some", "args": [85]}},
+  {"args": [[50, 51, 52]], "expect": {"$": "some", "args": [52]}},
+  {"args": [[90, 40, 40, 100]], "expect": {"$": "some", "args": [77]}},
+  {"args": [[0, 0, 1]], "expect": {"$": "some", "args": [1]}},
+  {"args": [[1, 1, 1, 2]], "expect": {"$": "some", "args": [1]}}
+]

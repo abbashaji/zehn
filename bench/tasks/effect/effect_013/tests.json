@@ -1,0 +1,12 @@
+[
+  {"args": [[]], "expect": 10, "stdout": "item | qty\n-----+----\n"},
+  {"args": [[{"name": "pen", "qty": 3}]], "expect": 10, "stdout": "item | qty\n-----+----\npen  |   3\n"},
+  {"args": [[{"name": "notebook", "qty": 12}, {"name": "pen", "qty": 3}]], "expect": 14, "stdout": "item     | qty\n---------+----\nnotebook |  12\npen      |   3\n"},
+  {"args": [[{"name": "ab", "qty": 1234567}]], "expect": 14, "stdout": "item |     qty\n-----+--------\nab   | 1234567\n"},
+  {"args": [[{"name": "", "qty": 5}, {"name": "x", "qty": 0}]], "expect": 10, "stdout": "item | qty\n-----+----\n     |   5\nx    |   0\n"},
+  {"args": [[{"name": "abcd", "qty": 100}]], "expect": 10, "stdout": "item | qty\n-----+----\nabcd | 100\n"},
+  {"args": [[{"name": "red pen", "qty": 7}, {"name": "blue", "qty": 42}, {"name": "green marker", "qty": 1000}]], "expect": 19, "stdout": "item         |  qty\n-------------+-----\nred pen      |    7\nblue         |   42\ngreen marker | 1000\n"},
+  {"args": [[{"name": "a", "qty": 1}, {"name": "b", "qty": 22}, {"name": "c", "qty": 333}, {"name": "d", "qty": 4444}]], "expect": 11, "stdout": "item |  qty\n-----+-----\na    |    1\nb    |   22\nc    |  333\nd    | 4444\n"},
+  {"args": [[{"name": "long name here", "qty": 5}, {"name": "s", "qty": 6}]], "expect": 20, "stdout": "item           | qty\n---------------+----\nlong name here |   5\ns              |   6\n"},
+  {"args": [[{"name": "gold", "qty": 9000000000000000}]], "expect": 23, "stdout": "item |              qty\n-----+-----------------\ngold | 9000000000000000\n"}
+]

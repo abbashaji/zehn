@@ -1,0 +1,45 @@
+{
+  "id": "numneg_004",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Divide every element, rounding down",
+  "description": "Return a new list in which every element of xs is divided by d and rounded down toward negative infinity (so -7 divided by 2 gives -4, and 7 divided by -2 also gives -4). The order is kept; an empty list gives an empty list. d is never 0 and may be negative.",
+  "entry": "floor_each",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    },
+    {
+      "name": "d",
+      "type": "Int"
+    }
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          10,
+          20
+        ],
+        5
+      ],
+      "expect": [
+        2,
+        4
+      ]
+    },
+    {
+      "args": [
+        [],
+        3
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states floor semantics (round toward negative infinity) in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

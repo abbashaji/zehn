@@ -1,0 +1,8 @@
+fn bucket_index(value: Int, width: Int) -> Int
+  intent "index of the width-sized bucket that holds value; the quotient is rounded down toward negative infinity"
+  requires width > 0
+  example bucket_index(7, 5) == 1
+  example bucket_index(-10, 5) == -2
+do
+  return int.div_floor(value, width)
+end fn

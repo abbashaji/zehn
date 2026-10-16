@@ -1,0 +1,20 @@
+{
+  "id": "pure_012",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Largest price drawdown",
+  "description": "Given a series of prices in time order, return the largest drawdown: the biggest value of (earlier price - later price) over all pairs where the first price comes before the second. If the price never falls below an earlier price (or the series has fewer than two prices), the drawdown is 0. Prices may be negative.",
+  "entry": "max_drawdown",
+  "params": [
+    {"name": "prices", "type": "List<Int>"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[10, 7, 12, 4, 9]], "expect": 8},
+    {"args": [[1, 2, 3]], "expect": 0}
+  ],
+  "notes": "The drop must go forward in time: in [1, 10, 2] the answer is 8 (10 to 2), not 9 (the 1 is before the 10). Carry the running peak."
+}

@@ -1,0 +1,84 @@
+fn next_state(state: Text, event: Text) -> Option<Text>
+  intent "the state after a legal move, or none when the event is not allowed in that state"
+  example next_state("closed", "open") == some("open")
+  example next_state("open", "close") == some("closed")
+  example next_state("closed", "lock") == some("locked")
+  example next_state("locked", "unlock") == some("closed")
+  example next_state("locked", "open") == none
+  example next_state("closed", "wave") == none
+do
+  match state do
+    case "closed" =>
+      match event do
+        case "open" =>
+          return some("open")
+        case "lock" =>
+          return some("locked")
+        case _ =>
+          return none
+      end match
+    case "open" =>
+      match event do
+        case "close" =>
+          return some("closed")
+        case _ =>
+          return none
+      end match
+    case "locked" =>
+      match event do
+        case "unlock" =>
+          return some("closed")
+        case _ =>
+          return none
+      end match
+    case _ =>
+      return none
+  end match
+end fn
+
+fn move_line(old: Text, new: Text) -> Text
+  intent "the line for a legal move between two states"
+  example move_line("closed", "open") == "closed -> open"
+  example move_line("open", "closed") == "open -> closed"
+do
+  return text.concat(old, text.concat(" -> ", new))
+end fn
+
+fn ignored_line(event: Text, state: Text) -> Text
+  intent "the line for an event that is not allowed in the current state"
+  example ignored_line("open", "locked") == "ignored open in locked"
+  example ignored_line("", "closed") == "ignored  in closed"
+do
+  return text.concat("ignored ", text.concat(event, text.concat(" in ", state)))
+end fn
+
+fn door_from(events: List<Text>, i: Int, state: Text) -> Text
+  intent "process the events from index i on and return the final state"
+  uses [console]
+  requires i >= 0
+  example move_line("locked", "closed") == "locked -> closed"
+  example ignored_line("close", "closed") == "ignored close in closed"
+do
+  match list.get(events, i) do
+    case none =>
+      return state
+    case some(event) =>
+      match next_state(state, event) do
+        case some(moved) =>
+          console.print(move_line(state, moved))
+          return door_from(events, i + 1, moved)
+        case none =>
+          console.print(ignored_line(event, state))
+          return door_from(events, i + 1, state)
+      end match
+  end match
+end fn
+
+fn run_door(events: List<Text>) -> Text
+  intent "run a door that starts closed through the events, printing each move or ignored event, and return its final state"
+  uses [console]
+  example next_state("open", "open") == none
+  example move_line("closed", "locked") == "closed -> locked"
+do
+  return door_from(events, 0, "closed")
+end fn

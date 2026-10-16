@@ -1,0 +1,65 @@
+fn pop(xs: List<Text>, i: Int, acc: List<Text>) -> List<Text>
+  intent "xs without its last element, copying from index i onward onto acc"
+  example pop(["a", "b", "c"], 0, []) == ["a", "b"]
+  example pop(["a"], 0, []) == []
+do
+  match list.get(xs, i) do
+    case none =>
+      return acc
+    case some(x) =>
+      if i + 1 >= list.len(xs) then
+        return acc
+      end if
+      return pop(xs, i + 1, list.append(acc, x))
+  end match
+end fn
+
+fn walk(segments: List<Text>, i: Int, stack: List<Text>) -> Result<List<Text>, Text>
+  intent "apply the path segments at index i and later to the stack of directory names; .. leaves the innermost directory"
+  example walk(["a", "b", ".."], 0, []) == ok(["a"])
+  example walk([".."], 0, []) == err("path escapes root")
+  example walk(["", ".", "a"], 0, []) == ok(["a"])
+do
+  match list.get(segments, i) do
+    case none =>
+      return ok(stack)
+    case some(s) =>
+      if s == "" or s == "." then
+        return walk(segments, i + 1, stack)
+      end if
+      if s == ".." then
+        if list.len(stack) == 0 then
+          return err("path escapes root")
+        end if
+        return walk(segments, i + 1, pop(stack, 0, []))
+      end if
+      return walk(segments, i + 1, list.append(stack, s))
+  end match
+end fn
+
+fn join_from(parts: List<Text>, i: Int) -> Text
+  intent "the parts at index i and later joined with slashes"
+  example join_from(["a", "b"], 0) == "a/b"
+  example join_from([], 0) == ""
+do
+  match list.get(parts, i) do
+    case none =>
+      return ""
+    case some(p) =>
+      if i + 1 >= list.len(parts) then
+        return p
+      end if
+      return text.concat(text.concat(p, "/"), join_from(parts, i + 1))
+  end match
+end fn
+
+fn normalize_path(path: Text) -> Result<Text, Text>
+  intent "resolve empty, . and .. segments of an absolute path; .. above the root is an error"
+  requires text.len(path) > 0
+  example normalize_path("/a/./b/../c") == ok("/a/c")
+  example normalize_path("/") == ok("/")
+  example normalize_path("/a/../..") == err("path escapes root")
+do
+  let stack = walk(text.split_on(path, "/"), 0, [])?
+  return ok(text.concat("/", join_from(stack, 0)))
+end fn

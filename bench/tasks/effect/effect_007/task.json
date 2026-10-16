@@ -1,0 +1,43 @@
+{
+  "id": "effect_007",
+  "category": "effect",
+  "level": 1,
+  "kind": "write",
+  "title": "Countdown with a step",
+  "description": "Count down from start in steps of step. Print the current value as `T-minus V` on its own line, subtract step, and repeat while the value is still above zero. When the value is no longer above zero, print `liftoff`; zero itself is never printed as a count. Return how many `T-minus` lines were printed. If step is zero or negative, print only `bad step: STEP` (STEP with its sign) and return 0, without any `liftoff`. If start is zero or negative, only `liftoff` is printed and 0 is returned.",
+  "entry": "countdown",
+  "params": [
+    {
+      "name": "start",
+      "type": "Int"
+    },
+    {
+      "name": "step",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        5,
+        2
+      ],
+      "expect": 3,
+      "stdout": "T-minus 5\nT-minus 3\nT-minus 1\nliftoff\n"
+    },
+    {
+      "args": [
+        3,
+        0
+      ],
+      "expect": 0,
+      "stdout": "bad step: 0\n"
+    }
+  ],
+  "notes": "Level 1. Loop with a step; the bad-step check comes before everything else (start 0 with step 0 is a bad step, no liftoff); a count that lands exactly on 0 is not printed; step larger than start prints one count; negative step is reported with its sign. Largest test value 9e15, below 2^53."
+}

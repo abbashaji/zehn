@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "-- Effects are declared in `uses` and must also be granted by the host at run time.\nfn log_line(msg: Text) -> Unit\n  uses [console]\ndo\n  return console.print(msg)\nend fn\n\nfn greet(name: Text) -> Unit\n  uses [console]\ndo\n  return log_line(text.concat(\"hello, \", name))\nend fn\n\nfn stamp() -> Int\n  uses [time.now]\ndo\n  return time.now()\nend fn\n\nfn pure_len(t: Text) -> Int\n  example pure_len(\"abc\") == 3\ndo\n  return text.len(t)\nend fn\n"
+}

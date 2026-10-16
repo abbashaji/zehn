@@ -1,0 +1,70 @@
+{
+  "examples": [
+    {
+      "fn": "add_stock",
+      "fuel": 53,
+      "line": 8,
+      "status": "pass"
+    },
+    {
+      "fn": "add_stock",
+      "fuel": 63,
+      "line": 9,
+      "status": "pass"
+    },
+    {
+      "fn": "remove_stock",
+      "fuel": 47,
+      "line": 17,
+      "status": "pass"
+    },
+    {
+      "fn": "remove_stock",
+      "fuel": 21,
+      "line": 18,
+      "status": "pass"
+    },
+    {
+      "fn": "remove_stock",
+      "fuel": 32,
+      "line": 19,
+      "status": "pass"
+    },
+    {
+      "fn": "remove_stock",
+      "fuel": 20,
+      "line": 20,
+      "status": "pass"
+    },
+    {
+      "fn": "double",
+      "fuel": 8,
+      "line": 37,
+      "status": "pass"
+    },
+    {
+      "fn": "total_units",
+      "fuel": 21,
+      "line": 44,
+      "status": "pass"
+    },
+    {
+      "fn": "total_units",
+      "fuel": 8,
+      "line": 45,
+      "status": "pass"
+    },
+    {
+      "fn": "doubled_values",
+      "fuel": 20,
+      "line": 51,
+      "status": "pass"
+    },
+    {
+      "fn": "lower_stock_keys",
+      "fuel": 20,
+      "line": 57,
+      "status": "pass"
+    }
+  ]
+}

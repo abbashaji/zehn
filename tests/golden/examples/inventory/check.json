@@ -1,0 +1,116 @@
+{
+  "exit": 0,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "StockError",
+        "ref": "type#12b5"
+      },
+      {
+        "kind": "fn",
+        "name": "add_stock",
+        "ref": "fn#627a"
+      },
+      {
+        "kind": "fn",
+        "name": "remove_stock",
+        "ref": "fn#de91"
+      },
+      {
+        "kind": "fn",
+        "name": "double",
+        "ref": "fn#a8e4"
+      },
+      {
+        "kind": "fn",
+        "name": "total_units",
+        "ref": "fn#d7bf"
+      },
+      {
+        "kind": "fn",
+        "name": "doubled_values",
+        "ref": "fn#c72c"
+      },
+      {
+        "kind": "fn",
+        "name": "lower_stock_keys",
+        "ref": "fn#4bd2"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 0,
+      "passed": 11,
+      "results": [
+        {
+          "example": "add_stock(map.empty(), \"pen\", 3) == map.set(map.empty(), \"pen\", 3)",
+          "fn": "add_stock",
+          "line": 8,
+          "status": "pass"
+        },
+        {
+          "example": "map.get(add_stock(map.set(map.empty(), \"pen\", 2), \"pen\", 3), \"pen\") == some(5)",
+          "fn": "add_stock",
+          "line": 9,
+          "status": "pass"
+        },
+        {
+          "example": "remove_stock(map.set(map.empty(), \"pen\", 5), \"pen\", 2) == ok(map.set(map.empty(), \"pen\", 3))",
+          "fn": "remove_stock",
+          "line": 17,
+          "status": "pass"
+        },
+        {
+          "example": "remove_stock(map.empty(), \"pen\", 1) == err(UnknownItem)",
+          "fn": "remove_stock",
+          "line": 18,
+          "status": "pass"
+        },
+        {
+          "example": "remove_stock(map.set(map.empty(), \"pen\", 1), \"pen\", 2) == err(OutOfStock)",
+          "fn": "remove_stock",
+          "line": 19,
+          "status": "pass"
+        },
+        {
+          "example": "remove_stock(map.set(map.empty(), \"pen\", 1), \"pen\", 0) == err(InvalidQty)",
+          "fn": "remove_stock",
+          "line": 20,
+          "status": "pass"
+        },
+        {
+          "example": "double(4) == 8",
+          "fn": "double",
+          "line": 37,
+          "status": "pass"
+        },
+        {
+          "example": "total_units(map.set(map.set(map.empty(), \"a\", 2), \"b\", 5)) == 7",
+          "fn": "total_units",
+          "line": 44,
+          "status": "pass"
+        },
+        {
+          "example": "total_units(map.empty()) == 0",
+          "fn": "total_units",
+          "line": 45,
+          "status": "pass"
+        },
+        {
+          "example": "doubled_values(map.set(map.empty(), \"a\", 2)) == [4]",
+          "fn": "doubled_values",
+          "line": 51,
+          "status": "pass"
+        },
+        {
+          "example": "lower_stock_keys(map.set(map.set(map.empty(), \"b\", 1), \"a\", 2)) == [\"b\", \"a\"]",
+          "fn": "lower_stock_keys",
+          "line": 57,
+          "status": "pass"
+        }
+      ]
+    },
+    "ok": true
+  }
+}

@@ -1,0 +1,24 @@
+fn all_from(upper: Text, keywords: List<Text>, i: Int) -> Bool
+  intent "true when every keyword at index i and later occurs in the upper-cased text"
+  example all_from("HELLO WORLD", ["hello"], 0) == true
+  example all_from("HELLO WORLD", ["hello", "bye"], 0) == false
+do
+  match list.get(keywords, i) do
+    case none =>
+      return true
+    case some(k) =>
+      if not text.contains(upper, text.to_upper(k)) then
+        return false
+      end if
+      return all_from(upper, keywords, i + 1)
+  end match
+end fn
+
+fn contains_all(content: Text, keywords: List<Text>) -> Bool
+  intent "true when every keyword occurs somewhere in the content, ignoring case"
+  example contains_all("Hello World", ["hello", "WORLD"]) == true
+  example contains_all("Hello World", ["hello", "bye"]) == false
+  example contains_all("Hello World", []) == true
+do
+  return all_from(text.to_upper(content), keywords, 0)
+end fn

@@ -1,0 +1,12 @@
+[
+  {"args": ["a\nb"], "expect": "1. a\n2. b"},
+  {"args": ["a\n\nb\n"], "expect": "1. a\n\n2. b\n"},
+  {"args": [""], "expect": ""},
+  {"args": ["\n"], "expect": "\n"},
+  {"args": ["x"], "expect": "1. x"},
+  {"args": ["\n\nq"], "expect": "\n\n1. q"},
+  {"args": ["one\ntwo\nthree"], "expect": "1. one\n2. two\n3. three"},
+  {"args": ["a\n\n\nb\n\nc"], "expect": "1. a\n\n\n2. b\n\n3. c"},
+  {"args": ["  indented\nz"], "expect": "1.   indented\n2. z"},
+  {"args": [" \na"], "expect": "1.  \n2. a"}
+]

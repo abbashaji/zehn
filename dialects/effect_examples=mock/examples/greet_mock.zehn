@@ -1,0 +1,40 @@
+-- Examples of effectful functions: the effects are mocked, nothing touches the host.
+fn greet(name: Text) -> Unit
+  intent "print a greeting for the name"
+  uses [console]
+  example greet("Ada") with console = mock [] prints ["hello, Ada"]
+do
+  return console.print(text.concat("hello, ", name))
+end fn
+
+fn age(born: Int) -> Int
+  intent "years since the birth year, from the clock"
+  uses [time.now]
+  example age(1900) == 126 with time.now = mock [2026]
+do
+  return time.now() - born
+end fn
+
+fn report(born: Int) -> Int
+  intent "print the age and return it"
+  uses [console, time.now]
+  example report(2000) == 26 with console = mock [] with time.now = mock [2026] prints ["age 26"]
+do
+  let years = age(born)
+  console.print(text.concat("age ", int.to_text(years)))
+  return years
+end fn
+
+fn twice(born: Int) -> Int
+  intent "ask the clock twice and add the two ages"
+  uses [time.now]
+  example twice(10) == 15 with time.now = mock [20, 15]
+do
+  return age(born) + age(born)
+end fn
+
+fn double(n: Int) -> Int
+  example double(4) == 8
+do
+  return n * 2
+end fn

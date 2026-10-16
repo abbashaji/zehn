@@ -1,0 +1,122 @@
+type Cmd = { op: Text, key: Text, n: Int }
+
+fn get_line(key: Text, v: Int) -> Text
+  intent "the line printed by get for a key that has a value"
+  example get_line("a", 5) == "a = 5"
+  example get_line("b", 0 - 2) == "b = -2"
+do
+  return text.concat(key, text.concat(" = ", int.to_text(v)))
+end fn
+
+fn unset_line(key: Text) -> Text
+  intent "the line printed by get for a key that has no value"
+  example unset_line("a") == "a: unset"
+  example unset_line("") == ": unset"
+do
+  return text.concat(key, ": unset")
+end fn
+
+fn nothing_line(key: Text) -> Text
+  intent "the line printed by del for a key that has no value"
+  example nothing_line("a") == "nothing to delete: a"
+  example nothing_line("zz") == "nothing to delete: zz"
+do
+  return text.concat("nothing to delete: ", key)
+end fn
+
+fn entry_line(key: Text, v: Int) -> Text
+  intent "the line printed by dump for one entry"
+  example entry_line("a", 5) == "a=5"
+  example entry_line("b", 0 - 2) == "b=-2"
+do
+  return text.concat(key, text.concat("=", int.to_text(v)))
+end fn
+
+fn bad_op_line(pos: Int, op: Text) -> Text
+  intent "the line printed for a command with an unknown op"
+  example bad_op_line(3, "SET") == "command 3: bad op SET"
+  example bad_op_line(1, "") == "command 1: bad op "
+do
+  return text.concat("command ", text.concat(int.to_text(pos), text.concat(": bad op ", op)))
+end fn
+
+fn print_entries(store: Map<Text, Int>, keys: List<Text>, i: Int) -> Map<Text, Int>
+  intent "print the entries for the keys from index i on, in key order, and hand the store back unchanged"
+  uses [console]
+  requires i >= 0
+  example entry_line("k", 1) == "k=1"
+  example entry_line("m", 20) == "m=20"
+do
+  match list.get(keys, i) do
+    case none =>
+      return store
+    case some(key) =>
+      console.print(entry_line(key, option.unwrap_or(map.get(store, key), 0)))
+      return print_entries(store, keys, i + 1)
+  end match
+end fn
+
+fn exec(c: Cmd, pos: Int, store: Map<Text, Int>) -> Map<Text, Int>
+  intent "run one command against the store and return the new store"
+  uses [console]
+  example get_line("x", 1) == "x = 1"
+  example bad_op_line(2, "go") == "command 2: bad op go"
+do
+  match c.op do
+    case "set" =>
+      return map.set(store, c.key, c.n)
+    case "add" =>
+      return map.set(store, c.key, option.unwrap_or(map.get(store, c.key), 0) + c.n)
+    case "get" =>
+      match map.get(store, c.key) do
+        case some(v) =>
+          console.print(get_line(c.key, v))
+          return store
+        case none =>
+          console.print(unset_line(c.key))
+          return store
+      end match
+    case "del" =>
+      if map.has(store, c.key) then
+        return map.remove(store, c.key)
+      else
+        console.print(nothing_line(c.key))
+        return store
+      end if
+    case "dump" =>
+      if map.len(store) == 0 then
+        console.print("(empty)")
+        return store
+      else
+        return print_entries(store, map.keys(store), 0)
+      end if
+    case _ =>
+      console.print(bad_op_line(pos, c.op))
+      return store
+  end match
+end fn
+
+fn script_from(cmds: List<Cmd>, i: Int, store: Map<Text, Int>) -> Map<Text, Int>
+  intent "run the commands from index i on and return the final store"
+  uses [console]
+  requires i >= 0
+  example entry_line("a", 3) == "a=3"
+  example unset_line("q") == "q: unset"
+do
+  match list.get(cmds, i) do
+    case none =>
+      return store
+    case some(c) =>
+      return script_from(cmds, i + 1, exec(c, i + 1, store))
+  end match
+end fn
+
+fn run_script(cmds: List<Cmd>) -> Int
+  intent "run a script of set, add, get, del and dump commands on an empty store and return how many keys are left"
+  uses [console]
+  ensures out >= 0 and out <= list.len(cmds)
+  example get_line("k", 9) == "k = 9"
+  example nothing_line("k") == "nothing to delete: k"
+do
+  return map.len(script_from(cmds, 0, map.empty()))
+end fn

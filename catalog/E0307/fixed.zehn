@@ -1,0 +1,6 @@
+fn scale(n: Int) -> Int
+  example scale(3) == 6
+do
+  let doubled = n * 2
+  return doubled
+end fn

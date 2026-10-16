@@ -1,0 +1,5 @@
+fn greet(name: Text) -> Unit
+  uses [console]
+do
+  return console.print(name)
+end fn

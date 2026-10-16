@@ -1,0 +1,86 @@
+fn limits_ok(limits: List<Int>, i: Int, prev: Int) -> Bool
+  intent "true when every limit from index i on is larger than the one before it, prev being the limit before index i"
+  requires i >= 0
+  example limits_ok([5, 9], 0, 0) == true
+  example limits_ok([5, 5], 0, 0) == false
+  example limits_ok([0, 5], 0, 0) == false
+do
+  match list.get(limits, i) do
+    case none =>
+      return true
+    case some(l) =>
+      if l > prev then
+        return limits_ok(limits, i + 1, l)
+      else
+        return false
+      end if
+  end match
+end fn
+
+fn rates_ok(rates: List<Int>, i: Int) -> Bool
+  intent "true when no rate from index i on is negative"
+  requires i >= 0
+  example rates_ok([0, 3], 0) == true
+  example rates_ok([2, -1], 0) == false
+do
+  match list.get(rates, i) do
+    case none =>
+      return true
+    case some(r) =>
+      if r < 0 then
+        return false
+      else
+        return rates_ok(rates, i + 1)
+      end if
+  end match
+end fn
+
+fn bill_from(limits: List<Int>, rates: List<Int>, i: Int, prev: Int, usage: Int, total: Int) -> Int
+  intent "total plus the charge of tiers i and later, where prev is the upper limit of the tier before i"
+  requires i >= 0
+  example bill_from([10, 20], [2, 3], 0, 0, 15, 0) == 35
+  example bill_from([10, 20], [2, 3], 1, 10, 15, 20) == 35
+  example bill_from([10, 20], [2, 3], 0, 0, 4, 0) == 8
+do
+  match list.get(limits, i) do
+    case none =>
+      return total
+    case some(l) =>
+      match list.get(rates, i) do
+        case none =>
+          return total
+        case some(r) =>
+          let units = int.max(0, int.min(usage, l) - prev)
+          return bill_from(limits, rates, i + 1, l, usage, total + units * r)
+      end match
+  end match
+end fn
+
+fn tariff_bill(limits: List<Int>, rates: List<Int>, usage: Int) -> Result<Int, Text>
+  intent "bill for usage under a tiered tariff, where tier k covers the units above limits[k - 1] (0 for the first tier) up to limits[k] and each unit costs rates[k], or an error for a malformed tariff or usage"
+  example tariff_bill([10, 20], [2, 3], 15) == ok(35)
+  example tariff_bill([10], [2, 3], 5) == err("length mismatch")
+  example tariff_bill([10], [2], 11) == err("usage above last tier")
+do
+  if list.len(limits) != list.len(rates) then
+    return err("length mismatch")
+  end if
+  match list.get(limits, list.len(limits) - 1) do
+    case none =>
+      return err("no tiers")
+    case some(last) =>
+      if not limits_ok(limits, 0, 0) then
+        return err("bad limits")
+      end if
+      if not rates_ok(rates, 0) then
+        return err("bad rate")
+      end if
+      if usage < 0 then
+        return err("negative usage")
+      end if
+      if usage > last then
+        return err("usage above last tier")
+      end if
+      return ok(bill_from(limits, rates, 0, 0, usage, 0))
+  end match
+end fn

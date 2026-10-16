@@ -1,0 +1,14 @@
+[
+  {"args": [[false, true], 3, 5], "expect": {"$": "ok", "args": [2]}, "stdout": "attempt 1: failed\nwaiting 5\nattempt 2: ok\n"},
+  {"args": [[true], 5, 10], "expect": {"$": "ok", "args": [1]}, "stdout": "attempt 1: ok\n"},
+  {"args": [[false, false, false], 3, 10], "expect": {"$": "err", "args": ["gave up after 3 attempts"]}, "stdout": "attempt 1: failed\nwaiting 10\nattempt 2: failed\nwaiting 20\nattempt 3: failed\n"},
+  {"args": [[false], 3, 1], "expect": {"$": "err", "args": ["gave up after 3 attempts"]}, "stdout": "attempt 1: failed\nwaiting 1\nattempt 2: failed\nwaiting 2\nattempt 3: failed\n"},
+  {"args": [[false, true], 1, 4], "expect": {"$": "err", "args": ["gave up after 1 attempts"]}, "stdout": "attempt 1: failed\n"},
+  {"args": [[], 0, 1], "expect": {"$": "err", "args": ["no attempts allowed"]}, "stdout": ""},
+  {"args": [[true], -2, 1], "expect": {"$": "err", "args": ["no attempts allowed"]}, "stdout": ""},
+  {"args": [[false, false, false, false, false, false], 6, 10], "expect": {"$": "err", "args": ["gave up after 6 attempts"]}, "stdout": "attempt 1: failed\nwaiting 10\nattempt 2: failed\nwaiting 20\nattempt 3: failed\nwaiting 40\nattempt 4: failed\nwaiting 60\nattempt 5: failed\nwaiting 60\nattempt 6: failed\n"},
+  {"args": [[false, false, false], 3, 0], "expect": {"$": "err", "args": ["gave up after 3 attempts"]}, "stdout": "attempt 1: failed\nwaiting 0\nattempt 2: failed\nwaiting 0\nattempt 3: failed\n"},
+  {"args": [[false, false], 3, 100], "expect": {"$": "err", "args": ["gave up after 3 attempts"]}, "stdout": "attempt 1: failed\nwaiting 60\nattempt 2: failed\nwaiting 60\nattempt 3: failed\n"},
+  {"args": [[false, false, true], 2, 7], "expect": {"$": "err", "args": ["gave up after 2 attempts"]}, "stdout": "attempt 1: failed\nwaiting 7\nattempt 2: failed\n"},
+  {"args": [[false, false, false, false, false, false, false, false, false, false, false, true], 12, 1], "expect": {"$": "ok", "args": [12]}, "stdout": "attempt 1: failed\nwaiting 1\nattempt 2: failed\nwaiting 2\nattempt 3: failed\nwaiting 4\nattempt 4: failed\nwaiting 8\nattempt 5: failed\nwaiting 16\nattempt 6: failed\nwaiting 32\nattempt 7: failed\nwaiting 60\nattempt 8: failed\nwaiting 60\nattempt 9: failed\nwaiting 60\nattempt 10: failed\nwaiting 60\nattempt 11: failed\nwaiting 60\nattempt 12: ok\n"}
+]

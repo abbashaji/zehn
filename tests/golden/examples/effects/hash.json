@@ -1,0 +1,25 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "log_line",
+      "ref": "fn#ad03"
+    },
+    {
+      "kind": "fn",
+      "name": "greet",
+      "ref": "fn#5756"
+    },
+    {
+      "kind": "fn",
+      "name": "stamp",
+      "ref": "fn#d0c5"
+    },
+    {
+      "kind": "fn",
+      "name": "pure_len",
+      "ref": "fn#94d3"
+    }
+  ]
+}

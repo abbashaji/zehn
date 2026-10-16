@@ -1,0 +1,73 @@
+fn base_fee(zone: Text) -> Option<Int>
+  intent "base fee in cents for a zone name, none for an unknown zone"
+  example base_fee("local") == some(300)
+  example base_fee("mars") == none
+do
+  match zone do
+    case "local" =>
+      return some(300)
+    case "national" =>
+      return some(500)
+    case "international" =>
+      return some(1500)
+    case _ =>
+      return none
+  end match
+end fn
+
+fn extra_fee(zone: Text) -> Int
+  intent "surcharge in cents for each started kilogram after the first; 0 for an unknown zone"
+  example extra_fee("national") == 100
+  example extra_fee("mars") == 0
+do
+  match zone do
+    case "local" =>
+      return 50
+    case "national" =>
+      return 100
+    case "international" =>
+      return 400
+    case _ =>
+      return 0
+  end match
+end fn
+
+fn weight_limit(zone: Text) -> Int
+  intent "heaviest allowed parcel in grams; 0 for an unknown zone"
+  example weight_limit("local") == 30000
+  example weight_limit("international") == 20000
+do
+  match zone do
+    case "local" =>
+      return 30000
+    case "national" =>
+      return 30000
+    case "international" =>
+      return 20000
+    case _ =>
+      return 0
+  end match
+end fn
+
+fn parcel_fee(zone: Text, grams: Int) -> Result<Int, Text>
+  intent "fee in cents for a parcel: base fee plus a surcharge per further started kilogram"
+  example parcel_fee("local", 1001) == ok(350)
+  example parcel_fee("mars", 5) == err("unknown zone: mars")
+  example parcel_fee("international", 20001) == err("too heavy for international: limit is 20000 g")
+  example parcel_fee("national", 0) == err("invalid weight")
+do
+  if grams <= 0 then
+    return err("invalid weight")
+  end if
+  match base_fee(zone) do
+    case none =>
+      return err(text.concat("unknown zone: ", zone))
+    case some(base) =>
+      let limit = weight_limit(zone)
+      if grams > limit then
+        return err(text.concat(text.concat("too heavy for ", zone), text.concat(text.concat(": limit is ", int.to_text(limit)), " g")))
+      end if
+      let kilos = (grams + 999) / 1000
+      return ok(base + (kilos - 1) * extra_fee(zone))
+  end match
+end fn

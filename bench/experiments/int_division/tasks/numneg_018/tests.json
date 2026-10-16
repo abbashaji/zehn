@@ -1,0 +1,15 @@
+[
+  {"args": [7, 2], "expect": 3},
+  {"args": [8, 4], "expect": 2},
+  {"args": [-7, 2], "expect": -4},
+  {"args": [7, -2], "expect": -3},
+  {"args": [-7, -2], "expect": 4},
+  {"args": [0, 3], "expect": 0},
+  {"args": [0, -3], "expect": 0},
+  {"args": [-1, 5], "expect": -1},
+  {"args": [1, -5], "expect": 0},
+  {"args": [-10, 5], "expect": -2},
+  {"args": [10, -5], "expect": -2},
+  {"args": [-1000000007, 13], "expect": -76923078},
+  {"args": [1000000007, -13], "expect": -76923077}
+]

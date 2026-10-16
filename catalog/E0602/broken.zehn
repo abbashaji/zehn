@@ -1,0 +1,6 @@
+fn stamp() -> Int
+  uses [time.now]
+  example stamp() == 0
+do
+  return time.now()
+end fn

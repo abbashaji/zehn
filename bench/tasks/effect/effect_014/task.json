@@ -1,0 +1,82 @@
+{
+  "id": "effect_014",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Key-value store script",
+  "description": "Run a script of commands on a store that starts empty and maps keys (Text) to numbers (Int). Each command has an op, a key and a number n; commands are numbered from 1. `set` stores n under the key. `add` adds n to the key's value, treating a missing key as 0, and stores the result. `get` prints `KEY = V` when the key has a value and `KEY: unset` otherwise. `del` removes the key and prints nothing; if the key has no value it prints `nothing to delete: KEY` instead. `dump` prints one line `KEY=V` for every entry, in the order the keys were first inserted, or the single line `(empty)` when the store has no entries; key and n are ignored. Any other op prints `command N: bad op OP` and changes nothing (ops are case-sensitive). Insertion order: setting or adding to a key that already has a value keeps its place; a key that was deleted and is set again goes to the end. n is ignored by get, del and dump, and key is ignored by dump. Return the number of keys left at the end.",
+  "entry": "run_script",
+  "params": [
+    {
+      "name": "cmds",
+      "type": "List<Cmd>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Cmd",
+      "fields": [
+        {
+          "name": "op",
+          "type": "Text"
+        },
+        {
+          "name": "key",
+          "type": "Text"
+        },
+        {
+          "name": "n",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "op": "set",
+            "key": "a",
+            "n": 1
+          },
+          {
+            "op": "set",
+            "key": "b",
+            "n": 2
+          },
+          {
+            "op": "get",
+            "key": "a",
+            "n": 0
+          },
+          {
+            "op": "dump",
+            "key": "",
+            "n": 0
+          }
+        ]
+      ],
+      "expect": 2,
+      "stdout": "a = 1\na=1\nb=2\n"
+    },
+    {
+      "args": [
+        [
+          {
+            "op": "get",
+            "key": "z",
+            "n": 0
+          }
+        ]
+      ],
+      "expect": 0,
+      "stdout": "z: unset\n"
+    }
+  ],
+  "notes": "Level 3. Needs an insertion-ordered map: a plain unordered hash map gives wrong dump order (Rust HashMap, unordered containers). Re-setting keeps the position; delete-then-set moves to the end; add on a missing key creates it at the end; `del` of a missing key prints a message; empty key is a valid key (get prints ` = V`); ops are case-sensitive. Largest value 9e15."
+}

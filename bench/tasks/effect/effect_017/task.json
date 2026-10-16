@@ -1,0 +1,66 @@
+{
+  "id": "effect_017",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "League table from match results",
+  "description": "Each match has a home team, an away team and the goals each side scored (never negative); a team never plays itself. First print one line per match, in order, as `HOME HG-AG AWAY` (for example `Ajax 2-1 PSV`). Then print the line `-- table --`, followed by one line per team in the form `RANK. NAME: P pts` (for example `1. Ajax: 3 pts`). A win is worth 3 points, a draw 1 point to each side, a loss 0; every match adds to the totals of both teams. A team is in the table once it has appeared in any match, including with 0 points. Teams are ranked by total points, highest first; teams with equal points keep the order in which they first appeared in the list of matches (within one match the home team appears before the away team). Ranks are consecutive numbers from 1, with no shared ranks. Return the number of teams. An empty list prints only `-- table --` and returns 0.",
+  "entry": "print_results",
+  "params": [
+    {
+      "name": "ms",
+      "type": "List<Match>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Match",
+      "fields": [
+        {
+          "name": "home",
+          "type": "Text"
+        },
+        {
+          "name": "away",
+          "type": "Text"
+        },
+        {
+          "name": "home_goals",
+          "type": "Int"
+        },
+        {
+          "name": "away_goals",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "home": "Ajax",
+            "away": "PSV",
+            "home_goals": 2,
+            "away_goals": 1
+          }
+        ]
+      ],
+      "expect": 2,
+      "stdout": "Ajax 2-1 PSV\n-- table --\n1. Ajax: 3 pts\n2. PSV: 0 pts\n"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 0,
+      "stdout": "-- table --\n"
+    }
+  ],
+  "notes": "Level 3. Accumulate per-team totals keyed by name, then a stable sort by points descending: ties must keep first-appearance order (an unstable sort or a hash map without order gives wrong tie order); a team that only lost still gets a line; the same pair can meet twice; ranks go past 9; names may contain spaces. Goals compare only (largest 9e15)."
+}

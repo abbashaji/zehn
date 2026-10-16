@@ -1,0 +1,17 @@
+fn days_in_month(year: Int, month: Int) -> Result<Int, Text>
+  intent "number of days in the month of the given year, February always 28"
+  example days_in_month(2023, 2) == ok(28)
+  example days_in_month(2024, 4) == ok(30)
+  example days_in_month(2024, 13) == err("invalid month")
+do
+  if month < 1 or month > 12 then
+    return err("invalid month")
+  end if
+  if month == 2 then
+    return ok(28)
+  end if
+  if month == 4 or month == 6 or month == 9 or month == 11 then
+    return ok(30)
+  end if
+  return ok(31)
+end fn

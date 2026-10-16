@@ -1,0 +1,9 @@
+fn spin(n: Int) -> Int
+  example spin(1) == 4
+do
+  if n > 3 then
+    return n
+  else
+    return spin(n + 1)
+  end if
+end fn

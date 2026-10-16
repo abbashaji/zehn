@@ -1,0 +1,73 @@
+type Bracket = { upto: Int, rate: Int }
+
+fn rising(brackets: List<Bracket>, i: Int, prev: Int) -> Bool
+  intent "true when the limits from index i on are strictly rising and above prev"
+  example rising([], 0, 0) == true
+  example rising([{upto: 100, rate: 10}, {upto: 100, rate: 20}], 0, 0) == false
+  example rising([{upto: 100, rate: 10}, {upto: 200, rate: 20}], 0, 0) == true
+do
+  match list.get(brackets, i) do
+    case none =>
+      return true
+    case some(b) =>
+      if b.upto <= prev then
+        return false
+      end if
+      return rising(brackets, i + 1, b.upto)
+  end match
+end fn
+
+fn rates_valid(brackets: List<Bracket>, i: Int) -> Bool
+  intent "true when every bracket rate from index i on is between 0 and 100"
+  example rates_valid([], 0) == true
+  example rates_valid([{upto: 100, rate: 101}], 0) == false
+  example rates_valid([{upto: 100, rate: 100}, {upto: 200, rate: 0}], 0) == true
+do
+  match list.get(brackets, i) do
+    case none =>
+      return true
+    case some(b) =>
+      if b.rate < 0 or b.rate > 100 then
+        return false
+      end if
+      return rates_valid(brackets, i + 1)
+  end match
+end fn
+
+fn slices_tax(brackets: List<Bracket>, income: Int, top_rate: Int, i: Int, prev: Int, acc: Int) -> Int
+  intent "tax of the slices from index i on, each rounded down on its own; prev is the limit before bracket i"
+  example slices_tax([], 250, 40, 0, 0, 0) == 100
+  example slices_tax([{upto: 100, rate: 10}], 50, 40, 0, 0, 0) == 5
+  example slices_tax([{upto: 50, rate: 15}], 100, 15, 0, 0, 0) == 14
+do
+  match list.get(brackets, i) do
+    case none =>
+      if income > prev then
+        return acc + (income - prev) * top_rate / 100
+      end if
+      return acc
+    case some(b) =>
+      let slice = int.max(0, int.min(income, b.upto) - prev)
+      return slices_tax(brackets, income, top_rate, i + 1, b.upto, acc + slice * b.rate / 100)
+  end match
+end fn
+
+fn income_tax(income: Int, brackets: List<Bracket>, top_rate: Int) -> Result<Int, Text>
+  intent "progressive tax in cents; checks run in a fixed order"
+  example income_tax(5000, [{upto: 1000, rate: 10}, {upto: 4000, rate: 20}], 30) == ok(1000)
+  example income_tax(100, [{upto: 50, rate: 15}], 15) == ok(14)
+  example income_tax(-1, [], 30) == err("invalid income")
+  example income_tax(10, [{upto: 5, rate: 10}, {upto: 5, rate: 10}], 30) == err("invalid brackets")
+  example income_tax(10, [{upto: 5, rate: 101}], 30) == err("invalid rate")
+do
+  if income < 0 then
+    return err("invalid income")
+  end if
+  if not rising(brackets, 0, 0) then
+    return err("invalid brackets")
+  end if
+  if top_rate < 0 or top_rate > 100 or not rates_valid(brackets, 0) then
+    return err("invalid rate")
+  end if
+  return ok(slices_tax(brackets, income, top_rate, 0, 0, 0))
+end fn

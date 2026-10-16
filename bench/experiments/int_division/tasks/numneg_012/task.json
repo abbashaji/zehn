@@ -1,0 +1,39 @@
+{
+  "id": "numneg_012",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Whole steps away from zero",
+  "description": "A marker sits offset units from the origin (negative means to the left). It moves in whole steps of step units; count only the complete steps between the origin and the marker, counting a step to the left as negative. This is offset divided by step, rounded toward zero: offset 7 with step 3 gives 2, offset -7 with step 3 gives -2. step is positive.",
+  "entry": "whole_steps",
+  "params": [
+    {
+      "name": "offset",
+      "type": "Int"
+    },
+    {
+      "name": "step",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        9,
+        3
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        7,
+        3
+      ],
+      "expect": 2
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states truncation toward zero in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

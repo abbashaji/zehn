@@ -1,0 +1,23 @@
+fn collect(tags: List<Text>, i: Int, kept: List<Text>) -> List<Text>
+  intent "walk the tags from index i on, keeping each tag that is not already kept"
+  example collect([], 0, []) == []
+  example collect(["go", "go", "c"], 0, []) == ["go", "c"]
+do
+  match list.get(tags, i) do
+    case none =>
+      return kept
+    case some(tag) =>
+      if list.contains(kept, tag) then
+        return collect(tags, i + 1, kept)
+      end if
+      return collect(tags, i + 1, list.append(kept, tag))
+  end match
+end fn
+
+fn clean_tags(tags: List<Text>, limit: Int) -> Result<List<Text>, Text>
+  intent "tags without exact repeats; the limit is not used yet"
+  example clean_tags(["rust", "go", "rust"], 5) == ok(["rust", "go"])
+  example clean_tags([], 3) == ok([])
+do
+  return ok(collect(tags, 0, []))
+end fn

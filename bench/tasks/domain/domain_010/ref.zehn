@@ -1,0 +1,85 @@
+fn next_status(status: Text, event: Text) -> Option<Text>
+  intent "status after an event, or none when the event is not allowed from this status"
+  example next_status("new", "pay") == some("paid")
+  example next_status("paid", "cancel") == some("cancelled")
+  example next_status("paid", "pay") == none
+  example next_status("cancelled", "cancel") == none
+do
+  if status == "new" and event == "pay" then
+    return some("paid")
+  end if
+  if status == "paid" and event == "pack" then
+    return some("packed")
+  end if
+  if status == "packed" and event == "ship" then
+    return some("shipped")
+  end if
+  if status == "shipped" and event == "deliver" then
+    return some("delivered")
+  end if
+  if event == "cancel" and (status == "new" or status == "paid" or status == "packed") then
+    return some("cancelled")
+  end if
+  if status == "delivered" and event == "refund" then
+    return some("refunded")
+  end if
+  return none
+end fn
+
+fn known_status(status: Text) -> Bool
+  intent "whether the text is one of the seven order statuses"
+  example known_status("packed") == true
+  example known_status("lost") == false
+do
+  return list.contains(["new", "paid", "packed", "shipped", "delivered", "cancelled", "refunded"], status)
+end fn
+
+fn known_event(event: Text) -> Bool
+  intent "whether the text is one of the six events"
+  example known_event("ship") == true
+  example known_event("fly") == false
+do
+  return list.contains(["pay", "pack", "ship", "deliver", "cancel", "refund"], event)
+end fn
+
+fn step_prefix(i: Int) -> Text
+  intent "the text step N: for the 0-based index i"
+  example step_prefix(0) == "step 1: "
+  example step_prefix(4) == "step 5: "
+do
+  return text.concat(text.concat("step ", int.to_text(i + 1)), ": ")
+end fn
+
+fn run_from(status: Text, events: List<Text>, i: Int) -> Result<Text, Text>
+  intent "apply the events from index i on; an error names its 1-based step"
+  example run_from("new", ["pay", "pack"], 0) == ok("packed")
+  example run_from("new", ["pay", "pay"], 0) == err("step 2: cannot pay when paid")
+  example run_from("new", ["fly"], 0) == err("step 1: unknown event fly")
+do
+  match list.get(events, i) do
+    case none =>
+      return ok(status)
+    case some(event) =>
+      if not known_event(event) then
+        return err(text.concat(step_prefix(i), text.concat("unknown event ", event)))
+      end if
+      match next_status(status, event) do
+        case none =>
+          return err(text.concat(step_prefix(i), text.concat(text.concat("cannot ", event), text.concat(" when ", status))))
+        case some(next) =>
+          return run_from(next, events, i + 1)
+      end match
+  end match
+end fn
+
+fn apply_events(status: Text, events: List<Text>) -> Result<Text, Text>
+  intent "status of an order after a series of events, or the first problem found"
+  example apply_events("new", ["pay", "pack", "ship", "deliver"]) == ok("delivered")
+  example apply_events("lost", []) == err("unknown status: lost")
+  example apply_events("cancelled", []) == ok("cancelled")
+do
+  if not known_status(status) then
+    return err(text.concat("unknown status: ", status))
+  end if
+  return run_from(status, events, 0)
+end fn

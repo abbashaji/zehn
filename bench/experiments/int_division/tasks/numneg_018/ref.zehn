@@ -1,0 +1,8 @@
+fn euclid_quotient(a: Int, b: Int) -> Int
+  intent "the quotient q of a = b*q + r with 0 <= r < |b|"
+  requires b != 0
+  example euclid_quotient(7, 2) == 3
+  example euclid_quotient(8, 4) == 2
+do
+  return int.div_floor(a - int.rem_euclid(a, b), b)
+end fn

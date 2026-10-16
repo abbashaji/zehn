@@ -1,0 +1,63 @@
+{
+  "id": "domain_012",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Election winner with a majority rule",
+  "description": "A club elects one officer. There is a list of candidate names (each name appears once) and a list of ballots, each ballot being one text. A ballot is valid when its text is exactly the name of a candidate; every other ballot, including an empty one or one with different letter case, is spoiled and is ignored completely. Write election_winner, which takes the candidates and the ballots and returns the name of the winner. A candidate wins only with a strict majority: more than half of the valid ballots, so exactly half is not enough. Checks happen in this order, and the first failing one decides the result: no candidates at all gives the error \"no candidates\"; no valid ballots (including an empty ballot list) gives \"no valid ballots\"; otherwise the candidate with the most votes is found, and if that candidate does not have a strict majority the error is \"no majority: \" followed by the candidate's name, \" leads with \", the candidate's votes, \" of \" and the number of valid ballots (for example \"no majority: ann leads with 2 of 4\"). When several candidates share the highest vote count, the leader is the one that comes first in the list of candidates.",
+  "entry": "election_winner",
+  "params": [
+    {
+      "name": "candidates",
+      "type": "List<Text>"
+    },
+    {
+      "name": "ballots",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "ann",
+          "bob",
+          "cy"
+        ],
+        [
+          "ann",
+          "ann",
+          "bob"
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "ann"
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          "ann",
+          "bob"
+        ],
+        [
+          "ann",
+          "bob"
+        ]
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "no majority: ann leads with 1 of 2"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: counting per key without a map, a derived total (valid ballots only), strict majority arithmetic and a tie rule. Pitfalls: the majority is over valid ballots, not over all ballots; exactly half fails; ties for the lead are broken by candidate order, not by ballot order; spoiled ballots are not counted anywhere; with no candidates the error comes before the no-valid-ballots error even when ballots exist."
+}

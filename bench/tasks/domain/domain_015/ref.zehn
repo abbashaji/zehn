@@ -1,0 +1,62 @@
+type Summary = { months: Int, interest: Int, paid: Int }
+
+fn monthly_interest(balance: Int, rate_bp: Int) -> Int
+  intent "interest charged on a balance for one month, rounded down to a cent"
+  requires balance >= 0
+  requires rate_bp >= 0
+  example monthly_interest(1000, 100) == 10
+  example monthly_interest(710, 100) == 7
+  example monthly_interest(99, 100) == 0
+do
+  return balance * rate_bp / 10000
+end fn
+
+fn run_months(balance: Int, rate_bp: Int, payment: Int, month: Int, max_months: Int, interest_sum: Int, paid_sum: Int) -> Result<Summary, Text>
+  intent "simulate month number month (counted from 1) and on; stop when the balance is zero or the months run out"
+  requires balance > 0
+  requires rate_bp >= 0
+  requires payment > 0
+  example run_months(1000, 100, 300, 1, 12, 0, 0) == ok({months: 4, interest: 22, paid: 1022})
+  example run_months(1000, 100, 300, 1, 3, 0, 0) == err("not repaid after 3 months: 121 left")
+do
+  let interest = monthly_interest(balance, rate_bp)
+  let owed = balance + interest
+  let pay = int.min(payment, owed)
+  let left = owed - pay
+  if left == 0 then
+    return ok({months: month, interest: interest_sum + interest, paid: paid_sum + pay})
+  end if
+  if month >= max_months then
+    return err(text.concat(text.concat(text.concat("not repaid after ", int.to_text(max_months)), " months: "), text.concat(int.to_text(left), " left")))
+  end if
+  return run_months(left, rate_bp, payment, month + 1, max_months, interest_sum + interest, paid_sum + pay)
+end fn
+
+fn repayment_summary(principal: Int, rate_bp: Int, payment: Int, max_months: Int) -> Result<Summary, Text>
+  intent "months, total interest and total paid of a loan with a fixed monthly payment, or the reason it cannot be repaid"
+  example repayment_summary(1000, 100, 300, 12) == ok({months: 4, interest: 22, paid: 1022})
+  example repayment_summary(100, 0, 100, 1) == ok({months: 1, interest: 0, paid: 100})
+  example repayment_summary(0, 100, 300, 12) == err("invalid principal")
+  example repayment_summary(1000, -1, 300, 12) == err("invalid rate")
+  example repayment_summary(1000, 100, 0, 12) == err("invalid payment")
+  example repayment_summary(1000, 100, 300, 0) == err("invalid term")
+  example repayment_summary(100000, 100, 1000, 36) == err("payment too small: interest is 1000")
+do
+  if principal <= 0 then
+    return err("invalid principal")
+  end if
+  if rate_bp < 0 then
+    return err("invalid rate")
+  end if
+  if payment <= 0 then
+    return err("invalid payment")
+  end if
+  if max_months <= 0 then
+    return err("invalid term")
+  end if
+  let first = monthly_interest(principal, rate_bp)
+  if payment <= first then
+    return err(text.concat("payment too small: interest is ", int.to_text(first)))
+  end if
+  return run_months(principal, rate_bp, payment, 1, max_months, 0, 0)
+end fn

@@ -1,0 +1,11 @@
+fn trimmed_average(scores: List<Int>, drop: Int) -> Option<Int>
+  intent "average of the scores rounded down, none for an empty list"
+  example trimmed_average([80, 90, 100], 0) == some(90)
+  example trimmed_average([], 2) == none
+do
+  let n = list.len(scores)
+  if n == 0 then
+    return none
+  end if
+  return some(list.sum(scores) / n)
+end fn

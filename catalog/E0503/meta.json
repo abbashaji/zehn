@@ -1,0 +1,6 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "no program reaches this guard through check or run: E0310 rejects it first",
+  "unreachable": "E0310 rejects every body that can reach its end, and check/run refuse to execute a program with errors; E0503 can only be seen by calling the interpreter on a program that skipped the static passes"
+}

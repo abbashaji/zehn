@@ -1,0 +1,16 @@
+[
+  {"args": ["aa bb cc", 5], "expect": {"$": "ok", "args": ["aa bb|cc"]}},
+  {"args": ["a", 0], "expect": {"$": "err", "args": ["width must be positive"]}},
+  {"args": ["", 5], "expect": {"$": "ok", "args": [""]}},
+  {"args": ["abcdefgh x", 3], "expect": {"$": "ok", "args": ["abcdefgh|x"]}},
+  {"args": ["one two three four five", 9], "expect": {"$": "ok", "args": ["one two|three|four five"]}},
+  {"args": ["a b c d", 3], "expect": {"$": "ok", "args": ["a b|c d"]}},
+  {"args": ["a b c", 1], "expect": {"$": "ok", "args": ["a|b|c"]}},
+  {"args": ["  aa   bb  ", 4], "expect": {"$": "ok", "args": ["aa|bb"]}},
+  {"args": ["hello world", 11], "expect": {"$": "ok", "args": ["hello world"]}},
+  {"args": ["hello world", 10], "expect": {"$": "ok", "args": ["hello|world"]}},
+  {"args": ["x", 5], "expect": {"$": "ok", "args": ["x"]}},
+  {"args": ["abc de", -3], "expect": {"$": "err", "args": ["width must be positive"]}},
+  {"args": ["   ", 5], "expect": {"$": "ok", "args": [""]}},
+  {"args": ["", 0], "expect": {"$": "err", "args": ["width must be positive"]}}
+]

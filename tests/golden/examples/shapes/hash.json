@@ -1,0 +1,30 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Shape",
+      "ref": "type#8377"
+    },
+    {
+      "kind": "fn",
+      "name": "area",
+      "ref": "fn#154f"
+    },
+    {
+      "kind": "fn",
+      "name": "describe",
+      "ref": "fn#5077"
+    },
+    {
+      "kind": "fn",
+      "name": "total_area",
+      "ref": "fn#d17a"
+    },
+    {
+      "kind": "fn",
+      "name": "first_area",
+      "ref": "fn#ee34"
+    }
+  ]
+}

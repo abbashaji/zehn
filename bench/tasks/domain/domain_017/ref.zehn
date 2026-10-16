@@ -1,0 +1,164 @@
+type Match = { home: Text, away: Text, home_goals: Int, away_goals: Int }
+
+type Row = { team: Text, played: Int, points: Int, goal_diff: Int }
+
+fn invalid_from(matches: List<Match>, i: Int) -> Option<Text>
+  intent "the message for the first invalid match from index i on, naming its 1-based position"
+  example invalid_from([{home: "a", away: "b", home_goals: 1, away_goals: 0}], 0) == none
+  example invalid_from([{home: "a", away: "b", home_goals: 1, away_goals: 0}, {home: "c", away: "c", home_goals: -1, away_goals: 0}], 0) == some("match 2: a team cannot play itself")
+  example invalid_from([{home: "a", away: "b", home_goals: 1, away_goals: -1}], 0) == some("match 1: negative goals")
+do
+  match list.get(matches, i) do
+    case none =>
+      return none
+    case some(m) =>
+      if m.home == m.away then
+        return some(text.concat(text.concat("match ", int.to_text(i + 1)), ": a team cannot play itself"))
+      end if
+      if m.home_goals < 0 or m.away_goals < 0 then
+        return some(text.concat(text.concat("match ", int.to_text(i + 1)), ": negative goals"))
+      end if
+      return invalid_from(matches, i + 1)
+  end match
+end fn
+
+fn points_for(scored: Int, conceded: Int) -> Int
+  intent "league points for one match: 3 for a win, 1 for a draw, 0 for a loss"
+  example points_for(2, 1) == 3
+  example points_for(1, 1) == 1
+  example points_for(0, 4) == 0
+do
+  if scored > conceded then
+    return 3
+  end if
+  if scored == conceded then
+    return 1
+  end if
+  return 0
+end fn
+
+fn has_team(rows: List<Row>, team: Text, i: Int) -> Bool
+  intent "whether a row for the team exists from index i on"
+  example has_team([{team: "a", played: 1, points: 3, goal_diff: 1}], "a", 0) == true
+  example has_team([{team: "a", played: 1, points: 3, goal_diff: 1}], "b", 0) == false
+do
+  match list.get(rows, i) do
+    case none =>
+      return false
+    case some(r) =>
+      if r.team == team then
+        return true
+      end if
+      return has_team(rows, team, i + 1)
+  end match
+end fn
+
+fn bump(rows: List<Row>, team: Text, points: Int, diff: Int, i: Int) -> List<Row>
+  intent "copy of the rows from index i on, with one more match, the points and the goal difference added on the row of the team"
+  example bump([{team: "a", played: 1, points: 3, goal_diff: 2}], "a", 1, -1, 0) == [{team: "a", played: 2, points: 4, goal_diff: 1}]
+  example bump([{team: "a", played: 1, points: 3, goal_diff: 2}], "b", 1, -1, 0) == [{team: "a", played: 1, points: 3, goal_diff: 2}]
+do
+  match list.get(rows, i) do
+    case none =>
+      return []
+    case some(r) =>
+      let rest = bump(rows, team, points, diff, i + 1)
+      if r.team == team then
+        return list.concat([{team: r.team, played: r.played + 1, points: r.points + points, goal_diff: r.goal_diff + diff}], rest)
+      end if
+      return list.concat([r], rest)
+  end match
+end fn
+
+fn record(rows: List<Row>, team: Text, points: Int, diff: Int) -> List<Row>
+  intent "add one match result to the table: update the team's row, or append a new row at the end"
+  example record([], "a", 3, 2) == [{team: "a", played: 1, points: 3, goal_diff: 2}]
+  example record([{team: "a", played: 1, points: 3, goal_diff: 2}], "a", 0, -1) == [{team: "a", played: 2, points: 3, goal_diff: 1}]
+do
+  if has_team(rows, team, 0) then
+    return bump(rows, team, points, diff, 0)
+  end if
+  return list.append(rows, {team: team, played: 1, points: points, goal_diff: diff})
+end fn
+
+fn tally(matches: List<Match>, i: Int, rows: List<Row>) -> List<Row>
+  intent "the table after the matches from index i on, rows in order of first appearance"
+  example tally([{home: "a", away: "b", home_goals: 2, away_goals: 1}], 0, []) == [{team: "a", played: 1, points: 3, goal_diff: 1}, {team: "b", played: 1, points: 0, goal_diff: -1}]
+  example tally([], 0, []) == []
+do
+  match list.get(matches, i) do
+    case none =>
+      return rows
+    case some(m) =>
+      let with_home = record(rows, m.home, points_for(m.home_goals, m.away_goals), m.home_goals - m.away_goals)
+      let with_away = record(with_home, m.away, points_for(m.away_goals, m.home_goals), m.away_goals - m.home_goals)
+      return tally(matches, i + 1, with_away)
+  end match
+end fn
+
+fn better(a: Row, b: Row) -> Bool
+  intent "whether row a ranks strictly above row b: more points, or equal points and a higher goal difference"
+  example better({team: "a", played: 1, points: 3, goal_diff: 0}, {team: "b", played: 1, points: 1, goal_diff: 5}) == true
+  example better({team: "a", played: 1, points: 3, goal_diff: 0}, {team: "b", played: 1, points: 3, goal_diff: 0}) == false
+  example better({team: "a", played: 1, points: 3, goal_diff: 1}, {team: "b", played: 1, points: 3, goal_diff: 0}) == true
+do
+  return a.points > b.points or a.points == b.points and a.goal_diff > b.goal_diff
+end fn
+
+fn rows_from(rows: List<Row>, i: Int) -> List<Row>
+  intent "the rows from index i on"
+  example rows_from([{team: "a", played: 1, points: 3, goal_diff: 1}, {team: "b", played: 1, points: 0, goal_diff: -1}], 1) == [{team: "b", played: 1, points: 0, goal_diff: -1}]
+  example rows_from([], 0) == []
+do
+  match list.get(rows, i) do
+    case none =>
+      return []
+    case some(r) =>
+      return list.concat([r], rows_from(rows, i + 1))
+  end match
+end fn
+
+fn insert_row(sorted: List<Row>, row: Row, i: Int) -> List<Row>
+  intent "insert a row into an ordered table before the first row from index i on that it ranks strictly above; equal rows stay in front"
+  example insert_row([{team: "a", played: 1, points: 3, goal_diff: 0}], {team: "b", played: 1, points: 3, goal_diff: 0}, 0) == [{team: "a", played: 1, points: 3, goal_diff: 0}, {team: "b", played: 1, points: 3, goal_diff: 0}]
+  example insert_row([{team: "a", played: 1, points: 1, goal_diff: 0}], {team: "b", played: 1, points: 3, goal_diff: 0}, 0) == [{team: "b", played: 1, points: 3, goal_diff: 0}, {team: "a", played: 1, points: 1, goal_diff: 0}]
+do
+  match list.get(sorted, i) do
+    case none =>
+      return [row]
+    case some(s) =>
+      if better(row, s) then
+        return list.concat([row], rows_from(sorted, i))
+      end if
+      return list.concat([s], insert_row(sorted, row, i + 1))
+  end match
+end fn
+
+fn sort_rows(rows: List<Row>, i: Int, sorted: List<Row>) -> List<Row>
+  intent "stable insertion sort of the rows from index i on into the ordered table"
+  example sort_rows([{team: "a", played: 1, points: 0, goal_diff: -1}, {team: "b", played: 1, points: 3, goal_diff: 1}], 0, []) == [{team: "b", played: 1, points: 3, goal_diff: 1}, {team: "a", played: 1, points: 0, goal_diff: -1}]
+  example sort_rows([], 0, []) == []
+do
+  match list.get(rows, i) do
+    case none =>
+      return sorted
+    case some(r) =>
+      return sort_rows(rows, i + 1, insert_row(sorted, r, 0))
+  end match
+end fn
+
+fn standings(matches: List<Match>) -> Result<List<Row>, Text>
+  intent "league table from match results, ordered by points then goal difference then first appearance; invalid matches are reported by position"
+  ensures result.is_ok(out) implies list.len(result.unwrap(out)) <= 2 * list.len(matches)
+  example standings([]) == ok([])
+  example standings([{home: "a", away: "b", home_goals: 2, away_goals: 1}]) == ok([{team: "a", played: 1, points: 3, goal_diff: 1}, {team: "b", played: 1, points: 0, goal_diff: -1}])
+  example standings([{home: "a", away: "b", home_goals: 0, away_goals: 1}, {home: "c", away: "d", home_goals: 0, away_goals: 0}]) == ok([{team: "b", played: 1, points: 3, goal_diff: 1}, {team: "c", played: 1, points: 1, goal_diff: 0}, {team: "d", played: 1, points: 1, goal_diff: 0}, {team: "a", played: 1, points: 0, goal_diff: -1}])
+  example standings([{home: "a", away: "a", home_goals: 0, away_goals: 0}]) == err("match 1: a team cannot play itself")
+do
+  match invalid_from(matches, 0) do
+    case some(message) =>
+      return err(message)
+    case none =>
+      return ok(sort_rows(tally(matches, 0, []), 0, []))
+  end match
+end fn

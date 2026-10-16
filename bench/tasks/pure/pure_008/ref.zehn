@@ -1,0 +1,32 @@
+fn digits_from(n: Int, base: Int, count: Int) -> Int
+  intent "number of digits of n in the given base, added to count"
+  requires n >= 0
+  requires base >= 2
+  example digits_from(255, 2, 0) == 8
+  example digits_from(9, 10, 0) == 1
+  example digits_from(0, 10, 0) == 1
+do
+  if n < base then
+    return count + 1
+  else
+    return digits_from(n / base, base, count + 1)
+  end if
+end fn
+
+fn digit_count(n: Int, base: Int) -> Result<Int, Text>
+  intent "number of digits of n written in the given base, or an error for a negative n or a base below 2"
+  example digit_count(255, 16) == ok(2)
+  example digit_count(0, 10) == ok(1)
+  example digit_count(5, 1) == err("base must be at least 2")
+  example digit_count(-1, 10) == err("negative number")
+do
+  if n < 0 then
+    return err("negative number")
+  else
+    if base < 2 then
+      return err("base must be at least 2")
+    else
+      return ok(digits_from(n, base, 0))
+    end if
+  end if
+end fn

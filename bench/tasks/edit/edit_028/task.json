@@ -1,0 +1,49 @@
+{
+  "id": "edit_028",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Progressive income tax with child credit",
+  "description": "Bug report for the yearly income tax function. Incomes are whole currency units, the result is a whole number. The tax is progressive: the first 10000 of the income are not taxed; the part of the income from 10000 up to 30000 is taxed at 15 percent; the part from 30000 up to 70000 at 30 percent; the part above 70000 at 45 percent. The tax of each band is rounded down to a whole unit and the three results are added. Then a credit of 300 per child is subtracted, and the result is never below 0. Today the function applies the rate of the highest band reached to the whole income, so taxes jump up at the band limits, and it can return a negative tax when the credit is larger than the tax. Fix the program. The checks are made in this order and the first one that applies decides the error message: negative income: \"invalid income\"; negative number of children: \"invalid children\".",
+  "entry": "income_tax",
+  "params": [
+    {
+      "name": "income",
+      "type": "Int"
+    },
+    {
+      "name": "children",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        8000,
+        0
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          0
+        ]
+      }
+    },
+    {
+      "args": [
+        -1,
+        0
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid income"
+        ]
+      }
+    }
+  ],
+  "notes": "Two bugs: cliff (flat rate of the reached band on the whole income instead of marginal bands) and no floor at 0 after the credit. A full band always yields a whole number (20000 * 15 / 100 and 40000 * 30 / 100), and a later band is only non-empty when the earlier ones are full, so at most one band is rounded; rounding per band and rounding the sum agree on every test. Visible examples are chosen so that the start passes them. All operands of division are non-negative."
+}

@@ -1,0 +1,19 @@
+[
+  {"args": [[]], "expect": {"$": "err", "args": ["empty stack at end"]}, "stdout": ""},
+  {"args": [[{"op": "push", "n": 3}]], "expect": {"$": "ok", "args": [3]}, "stdout": "1: [3]\n"},
+  {"args": [[{"op": "push", "n": 2}, {"op": "push", "n": 3}, {"op": "add", "n": 99}]], "expect": {"$": "ok", "args": [5]}, "stdout": "1: [2]\n2: [2,3]\n3: [5]\n"},
+  {"args": [[{"op": "push", "n": 4}, {"op": "push", "n": -5}, {"op": "mul", "n": 7}]], "expect": {"$": "ok", "args": [-20]}, "stdout": "1: [4]\n2: [4,-5]\n3: [-20]\n"},
+  {"args": [[{"op": "push", "n": 7}, {"op": "dup", "n": 5}, {"op": "mul", "n": 0}]], "expect": {"$": "ok", "args": [49]}, "stdout": "1: [7]\n2: [7,7]\n3: [49]\n"},
+  {"args": [[{"op": "push", "n": 1}, {"op": "push", "n": 2}, {"op": "swap", "n": 3}]], "expect": {"$": "ok", "args": [1]}, "stdout": "1: [1]\n2: [1,2]\n3: [2,1]\n"},
+  {"args": [[{"op": "push", "n": 4}, {"op": "pop", "n": 8}]], "expect": {"$": "err", "args": ["empty stack at end"]}, "stdout": "1: [4]\n2: []\n"},
+  {"args": [[{"op": "push", "n": 1}, {"op": "add", "n": 2}]], "expect": {"$": "err", "args": ["stack underflow at command 2"]}, "stdout": "1: [1]\n"},
+  {"args": [[{"op": "pop", "n": 0}]], "expect": {"$": "err", "args": ["stack underflow at command 1"]}, "stdout": ""},
+  {"args": [[{"op": "Push", "n": 1}]], "expect": {"$": "err", "args": ["unknown op at command 1"]}, "stdout": ""},
+  {"args": [[{"op": "jump", "n": 3}]], "expect": {"$": "err", "args": ["unknown op at command 1"]}, "stdout": ""},
+  {"args": [[{"op": "push", "n": 1}, {"op": "push", "n": 2}, {"op": "swap", "n": 0}, {"op": "swap", "n": 0}, {"op": "mul", "n": 0}, {"op": "dup", "n": 0}, {"op": "add", "n": 0}, {"op": "wave", "n": 0}, {"op": "push", "n": 3}]], "expect": {"$": "err", "args": ["unknown op at command 8"]}, "stdout": "1: [1]\n2: [1,2]\n3: [2,1]\n4: [1,2]\n5: [2]\n6: [2,2]\n7: [4]\n"},
+  {"args": [[{"op": "dup", "n": 0}]], "expect": {"$": "err", "args": ["stack underflow at command 1"]}, "stdout": ""},
+  {"args": [[{"op": "push", "n": 1}, {"op": "swap", "n": 0}]], "expect": {"$": "err", "args": ["stack underflow at command 2"]}, "stdout": "1: [1]\n"},
+  {"args": [[{"op": "push", "n": 9}, {"op": "pop", "n": 0}, {"op": "pop", "n": 0}]], "expect": {"$": "err", "args": ["stack underflow at command 3"]}, "stdout": "1: [9]\n2: []\n"},
+  {"args": [[{"op": "push", "n": 3000000000000000}, {"op": "push", "n": 3000000000000000}, {"op": "add", "n": 0}]], "expect": {"$": "ok", "args": [6000000000000000]}, "stdout": "1: [3000000000000000]\n2: [3000000000000000,3000000000000000]\n3: [6000000000000000]\n"},
+  {"args": [[{"op": "push", "n": 1}, {"op": "push", "n": 2}, {"op": "push", "n": 3}, {"op": "push", "n": 4}, {"op": "push", "n": 5}, {"op": "add", "n": 0}, {"op": "add", "n": 0}, {"op": "add", "n": 0}, {"op": "add", "n": 0}]], "expect": {"$": "ok", "args": [15]}, "stdout": "1: [1]\n2: [1,2]\n3: [1,2,3]\n4: [1,2,3,4]\n5: [1,2,3,4,5]\n6: [1,2,3,9]\n7: [1,2,12]\n8: [1,14]\n9: [15]\n"}
+]

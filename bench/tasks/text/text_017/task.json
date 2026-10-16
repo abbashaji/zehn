@@ -1,0 +1,43 @@
+{
+  "id": "text_017",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Check tag nesting",
+  "description": "A markup text contains opening tags such as \"<b>\" and closing tags such as \"</b>\"; a tag name is a non-empty run of lower-case letters. Every angle bracket belongs to a tag (a \"<\" is always followed later by its \">\", and the text between tags contains no angle brackets), and there are no self-closing tags. Check that the tags nest properly and return the deepest nesting level reached (0 if there are no tags). Scan from left to right and report the first problem as an error: a closing tag when nothing is open gives \"unexpected closing tag: NAME\"; a closing tag that does not match the most recently opened tag gives \"mismatched tag: expected OPEN, found NAME\"; and if the text ends with tags still open, \"unclosed tag: NAME\" with the most recently opened one.",
+  "entry": "max_tag_depth",
+  "params": [
+    {
+      "name": "markup",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "<a><b>x</b></a>"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          2
+        ]
+      }
+    },
+    {
+      "args": [
+        "<a></b>"
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "mismatched tag: expected a, found b"
+        ]
+      }
+    }
+  ],
+  "notes": "Needs a stack of open tags. Problems found while scanning take precedence over unclosed tags at the end. The depth counts the stack after an opening tag, not the number of tags."
+}

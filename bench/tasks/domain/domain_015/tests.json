@@ -1,0 +1,20 @@
+[
+  {"args": [1000, 100, 300, 12], "expect": {"$": "ok", "args": [{"months": 4, "interest": 22, "paid": 1022}]}},
+  {"args": [1000, 100, 300, 3], "expect": {"$": "err", "args": ["not repaid after 3 months: 121 left"]}},
+  {"args": [1000, 100, 300, 4], "expect": {"$": "ok", "args": [{"months": 4, "interest": 22, "paid": 1022}]}},
+  {"args": [100, 0, 100, 1], "expect": {"$": "ok", "args": [{"months": 1, "interest": 0, "paid": 100}]}},
+  {"args": [100, 0, 30, 4], "expect": {"$": "ok", "args": [{"months": 4, "interest": 0, "paid": 100}]}},
+  {"args": [100, 0, 30, 3], "expect": {"$": "err", "args": ["not repaid after 3 months: 10 left"]}},
+  {"args": [100000, 100, 1000, 36], "expect": {"$": "err", "args": ["payment too small: interest is 1000"]}},
+  {"args": [100000, 100, 1001, 36], "expect": {"$": "err", "args": ["not repaid after 36 months: 99929 left"]}},
+  {"args": [100000, 150, 10000, 12], "expect": {"$": "ok", "args": [{"months": 11, "interest": 9158, "paid": 109158}]}},
+  {"args": [100000, 150, 10000, 11], "expect": {"$": "ok", "args": [{"months": 11, "interest": 9158, "paid": 109158}]}},
+  {"args": [50, 500, 3, 40], "expect": {"$": "ok", "args": [{"months": 28, "interest": 32, "paid": 82}]}},
+  {"args": [0, 100, 300, 12], "expect": {"$": "err", "args": ["invalid principal"]}},
+  {"args": [-5, -1, 0, 0], "expect": {"$": "err", "args": ["invalid principal"]}},
+  {"args": [1000, -1, 300, 12], "expect": {"$": "err", "args": ["invalid rate"]}},
+  {"args": [1000, 100, 0, 12], "expect": {"$": "err", "args": ["invalid payment"]}},
+  {"args": [1000, 100, 300, 0], "expect": {"$": "err", "args": ["invalid term"]}},
+  {"args": [999, 99, 500, 5], "expect": {"$": "ok", "args": [{"months": 3, "interest": 14, "paid": 1013}]}},
+  {"args": [1000000, 25, 200000, 10], "expect": {"$": "ok", "args": [{"months": 6, "interest": 7567, "paid": 1007567}]}}
+]

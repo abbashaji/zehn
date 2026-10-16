@@ -1,0 +1,39 @@
+{
+  "id": "numneg_010",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Remainder that follows the dividend",
+  "description": "Divide a by b with the quotient q rounded toward zero (the fraction is dropped), and return the remainder r = a - b*q. Because of the rounding, r is 0 or has the same sign as a, and |r| < |b|. For example -7 and 2 give q = -3 and r = -1; 7 and -2 give q = -3 and r = 1. b is never 0 and may be negative.",
+  "entry": "trunc_remainder",
+  "params": [
+    {
+      "name": "a",
+      "type": "Int"
+    },
+    {
+      "name": "b",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        7,
+        2
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        8,
+        -4
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states truncation toward zero in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

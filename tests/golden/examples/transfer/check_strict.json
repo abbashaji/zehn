@@ -1,0 +1,75 @@
+{
+  "exit": 0,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Account",
+        "ref": "type#301f"
+      },
+      {
+        "kind": "type",
+        "name": "TransferError",
+        "ref": "type#6ae4"
+      },
+      {
+        "kind": "type",
+        "name": "Transfer",
+        "ref": "type#ad49"
+      },
+      {
+        "kind": "fn",
+        "name": "debit",
+        "ref": "fn#2cff"
+      },
+      {
+        "kind": "fn",
+        "name": "credit",
+        "ref": "fn#cdd4"
+      },
+      {
+        "kind": "fn",
+        "name": "transfer",
+        "ref": "fn#9240"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 0,
+      "passed": 5,
+      "results": [
+        {
+          "example": "debit({balance: 100}, 30) == ok({balance: 70})",
+          "fn": "debit",
+          "line": 11,
+          "status": "pass"
+        },
+        {
+          "example": "debit({balance: 10}, 30) == err(InsufficientFunds)",
+          "fn": "debit",
+          "line": 12,
+          "status": "pass"
+        },
+        {
+          "example": "credit({balance: 5}, 3) == {balance: 8}",
+          "fn": "credit",
+          "line": 24,
+          "status": "pass"
+        },
+        {
+          "example": "transfer({balance: 100}, {balance: 0}, 30) == ok({from: {balance: 70}, to: {balance: 30}})",
+          "fn": "transfer",
+          "line": 34,
+          "status": "pass"
+        },
+        {
+          "example": "transfer({balance: 10}, {balance: 0}, 30) == err(InsufficientFunds)",
+          "fn": "transfer",
+          "line": 35,
+          "status": "pass"
+        }
+      ]
+    },
+    "ok": true
+  }
+}

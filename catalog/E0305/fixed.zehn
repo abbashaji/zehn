@@ -1,0 +1,7 @@
+fn bump(n: Int) -> Int
+  example bump(1) == 2
+do
+  var total = n
+  total := total + 1
+  return total
+end fn

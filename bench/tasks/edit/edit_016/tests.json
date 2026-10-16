@@ -1,0 +1,15 @@
+[
+  {"args": [800], "expect": {"$": "ok", "args": [500]}},
+  {"args": [3000], "expect": {"$": "ok", "args": [900]}},
+  {"args": [1], "expect": {"$": "ok", "args": [500]}},
+  {"args": [999], "expect": {"$": "ok", "args": [500]}},
+  {"args": [1000], "expect": {"$": "ok", "args": [500]}},
+  {"args": [1001], "expect": {"$": "ok", "args": [900]}},
+  {"args": [2500], "expect": {"$": "ok", "args": [900]}},
+  {"args": [4999], "expect": {"$": "ok", "args": [900]}},
+  {"args": [5000], "expect": {"$": "ok", "args": [900]}},
+  {"args": [5001], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [100000], "expect": {"$": "ok", "args": [1500]}},
+  {"args": [0], "expect": {"$": "err", "args": ["invalid weight"]}},
+  {"args": [-7], "expect": {"$": "err", "args": ["invalid weight"]}}
+]

@@ -1,0 +1,74 @@
+type Shift = { begin: Int, finish: Int }
+
+fn shifts_valid(shifts: List<Shift>, i: Int) -> Bool
+  intent "true when every shift from index i on begins before it finishes"
+  example shifts_valid([], 0) == true
+  example shifts_valid([{begin: 1, finish: 2}, {begin: 3, finish: 3}], 0) == false
+  example shifts_valid([{begin: 1, finish: 2}, {begin: 3, finish: 4}], 0) == true
+do
+  match list.get(shifts, i) do
+    case none =>
+      return true
+    case some(s) =>
+      if s.begin >= s.finish then
+        return false
+      end if
+      return shifts_valid(shifts, i + 1)
+  end match
+end fn
+
+fn begins_sorted(shifts: List<Shift>, i: Int, prev: Int) -> Bool
+  intent "true when no shift from index i on begins before prev or before the shift ahead of it"
+  example begins_sorted([], 0, 0) == true
+  example begins_sorted([{begin: 5, finish: 6}, {begin: 3, finish: 4}], 0, 0) == false
+  example begins_sorted([{begin: 3, finish: 4}, {begin: 3, finish: 9}], 0, 0) == true
+do
+  match list.get(shifts, i) do
+    case none =>
+      return true
+    case some(s) =>
+      if s.begin < prev then
+        return false
+      end if
+      return begins_sorted(shifts, i + 1, s.begin)
+  end match
+end fn
+
+fn merge_from(shifts: List<Shift>, gap: Int, i: Int, open_begin: Int, open_finish: Int, has_open: Bool, done: List<Shift>) -> List<Shift>
+  intent "merge the overlapping shifts from index i on; the open shift is not yet in done and exists only when has_open is true"
+  example merge_from([], 0, 0, 0, 0, false, []) == []
+  example merge_from([{begin: 1, finish: 4}, {begin: 3, finish: 5}], 0, 0, 0, 0, false, []) == [{begin: 1, finish: 5}]
+  example merge_from([{begin: 1, finish: 3}, {begin: 3, finish: 6}], 1, 0, 0, 0, false, []) == [{begin: 1, finish: 3}, {begin: 3, finish: 6}]
+do
+  match list.get(shifts, i) do
+    case none =>
+      if has_open then
+        return list.append(done, {begin: open_begin, finish: open_finish})
+      end if
+      return done
+    case some(s) =>
+      if not has_open then
+        return merge_from(shifts, gap, i + 1, s.begin, s.finish, true, done)
+      end if
+      if s.begin < open_finish then
+        return merge_from(shifts, gap, i + 1, open_begin, int.max(open_finish, s.finish), true, done)
+      end if
+      return merge_from(shifts, gap, i + 1, s.begin, s.finish, true, list.append(done, {begin: open_begin, finish: open_finish}))
+  end match
+end fn
+
+fn merge_shifts(shifts: List<Shift>, gap: Int) -> Result<List<Shift>, Text>
+  intent "merge shifts that overlap; checks run in a fixed order"
+  example merge_shifts([{begin: 1, finish: 3}, {begin: 2, finish: 5}, {begin: 8, finish: 9}], 0) == ok([{begin: 1, finish: 5}, {begin: 8, finish: 9}])
+  example merge_shifts([{begin: 1, finish: 3}, {begin: 3, finish: 5}], 0) == ok([{begin: 1, finish: 3}, {begin: 3, finish: 5}])
+  example merge_shifts([{begin: 3, finish: 3}, {begin: 1, finish: 2}], 0) == err("invalid shift")
+  example merge_shifts([{begin: 5, finish: 7}, {begin: 3, finish: 4}], 0) == err("not sorted")
+do
+  if not shifts_valid(shifts, 0) then
+    return err("invalid shift")
+  end if
+  if not begins_sorted(shifts, 0, 0) then
+    return err("not sorted")
+  end if
+  return ok(merge_from(shifts, gap, 0, 0, 0, false, []))
+end fn

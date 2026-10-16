@@ -1,0 +1,34 @@
+fn wrap_from(words: List<Text>, i: Int, line: Text, width: Int) -> Text
+  intent "lay out the words at index i and later greedily after the current line, lines joined with |; empty pieces are not words"
+  example wrap_from(["bb", "cc"], 0, "", 5) == "bb cc"
+  example wrap_from(["bb", "cc"], 0, "", 4) == "bb|cc"
+  example wrap_from([], 0, "", 4) == ""
+do
+  match list.get(words, i) do
+    case none =>
+      return line
+    case some(w) =>
+      if w == "" then
+        return wrap_from(words, i + 1, line, width)
+      end if
+      if line == "" then
+        return wrap_from(words, i + 1, w, width)
+      end if
+      if text.len(line) + 1 + text.len(w) <= width then
+        return wrap_from(words, i + 1, text.concat(text.concat(line, " "), w), width)
+      end if
+      return text.concat(text.concat(line, "|"), wrap_from(words, i + 1, w, width))
+  end match
+end fn
+
+fn wrap_words(body: Text, width: Int) -> Result<Text, Text>
+  intent "break the space-separated words into lines of at most width characters, filling each line greedily; lines are joined with |; a width below 1 is an error"
+  example wrap_words("aa bb cc", 5) == ok("aa bb|cc")
+  example wrap_words("abcdefgh x", 3) == ok("abcdefgh|x")
+  example wrap_words("a", 0) == err("width must be positive")
+do
+  if width < 1 then
+    return err("width must be positive")
+  end if
+  return ok(wrap_from(text.split_on(body, " "), 0, "", width))
+end fn

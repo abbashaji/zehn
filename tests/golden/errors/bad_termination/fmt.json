@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "fn spin(n: Int) -> Int\n  example spin(1) == 1\ndo\n  return spin(n + 1)\nend fn\n\nfn ping(n: Int) -> Int\n  example ping(1) == 1\ndo\n  return pong(n + 1)\nend fn\n\nfn pong(n: Int) -> Int\n  example pong(1) == 1\ndo\n  return ping(n + 1)\nend fn\n\nfn fib(n: Int) -> Int\n  example fib(40) == 102334155\ndo\n  if n < 2 then\n    return n\n  else\n    return fib(n - 1) + fib(n - 2)\n  end if\nend fn\n"
+}

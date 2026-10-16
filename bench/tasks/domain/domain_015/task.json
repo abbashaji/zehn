@@ -1,0 +1,83 @@
+{
+  "id": "domain_015",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Loan repayment summary",
+  "description": "A loan is repaid in monthly steps. Write repayment_summary, which takes the principal in cents, the monthly interest rate in basis points (one basis point is one hundredth of a percent, so 100 is 1 percent per month), the fixed monthly payment in cents and the maximum number of months allowed, and returns a summary with three fields: months (how many monthly steps were needed), interest (the total interest charged) and paid (the total amount paid). Each month works like this: first interest is charged on the current balance, equal to the balance times the rate divided by 10000, rounded down to a whole cent, and added to the balance; then the payment is made, which is the fixed payment or the whole balance if that is smaller; the month counts as one step. The loan ends in the month the balance reaches zero, so the last payment is usually smaller than the fixed one. Checks happen in this order, and the first failing one decides the result: a principal of zero or less gives the error \"invalid principal\"; a rate below zero gives \"invalid rate\"; a payment of zero or less gives \"invalid payment\"; a maximum of zero months or less gives \"invalid term\"; a payment that does not exceed the interest of the first month (computed on the principal) gives \"payment too small: interest is \" followed by that first month's interest; if the balance is still above zero after the maximum number of months the error is \"not repaid after \" followed by the maximum, \" months: \", the balance left and \" left\". A rate of zero is allowed.",
+  "entry": "repayment_summary",
+  "params": [
+    {
+      "name": "principal",
+      "type": "Int"
+    },
+    {
+      "name": "rate_bp",
+      "type": "Int"
+    },
+    {
+      "name": "payment",
+      "type": "Int"
+    },
+    {
+      "name": "max_months",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Summary, Text>",
+  "types": [
+    {
+      "name": "Summary",
+      "fields": [
+        {
+          "name": "months",
+          "type": "Int"
+        },
+        {
+          "name": "interest",
+          "type": "Int"
+        },
+        {
+          "name": "paid",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        1000,
+        100,
+        300,
+        12
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          {
+            "months": 4,
+            "interest": 22,
+            "paid": 1022
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        1000,
+        100,
+        300,
+        3
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "not repaid after 3 months: 121 left"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: an iterative simulation with rounding at every step, a final partial payment, a derived early error and an exhaustion error. Pitfalls: interest is rounded down each month on the then-current balance (not computed in one go); the last payment is the remaining balance; a payment equal to the first month's interest is too small; the exhaustion error reports the balance after the last allowed month; the parameter checks come in the stated order and before the too-small check; paid equals principal plus total interest."
+}

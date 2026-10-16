@@ -1,0 +1,20 @@
+{
+  "id": "pure_009",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Sign changes in a series",
+  "description": "Count how many times the sign flips along a series of integers. Zeros have no sign and are skipped: compare each non-zero value with the closest non-zero value before it, so that [3, 0, -2] has one flip and [3, 0, 5] has none. Positive followed by negative, or negative followed by positive, is one flip. A series with no or one non-zero value has 0 flips.",
+  "entry": "sign_changes",
+  "params": [
+    {"name": "values", "type": "List<Int>"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, -1, 0, 2]], "expect": 2},
+    {"args": [[0, 0]], "expect": 0}
+  ],
+  "notes": "Zeros must not reset the remembered sign (flip across zeros counts) and must not count as a sign themselves. Needs a carried last non-zero sign."
+}

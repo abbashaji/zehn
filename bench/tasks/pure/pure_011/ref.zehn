@@ -1,0 +1,35 @@
+type Span = { lo: Int, hi: Int }
+
+fn merge_from(spans: List<Span>, i: Int, cur: Span, done: List<Span>) -> List<Span>
+  intent "finished spans in done, then the merge of cur with the spans from index i on"
+  requires i >= 0
+  example merge_from([{lo: 2, hi: 6}], 0, {lo: 1, hi: 3}, []) == [{lo: 1, hi: 6}]
+  example merge_from([{lo: 5, hi: 6}], 0, {lo: 1, hi: 3}, []) == [{lo: 1, hi: 3}, {lo: 5, hi: 6}]
+  example merge_from([], 0, {lo: 1, hi: 3}, [{lo: -4, hi: -2}]) == [{lo: -4, hi: -2}, {lo: 1, hi: 3}]
+do
+  match list.get(spans, i) do
+    case none =>
+      return list.append(done, cur)
+    case some(s) =>
+      if s.lo <= cur.hi then
+        return merge_from(spans, i + 1, {lo: cur.lo, hi: int.max(cur.hi, s.hi)}, done)
+      else
+        return merge_from(spans, i + 1, s, list.append(done, cur))
+      end if
+  end match
+end fn
+
+fn merge_spans(spans: List<Span>) -> List<Span>
+  intent "merge spans, given in order of lo, that overlap or share an endpoint into one span each; the result keeps the order"
+  ensures list.len(out) <= list.len(spans)
+  example merge_spans([{lo: 1, hi: 3}, {lo: 2, hi: 6}, {lo: 8, hi: 9}]) == [{lo: 1, hi: 6}, {lo: 8, hi: 9}]
+  example merge_spans([{lo: 1, hi: 3}, {lo: 4, hi: 5}]) == [{lo: 1, hi: 3}, {lo: 4, hi: 5}]
+  example merge_spans([]) == []
+do
+  match list.get(spans, 0) do
+    case none =>
+      return []
+    case some(first) =>
+      return merge_from(spans, 1, first, [])
+  end match
+end fn

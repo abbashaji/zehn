@@ -1,0 +1,14 @@
+[
+  {"args": [[], 3], "expect": {"$": "ok", "args": [0]}, "stdout": "(no items)\n"},
+  {"args": [[], 0], "expect": {"$": "err", "args": ["page size must be at least 1"]}, "stdout": ""},
+  {"args": [["a"], 0], "expect": {"$": "err", "args": ["page size must be at least 1"]}, "stdout": ""},
+  {"args": [["a", "b"], -2], "expect": {"$": "err", "args": ["page size must be at least 1"]}, "stdout": ""},
+  {"args": [["a"], 1], "expect": {"$": "ok", "args": [1]}, "stdout": "-- page 1 of 1 --\na\n"},
+  {"args": [["a", "b", "c", "d", "e"], 2], "expect": {"$": "ok", "args": [3]}, "stdout": "-- page 1 of 3 --\na\nb\n-- page 2 of 3 --\nc\nd\n-- page 3 of 3 --\ne\n"},
+  {"args": [["a", "b", "c", "d"], 2], "expect": {"$": "ok", "args": [2]}, "stdout": "-- page 1 of 2 --\na\nb\n-- page 2 of 2 --\nc\nd\n"},
+  {"args": [["a", "b", "c"], 10], "expect": {"$": "ok", "args": [1]}, "stdout": "-- page 1 of 1 --\na\nb\nc\n"},
+  {"args": [["a", "b", "c", "d", "e", "f", "g"], 3], "expect": {"$": "ok", "args": [3]}, "stdout": "-- page 1 of 3 --\na\nb\nc\n-- page 2 of 3 --\nd\ne\nf\n-- page 3 of 3 --\ng\n"},
+  {"args": [["", "x", ""], 2], "expect": {"$": "ok", "args": [2]}, "stdout": "-- page 1 of 2 --\n\nx\n-- page 2 of 2 --\n\n"},
+  {"args": [["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"], 1], "expect": {"$": "ok", "args": [11]}, "stdout": "-- page 1 of 11 --\n1\n-- page 2 of 11 --\n2\n-- page 3 of 11 --\n3\n-- page 4 of 11 --\n4\n-- page 5 of 11 --\n5\n-- page 6 of 11 --\n6\n-- page 7 of 11 --\n7\n-- page 8 of 11 --\n8\n-- page 9 of 11 --\n9\n-- page 10 of 11 --\n10\n-- page 11 of 11 --\n11\n"},
+  {"args": [["p", "q"], 9000000000000000], "expect": {"$": "ok", "args": [1]}, "stdout": "-- page 1 of 1 --\np\nq\n"}
+]

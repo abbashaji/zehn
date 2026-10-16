@@ -1,0 +1,11 @@
+fn pick73() -> Int
+  example pick73() == 73
+do
+  return 73
+end fn
+
+fn pick248() -> Int
+  example pick248() == 248
+do
+  return 248
+end fn

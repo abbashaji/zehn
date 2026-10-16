@@ -1,0 +1,69 @@
+fn price(plan: Text) -> Option<Int>
+  intent "price in cents per cycle of a plan, none for an unknown plan"
+  example price("free") == some(0)
+  example price("team") == some(7900)
+  example price("gold") == none
+do
+  match plan do
+    case "free" =>
+      return some(0)
+    case "basic" =>
+      return some(900)
+    case "pro" =>
+      return some(2900)
+    case "team" =>
+      return some(7900)
+    case _ =>
+      return none
+  end match
+end fn
+
+fn prorate(cents: Int, days_left: Int, cycle_days: Int) -> Int
+  intent "the part of a price that belongs to the days left in the cycle, rounded down"
+  requires cents >= 0
+  requires days_left >= 0
+  requires cycle_days > 0
+  example prorate(2900, 20, 30) == 1933
+  example prorate(900, 30, 30) == 900
+  example prorate(900, 0, 30) == 0
+do
+  return cents * days_left / cycle_days
+end fn
+
+fn change_plan(current: Text, target: Text, days_used: Int, cycle_days: Int) -> Result<Int, Text>
+  intent "net amount to settle when moving to another plan part-way through a cycle: charge for the target minus credit for the current, each prorated"
+  example change_plan("basic", "pro", 10, 30) == ok(1333)
+  example change_plan("pro", "basic", 5, 30) == ok(-1666)
+  example change_plan("gold", "pro", 3, 30) == err("unknown plan: gold")
+  example change_plan("pro", "pro", 3, 30) == err("already on plan pro")
+  example change_plan("basic", "team", 3, 30) == err("team plan requires pro")
+  example change_plan("pro", "basic", 8, 30) == err("downgrade not allowed after day 7")
+  example change_plan("pro", "basic", 3, 0) == err("invalid cycle")
+do
+  match price(current) do
+    case none =>
+      return err(text.concat("unknown plan: ", current))
+    case some(from_price) =>
+      match price(target) do
+        case none =>
+          return err(text.concat("unknown plan: ", target))
+        case some(to_price) =>
+          if cycle_days <= 0 or days_used < 0 or days_used > cycle_days then
+            return err("invalid cycle")
+          end if
+          if current == target then
+            return err(text.concat("already on plan ", current))
+          end if
+          if target == "team" and current != "pro" then
+            return err("team plan requires pro")
+          end if
+          if to_price < from_price and days_used > 7 then
+            return err("downgrade not allowed after day 7")
+          end if
+          let days_left = cycle_days - days_used
+          let charge = prorate(to_price, days_left, cycle_days)
+          let credit = prorate(from_price, days_left, cycle_days)
+          return ok(charge - credit)
+      end match
+  end match
+end fn

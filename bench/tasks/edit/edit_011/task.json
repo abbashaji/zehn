@@ -1,0 +1,48 @@
+{
+  "id": "edit_011",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Posts that mention all the tags",
+  "description": "Bug report for a search helper that picks the posts matching a list of tags. Two symptoms: a post is returned when it mentions only some of the tags, and a tag written in capitals does not find a post written in lower case. Fix the program. The complete rule is: a post matches when every tag occurs somewhere inside the post text (as a substring, not necessarily as a whole word), ignoring upper and lower case; with an empty list of tags every post matches; the result keeps the posts in their original order and has no other changes. Texts are plain ASCII.",
+  "entry": "matching_posts",
+  "params": [
+    {
+      "name": "posts",
+      "type": "List<Text>"
+    },
+    {
+      "name": "tags",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "List<Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "cat on mat",
+          "dog"
+        ],
+        [
+          "cat"
+        ]
+      ],
+      "expect": [
+        "cat on mat"
+      ]
+    },
+    {
+      "args": [
+        [],
+        [
+          "x"
+        ]
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Two bugs: the start returns a post when ANY tag occurs (and so returns nothing for an empty tag list), and the comparison is case-sensitive. Tags are never empty in the tests (substring semantics of the empty text are not exercised). Visible examples use one lowercase tag so that the start passes them."
+}

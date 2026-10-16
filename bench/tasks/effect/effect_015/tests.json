@@ -1,0 +1,16 @@
+[
+  {"args": [[], 10, 3], "expect": {"$": "ok", "args": [0]}, "stdout": "blocked: 0\n"},
+  {"args": [[1], 0, 3], "expect": {"$": "err", "args": ["window must be positive"]}, "stdout": ""},
+  {"args": [[1], -5, 3], "expect": {"$": "err", "args": ["window must be positive"]}, "stdout": ""},
+  {"args": [[1], 10, -1], "expect": {"$": "err", "args": ["limit must not be negative"]}, "stdout": ""},
+  {"args": [[], 0, -1], "expect": {"$": "err", "args": ["window must be positive"]}, "stdout": ""},
+  {"args": [[0, 1, 2, 3], 10, 2], "expect": {"$": "ok", "args": [2]}, "stdout": "t=0 allowed (1/2)\nt=1 allowed (2/2)\nt=2 blocked\nt=3 blocked\nblocked: 2\n"},
+  {"args": [[8, 9, 10, 11, 12], 10, 2], "expect": {"$": "ok", "args": [1]}, "stdout": "t=8 allowed (1/2)\nt=9 allowed (2/2)\nt=10 allowed (1/2)\nt=11 allowed (2/2)\nt=12 blocked\nblocked: 1\n"},
+  {"args": [[5, 5, 5], 5, 2], "expect": {"$": "ok", "args": [1]}, "stdout": "t=5 allowed (1/2)\nt=5 allowed (2/2)\nt=5 blocked\nblocked: 1\n"},
+  {"args": [[1, 1, 2, 2], 1, 1], "expect": {"$": "ok", "args": [2]}, "stdout": "t=1 allowed (1/1)\nt=1 blocked\nt=2 allowed (1/1)\nt=2 blocked\nblocked: 2\n"},
+  {"args": [[0, 100, 200], 10, 1], "expect": {"$": "ok", "args": [0]}, "stdout": "t=0 allowed (1/1)\nt=100 allowed (1/1)\nt=200 allowed (1/1)\nblocked: 0\n"},
+  {"args": [[3, 4, 5], 10, 0], "expect": {"$": "ok", "args": [3]}, "stdout": "t=3 blocked\nt=4 blocked\nt=5 blocked\nblocked: 3\n"},
+  {"args": [[0, 4000000000000, 4000000000001, 4000000000002], 1000000, 2], "expect": {"$": "ok", "args": [1]}, "stdout": "t=0 allowed (1/2)\nt=4000000000000 allowed (1/2)\nt=4000000000001 allowed (2/2)\nt=4000000000002 blocked\nblocked: 1\n"},
+  {"args": [[5, 9000000000000000], 9000000000000000, 1], "expect": {"$": "ok", "args": [0]}, "stdout": "t=5 allowed (1/1)\nt=9000000000000000 allowed (1/1)\nblocked: 0\n"},
+  {"args": [[10, 11, 12, 20, 21], 10, 1], "expect": {"$": "ok", "args": [3]}, "stdout": "t=10 allowed (1/1)\nt=11 blocked\nt=12 blocked\nt=20 allowed (1/1)\nt=21 blocked\nblocked: 3\n"}
+]

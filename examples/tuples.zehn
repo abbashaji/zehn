@@ -1,0 +1,172 @@
+-- Tuples: two or more values kept together. Build one with (a, b), take it apart with `match`.
+type Move = Step((Int, Int)) | Stay
+
+fn swap(p: (Int, Text)) -> (Text, Int)
+  intent "Exchange the two parts of a pair."
+  example swap((1, "a")) == ("a", 1)
+  example swap((0, "")) == ("", 0)
+do
+  match p do
+    case (n, t) =>
+      return (t, n)
+  end match
+end fn
+
+fn min_max(a: Int, b: Int) -> (Int, Int)
+  intent "The smaller and the larger of two numbers, in that order."
+  ensures out_lo(out) <= out_hi(out)
+  example min_max(5, 2) == (2, 5)
+  example min_max(1, 1) == (1, 1)
+do
+  if a <= b then
+    return (a, b)
+  else
+    return (b, a)
+  end if
+end fn
+
+fn out_lo(p: (Int, Int)) -> Int
+  example out_lo((3, 4)) == 3
+do
+  match p do
+    case (lo, _) =>
+      return lo
+  end match
+end fn
+
+fn out_hi(p: (Int, Int)) -> Int
+  example out_hi((3, 4)) == 4
+do
+  match p do
+    case (_, hi) =>
+      return hi
+  end match
+end fn
+
+fn fizz(n: Int) -> Text
+  intent "FizzBuzz for one number, by matching both remainders at once."
+  example fizz(15) == "FizzBuzz"
+  example fizz(9) == "Fizz"
+  example fizz(10) == "Buzz"
+  example fizz(7) == "7"
+do
+  match (n % 3, n % 5) do
+    case (0, 0) =>
+      return "FizzBuzz"
+    case (0, _) =>
+      return "Fizz"
+    case (_, 0) =>
+      return "Buzz"
+    case _ =>
+      return int.to_text(n)
+  end match
+end fn
+
+fn add_options(a: Option<Int>, b: Option<Int>) -> Int
+  intent "Sum of the values that are present; every combination is a case."
+  example add_options(some(1), some(2)) == 3
+  example add_options(some(4), none) == 4
+  example add_options(none, some(5)) == 5
+  example add_options(none, none) == 0
+do
+  match (a, b) do
+    case (some(x), some(y)) =>
+      return x + y
+    case (some(x), none) =>
+      return x
+    case (none, some(y)) =>
+      return y
+    case (none, none) =>
+      return 0
+  end match
+end fn
+
+fn span(r: ((Int, Int), (Int, Int))) -> Int
+  intent "Manhattan distance between the two corners of a rectangle."
+  example span(((0, 0), (3, 4))) == 7
+  example span(((5, 5), (1, 2))) == 7
+do
+  match r do
+    case ((x1, y1), (x2, y2)) =>
+      return abs_diff(x1, x2) + abs_diff(y1, y2)
+  end match
+end fn
+
+fn abs_diff(a: Int, b: Int) -> Int
+  example abs_diff(2, 7) == 5
+  example abs_diff(7, 2) == 5
+do
+  if a < b then
+    return b - a
+  else
+    return a - b
+  end if
+end fn
+
+fn div_mod(a: Int, b: Int) -> Result<(Int, Int), Text>
+  intent "Quotient and remainder, or an error for a zero divisor."
+  example div_mod(7, 2) == ok((3, 1))
+  example div_mod(1, 0) == err("division by zero")
+do
+  if b == 0 then
+    return err("division by zero")
+  else
+    return ok((a / b, a % b))
+  end if
+end fn
+
+fn apply_move(pos: (Int, Int), m: Move) -> (Int, Int)
+  intent "A position after a step; staying keeps it."
+  example apply_move((1, 1), Step((2, -1))) == (3, 0)
+  example apply_move((1, 1), Stay) == (1, 1)
+do
+  match m do
+    case Step((dx, dy)) =>
+      match pos do
+        case (x, y) =>
+          return (x + dx, y + dy)
+      end match
+    case Stay =>
+      return pos
+  end match
+end fn
+
+fn sum_pairs(ps: List<(Int, Int)>) -> List<Int>
+  intent "The sum of each pair."
+  example sum_pairs([(1, 2), (3, 4)]) == [3, 7]
+  example sum_pairs([]) == []
+do
+  return list.map(ps, pair_sum)
+end fn
+
+fn pair_sum(p: (Int, Int)) -> Int
+  example pair_sum((10, 20)) == 30
+do
+  match p do
+    case (a, b) =>
+      return a + b
+  end match
+end fn
+
+fn labelled(n: Int) -> (Int, (Bool, Text))
+  intent "A number with a nested pair describing it."
+  example labelled(4) == (4, (true, "even"))
+  example labelled(3) == (3, (false, "odd"))
+do
+  let even = n % 2 == 0
+  let label = if_even(even)
+  let detail = (even, label)
+  return (n, detail)
+end fn
+
+fn if_even(even: Bool) -> Text
+  example if_even(true) == "even"
+  example if_even(false) == "odd"
+do
+  match even do
+    case true =>
+      return "even"
+    case false =>
+      return "odd"
+  end match
+end fn

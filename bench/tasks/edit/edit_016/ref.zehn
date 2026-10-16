@@ -1,0 +1,18 @@
+fn shipping_fee(grams: Int) -> Result<Int, Text>
+  intent "parcel fee in cents by weight band: up to 1000 g 500, up to 5000 g 900, above that 1500"
+  example shipping_fee(800) == ok(500)
+  example shipping_fee(1000) == ok(500)
+  example shipping_fee(5001) == ok(1500)
+  example shipping_fee(0) == err("invalid weight")
+do
+  if grams < 1 then
+    return err("invalid weight")
+  end if
+  if grams <= 1000 then
+    return ok(500)
+  end if
+  if grams <= 5000 then
+    return ok(900)
+  end if
+  return ok(1500)
+end fn

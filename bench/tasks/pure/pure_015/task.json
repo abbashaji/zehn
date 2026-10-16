@@ -1,0 +1,21 @@
+{
+  "id": "pure_015",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Slots for tasks with a cooldown",
+  "description": "Tasks run in the given order, one task per time slot, with slots numbered 1, 2, 3 and so on. Each task is an integer kind. Two tasks of the same kind must have at least cooldown other slots between them (cooldown is 0 or more). A task goes into the earliest slot that is after the previous task's slot and respects the cooldown for its kind; the slots in between stay idle. Return the number of the last used slot, which is the total number of slots needed. No tasks need 0 slots. The order of the tasks is fixed and must not be changed.",
+  "entry": "schedule_length",
+  "params": [
+    {"name": "tasks", "type": "List<Int>"},
+    {"name": "cooldown", "type": "Int"}
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, 1, 1], 2], "expect": 7},
+    {"args": [[1, 2, 1], 2], "expect": 4}
+  ],
+  "notes": "The order is fixed (not the reordering variant of the classic puzzle). The cooldown counts from the slot of the previous task of the same kind, not from the previous slot; a task of another kind in between fills a slot but does not reset anything. Internally a per-kind last-slot table is needed."
+}

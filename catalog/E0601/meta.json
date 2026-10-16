@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`charge` calls `audit`, which needs `console`, without declaring it"
+}

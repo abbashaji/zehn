@@ -1,0 +1,20 @@
+{
+  "id": "pure_010",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Deepest nesting of open and close steps",
+  "description": "A sequence of steps describes nesting: 1 opens a level and -1 closes one. Return Ok with the deepest level reached (the depth starts at 0, so an empty sequence gives Ok(0)). Go through the steps from the first one and report the first problem found: a step that is neither 1 nor -1 gives Err 'bad step'; a -1 that would take the depth below 0 gives Err 'closed too early'. If the steps end while the depth is above 0, return Err 'left open'.",
+  "entry": "max_depth",
+  "params": [
+    {"name": "steps", "type": "List<Int>"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, 1, -1, 1, -1, -1]], "expect": {"$": "ok", "args": [2]}},
+    {"args": [[1, -1, -1, 5]], "expect": {"$": "err", "args": ["closed too early"]}}
+  ],
+  "notes": "Error order is the scan order: [1, -1, -1, 5] is 'closed too early' (not 'bad step'), [1, 5, -1, -1, -1] is 'bad step'. 'left open' only applies when the scan finished without another problem."
+}

@@ -1,0 +1,61 @@
+{
+  "id": "domain_016",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Subscription plan change with proration",
+  "description": "A subscription has a billing cycle of a given number of days, and the customer is part-way through it. There are four plans with a price in cents per cycle: \"free\" costs 0, \"basic\" costs 900, \"pro\" costs 2900 and \"team\" costs 7900. Write change_plan, which takes the current plan, the target plan, the number of days of the cycle already used and the length of the cycle in days, and returns the net amount in cents to settle for the change: a positive number is an extra charge, a negative number is a credit, and zero means nothing to settle. The days left are the cycle length minus the days used. The customer is credited for the unused part of the current plan, which is its price times the days left divided by the cycle length, rounded down, and is charged for the same remaining days on the target plan, computed the same way with the target price and rounded down on its own. The net amount is the charge minus the credit. Checks happen in this order, and the first failing one decides the result: a current plan that is not one of the four names gives the error \"unknown plan: \" followed by that text; then the same check for the target plan; a cycle length of zero or less, a negative number of days used, or more days used than the cycle has gives \"invalid cycle\"; a target equal to the current plan gives \"already on plan \" followed by the plan name; a target of \"team\" from any plan other than \"pro\" gives \"team plan requires pro\"; a change to a cheaper plan (target price below the current price) after more than 7 days of the cycle have been used gives \"downgrade not allowed after day 7\", while exactly 7 days used is still allowed.",
+  "entry": "change_plan",
+  "params": [
+    {
+      "name": "current",
+      "type": "Text"
+    },
+    {
+      "name": "target",
+      "type": "Text"
+    },
+    {
+      "name": "days_used",
+      "type": "Int"
+    },
+    {
+      "name": "cycle_days",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "basic",
+        "pro",
+        10,
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          1333
+        ]
+      }
+    },
+    {
+      "args": [
+        "pro",
+        "basic",
+        5,
+        30
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          -1666
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: several interacting rules and two separately rounded prorations. Pitfalls: the charge and the credit are each rounded down before subtracting (rounding the difference gives other numbers); the result may be negative; the unknown-plan checks come first, current before target, then the cycle check, then same-plan, then the team rule, then the downgrade rule; downgrade is judged by price, so team to pro and pro to free are downgrades and basic to pro is not; day 7 itself is allowed; the team rule applies to upgrades only (team to team is caught as same plan first)."
+}

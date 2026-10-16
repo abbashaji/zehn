@@ -1,0 +1,14 @@
+[
+  {"args": ["a-b-c", "-", "+"], "expect": "a+b+c"},
+  {"args": ["abc", "", "x"], "expect": "abc"},
+  {"args": ["aaa", "aa", "b"], "expect": "ba"},
+  {"args": ["aaaa", "aa", "b"], "expect": "bb"},
+  {"args": ["hello", "l", ""], "expect": "heo"},
+  {"args": ["abab", "ab", "ba"], "expect": "baba"},
+  {"args": ["", "a", "b"], "expect": ""},
+  {"args": ["xyz", "q", "r"], "expect": "xyz"},
+  {"args": ["a.b.c", ".", "::"], "expect": "a::b::c"},
+  {"args": ["banana", "ana", "X"], "expect": "bXna"},
+  {"args": ["aXa", "a", "aa"], "expect": "aaXaa"},
+  {"args": ["abc", "abc", ""], "expect": ""}
+]

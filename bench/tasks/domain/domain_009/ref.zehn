@@ -1,0 +1,41 @@
+fn block_fee(billable: Int) -> Int
+  intent "charge of one block with this many billable minutes: 300 per started hour, at most 1500"
+  example block_fee(0) == 0
+  example block_fee(1) == 300
+  example block_fee(61) == 600
+  example block_fee(1425) == 1500
+do
+  if billable <= 0 then
+    return 0
+  end if
+  return int.min(1500, (billable + 59) / 60 * 300)
+end fn
+
+fn fee_from(remaining: Int, grace: Int) -> Int
+  intent "fee for the minutes still to be billed, taking blocks of 1440 minutes; the grace minutes are free in the first block only"
+  example fee_from(0, 15) == 0
+  example fee_from(16, 15) == 300
+  example fee_from(1441, 15) == 1800
+do
+  if remaining <= 0 then
+    return 0
+  end if
+  let block = int.min(remaining, 1440)
+  return block_fee(block - grace) + fee_from(remaining - block, 0)
+end fn
+
+fn parking_fee(entry: Int, exit: Int) -> Result<Int, Text>
+  intent "parking fee in cents for a stay: 15 free minutes once, 300 per started hour, at most 1500 per block of 1440 minutes"
+  example parking_fee(0, 16) == ok(300)
+  example parking_fee(0, 1441) == ok(1800)
+  example parking_fee(-1, 10) == err("invalid entry time")
+  example parking_fee(5, 4) == err("exit before entry")
+do
+  if entry < 0 then
+    return err("invalid entry time")
+  end if
+  if exit < entry then
+    return err("exit before entry")
+  end if
+  return ok(fee_from(exit - entry, 15))
+end fn

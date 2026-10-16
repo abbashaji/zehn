@@ -1,0 +1,39 @@
+{
+  "id": "numneg_008",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Percentage of a signed amount, rounded down",
+  "description": "amount is a number of cents and may be negative (a debt). Return amount * pct / 100 rounded down toward negative infinity, so a debt is rounded to the larger debt: 5% of -150 is -7.5 and gives -8, while 5% of 150 is 7.5 and gives 7. pct is between 0 and 100.",
+  "entry": "percent_of",
+  "params": [
+    {
+      "name": "amount",
+      "type": "Int"
+    },
+    {
+      "name": "pct",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        200,
+        5
+      ],
+      "expect": 10
+    },
+    {
+      "args": [
+        100,
+        100
+      ],
+      "expect": 100
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states floor semantics (round toward negative infinity) in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

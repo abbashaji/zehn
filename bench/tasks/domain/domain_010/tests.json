@@ -1,0 +1,21 @@
+[
+  {"args": ["new", []], "expect": {"$": "ok", "args": ["new"]}},
+  {"args": ["new", ["pay"]], "expect": {"$": "ok", "args": ["paid"]}},
+  {"args": ["new", ["pay", "pack", "ship", "deliver"]], "expect": {"$": "ok", "args": ["delivered"]}},
+  {"args": ["new", ["pay", "pack", "ship", "deliver", "refund"]], "expect": {"$": "ok", "args": ["refunded"]}},
+  {"args": ["new", ["cancel"]], "expect": {"$": "ok", "args": ["cancelled"]}},
+  {"args": ["packed", ["cancel"]], "expect": {"$": "ok", "args": ["cancelled"]}},
+  {"args": ["shipped", ["cancel"]], "expect": {"$": "err", "args": ["step 1: cannot cancel when shipped"]}},
+  {"args": ["new", ["pay", "pay"]], "expect": {"$": "err", "args": ["step 2: cannot pay when paid"]}},
+  {"args": ["new", ["ship"]], "expect": {"$": "err", "args": ["step 1: cannot ship when new"]}},
+  {"args": ["cancelled", ["pay"]], "expect": {"$": "err", "args": ["step 1: cannot pay when cancelled"]}},
+  {"args": ["cancelled", []], "expect": {"$": "ok", "args": ["cancelled"]}},
+  {"args": ["refunded", ["refund"]], "expect": {"$": "err", "args": ["step 1: cannot refund when refunded"]}},
+  {"args": ["delivered", ["refund", "cancel"]], "expect": {"$": "err", "args": ["step 2: cannot cancel when refunded"]}},
+  {"args": ["paid", ["pack", "fly"]], "expect": {"$": "err", "args": ["step 2: unknown event fly"]}},
+  {"args": ["paid", ["ship", "fly"]], "expect": {"$": "err", "args": ["step 1: cannot ship when paid"]}},
+  {"args": ["lost", []], "expect": {"$": "err", "args": ["unknown status: lost"]}},
+  {"args": ["lost", ["pay"]], "expect": {"$": "err", "args": ["unknown status: lost"]}},
+  {"args": ["new", ["pay", "Pack"]], "expect": {"$": "err", "args": ["step 2: unknown event Pack"]}},
+  {"args": ["", []], "expect": {"$": "err", "args": ["unknown status: "]}}
+]

@@ -1,0 +1,28 @@
+{
+  "examples": [
+    {
+      "fn": "spin",
+      "fuel": 90003,
+      "line": 2,
+      "status": "fail"
+    },
+    {
+      "fn": "ping",
+      "fuel": 90003,
+      "line": 12,
+      "status": "fail"
+    },
+    {
+      "fn": "pong",
+      "fuel": 90003,
+      "line": 22,
+      "status": "fail"
+    },
+    {
+      "fn": "fib",
+      "fuel": 1000001,
+      "line": 32,
+      "status": "fail"
+    }
+  ]
+}

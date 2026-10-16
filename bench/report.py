@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Benchmark report: tables, H1-H5 verdicts and the A/B decision helper.
 
-  python3 bench/report.py --run DIR [--run DIR ...] [--out FILE] [--set dev|hidden]
+  python3 bench/report.py --run DIR [--run DIR ...] [--out FILE] [--set dev|hidden] [--exclude-errors]
   python3 bench/report.py ab --a DIR --b DIR --simpler a|b [--out FILE]
 
 Reads result records only (<DIR>/records.jsonl, optional <DIR>/meta.json).
@@ -66,7 +66,9 @@ def load(dirs, only_set=None):
     return metas, records, infos
 
 
-def build_report(dirs, only_set=None):
+def build_report(dirs, only_set=None, exclude_errors=False):
+    """exclude_errors: errored runs are always left out of every metric (v006, ADR-0015); the flag only makes the
+    left-out table explicit: one row per language, printed even when nothing was dropped (message: first 80 chars)."""
     metas, records, infos = load(dirs, only_set)
     max_rounds = metrics.infer_max_rounds(records, metas)
     out = ["# Benchmark report", ""]
@@ -81,7 +83,21 @@ def build_report(dirs, only_set=None):
                      ", ".join(sets) or "-", len(recs),
                      len(set(r["task_id"] for r in recs)), meta_txt])
     out += table(["dir", "run_id", "set", "records", "tasks", "meta"], rows)
-    if ERRORED:
+    if exclude_errors:
+        out += ["", "## Runs left out (ended on an error)", "",
+                "Records with a non-null `error` are dropped before any metric is computed (--exclude-errors)."]
+        langs = sorted(set(r["lang"] for r in ERRORED) | set(r["lang"] for r in records))
+        rows = []
+        for lang in langs:
+            e = [r for r in ERRORED if r["lang"] == lang]
+            msgs = {}
+            for r in e:
+                m = " ".join(str(r["error"]).split())[:80]
+                msgs[m] = msgs.get(m, 0) + 1
+            rows.append([lang, sum(1 for r in records if r["lang"] == lang), len(e),
+                         "; ".join("%s (x%d)" % (m, n) for m, n in sorted(msgs.items())) or "-"])
+        out += [""] + table(["lang", "valid runs", "dropped", "error message (first 80 chars)"], rows)
+    elif ERRORED:
         out += ["", "## Runs left out (ended on an error)", "",
                 "These runs hit an error before they could finish (API outage, tool crash). They are counted "
                 "in no metric below; `run.py run --resume` redoes the API ones."]
@@ -235,8 +251,11 @@ def main(argv=None):
             p.add_argument("--run", action="append", required=True, metavar="DIR")
             p.add_argument("--out")
             p.add_argument("--set", dest="only_set", choices=["dev", "hidden"])
+            p.add_argument("--exclude-errors", action="store_true",
+                           help="print the dropped-errored-runs table per language even when it is empty "
+                                "(errored runs are left out of the metrics with or without this flag)")
             args = p.parse_args(argv)
-            emit(build_report(args.run, args.only_set), args.out)
+            emit(build_report(args.run, args.only_set, args.exclude_errors), args.out)
     except metrics.RecordError as exc:
         sys.stderr.write("error: %s\n" % exc)
         return 2

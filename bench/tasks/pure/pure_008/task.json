@@ -1,0 +1,21 @@
+{
+  "id": "pure_008",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Digits of a number in a base",
+  "description": "Return Ok with the number of digits that n has when written in the given base (2 or more), without leading zeros. The number 0 is written with one digit. Check the input and return Err with exactly these messages: 'negative number' if n is below 0 (checked first), otherwise 'base must be at least 2' if base is below 2.",
+  "entry": "digit_count",
+  "params": [
+    {"name": "n", "type": "Int"},
+    {"name": "base", "type": "Int"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [255, 16], "expect": {"$": "ok", "args": [2]}},
+    {"args": [5, 1], "expect": {"$": "err", "args": ["base must be at least 2"]}}
+  ],
+  "notes": "Zero has one digit. Boundaries at exact powers of the base (255/256 in base 2 and 16, 99/100 in base 100). Error precedence is tested with both inputs bad. Division only happens on non-negative values, after the checks."
+}

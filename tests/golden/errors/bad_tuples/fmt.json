@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "type Color = Red | Green | Blue\n\nfn too_many(p: (Int, Int)) -> Int\n  example too_many((1, 2)) == 1\ndo\n  match p do\n    case (a, b, c) =>\n      return a + b + c\n  end match\nend fn\n\nfn not_a_tuple(n: Int) -> Int\n  example not_a_tuple(1) == 1\ndo\n  match n do\n    case (a, b) =>\n      return a\n  end match\nend fn\n\nfn wrong_size() -> (Int, Int)\n  example wrong_size() == (1, 2)\ndo\n  return (1, 2, 3)\nend fn\n\nfn wrong_element() -> (Int, Text)\n  example wrong_element() == (1, \"a\")\ndo\n  return (1, 2)\nend fn\n\nfn missing_case(c: Color, flag: Bool) -> Int\n  example missing_case(Red, true) == 1\ndo\n  match (c, flag) do\n    case (Red, true) =>\n      return 1\n    case (Green, _) =>\n      return 2\n    case (Blue, false) =>\n      return 3\n  end match\nend fn\n\nfn wrong_return(p: (Int, Int)) -> (Int, Int, Int)\n  example wrong_return((1, 2)) == (1, 2, 3)\ndo\n  return p\nend fn\n"
+}

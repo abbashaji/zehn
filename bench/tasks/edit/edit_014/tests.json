@@ -1,0 +1,17 @@
+[
+  {"args": [[{"name": "ana", "points": 50}, {"name": "bo", "points": 70}, {"name": "cy", "points": 60}]], "expect": [{"name": "bo", "rank": 1}, {"name": "cy", "rank": 2}, {"name": "ana", "rank": 3}]},
+  {"args": [[]], "expect": []},
+  {"args": [[{"name": "solo", "points": 10}]], "expect": [{"name": "solo", "rank": 1}]},
+  {"args": [[{"name": "solo", "points": 0}]], "expect": [{"name": "solo", "rank": 0}]},
+  {"args": [[{"name": "a", "points": 90}, {"name": "b", "points": 80}, {"name": "c", "points": 80}, {"name": "d", "points": 70}]], "expect": [{"name": "a", "rank": 1}, {"name": "b", "rank": 2}, {"name": "c", "rank": 2}, {"name": "d", "rank": 4}]},
+  {"args": [[{"name": "a", "points": 10}, {"name": "b", "points": 30}, {"name": "c", "points": 20}, {"name": "d", "points": 30}, {"name": "e", "points": 10}]], "expect": [{"name": "b", "rank": 1}, {"name": "d", "rank": 1}, {"name": "c", "rank": 3}, {"name": "a", "rank": 4}, {"name": "e", "rank": 4}]},
+  {"args": [[{"name": "a", "points": 5}, {"name": "b", "points": 5}, {"name": "c", "points": 5}]], "expect": [{"name": "a", "rank": 1}, {"name": "b", "rank": 1}, {"name": "c", "rank": 1}]},
+  {"args": [[{"name": "a", "points": 0}, {"name": "b", "points": 7}, {"name": "c", "points": 0}, {"name": "d", "points": 3}]], "expect": [{"name": "b", "rank": 1}, {"name": "d", "rank": 2}, {"name": "a", "rank": 0}, {"name": "c", "rank": 0}]},
+  {"args": [[{"name": "a", "points": 0}, {"name": "b", "points": 0}]], "expect": [{"name": "a", "rank": 0}, {"name": "b", "rank": 0}]},
+  {"args": [[{"name": "x", "points": 1}, {"name": "y", "points": 2}, {"name": "z", "points": 3}, {"name": "w", "points": 4}]], "expect": [{"name": "w", "rank": 1}, {"name": "z", "rank": 2}, {"name": "y", "rank": 3}, {"name": "x", "rank": 4}]},
+  {"args": [[{"name": "a", "points": 60}, {"name": "b", "points": 60}, {"name": "c", "points": 50}, {"name": "d", "points": 50}, {"name": "e", "points": 50}, {"name": "f", "points": 40}]], "expect": [{"name": "a", "rank": 1}, {"name": "b", "rank": 1}, {"name": "c", "rank": 3}, {"name": "d", "rank": 3}, {"name": "e", "rank": 3}, {"name": "f", "rank": 6}]},
+  {"args": [[{"name": "late", "points": 20}, {"name": "early", "points": 20}, {"name": "mid", "points": 25}]], "expect": [{"name": "mid", "rank": 1}, {"name": "late", "rank": 2}, {"name": "early", "rank": 2}]},
+  {"args": [[{"name": "p", "points": 100}, {"name": "q", "points": 100}, {"name": "r", "points": 0}, {"name": "s", "points": 99}]], "expect": [{"name": "p", "rank": 1}, {"name": "q", "rank": 1}, {"name": "s", "rank": 3}, {"name": "r", "rank": 0}]},
+  {"args": [[{"name": "a", "points": 3}, {"name": "b", "points": 0}, {"name": "c", "points": 3}, {"name": "d", "points": 0}, {"name": "e", "points": 1}]], "expect": [{"name": "a", "rank": 1}, {"name": "c", "rank": 1}, {"name": "e", "rank": 3}, {"name": "b", "rank": 0}, {"name": "d", "rank": 0}]},
+  {"args": [[{"name": "n1", "points": 2}, {"name": "n2", "points": 1}, {"name": "n3", "points": 2}, {"name": "n4", "points": 1}, {"name": "n5", "points": 2}, {"name": "n6", "points": 3}]], "expect": [{"name": "n6", "rank": 1}, {"name": "n1", "rank": 2}, {"name": "n3", "rank": 2}, {"name": "n5", "rank": 2}, {"name": "n2", "rank": 5}, {"name": "n4", "rank": 5}]}
+]

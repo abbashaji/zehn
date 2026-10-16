@@ -1,0 +1,20 @@
+[
+  {"args": [255, 16], "expect": {"$": "ok", "args": [2]}},
+  {"args": [5, 1], "expect": {"$": "err", "args": ["base must be at least 2"]}},
+  {"args": [0, 10], "expect": {"$": "ok", "args": [1]}},
+  {"args": [9, 10], "expect": {"$": "ok", "args": [1]}},
+  {"args": [10, 10], "expect": {"$": "ok", "args": [2]}},
+  {"args": [255, 2], "expect": {"$": "ok", "args": [8]}},
+  {"args": [256, 2], "expect": {"$": "ok", "args": [9]}},
+  {"args": [256, 16], "expect": {"$": "ok", "args": [3]}},
+  {"args": [5, 5], "expect": {"$": "ok", "args": [2]}},
+  {"args": [1, 2], "expect": {"$": "ok", "args": [1]}},
+  {"args": [-1, 10], "expect": {"$": "err", "args": ["negative number"]}},
+  {"args": [-1, 1], "expect": {"$": "err", "args": ["negative number"]}},
+  {"args": [0, 0], "expect": {"$": "err", "args": ["base must be at least 2"]}},
+  {"args": [9007199254740991, 10], "expect": {"$": "ok", "args": [16]}},
+  {"args": [9007199254740991, 2], "expect": {"$": "ok", "args": [53]}},
+  {"args": [100, 100], "expect": {"$": "ok", "args": [2]}},
+  {"args": [99, 100], "expect": {"$": "ok", "args": [1]}},
+  {"args": [0, 2], "expect": {"$": "ok", "args": [1]}}
+]

@@ -1,0 +1,8 @@
+fn first(n: Int) -> Int
+  example first(1) == 1
+do
+  match n do
+    case (a, b) =>
+      return a
+  end match
+end fn

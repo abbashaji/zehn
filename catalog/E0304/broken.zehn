@@ -1,0 +1,6 @@
+fn head(xs: List<Int>) -> Int
+  example head([4]) == 4
+do
+  let x = list.get(xs, 0)?
+  return x
+end fn

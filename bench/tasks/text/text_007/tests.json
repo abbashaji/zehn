@@ -1,0 +1,13 @@
+[
+  {"args": ["a bb ccc"], "expect": 3},
+  {"args": [""], "expect": 0},
+  {"args": ["hello"], "expect": 5},
+  {"args": ["  ab   c "], "expect": 2},
+  {"args": [" "], "expect": 0},
+  {"args": ["a  b"], "expect": 1},
+  {"args": ["one two three four"], "expect": 5},
+  {"args": ["x"], "expect": 1},
+  {"args": ["abc de fghij k"], "expect": 5},
+  {"args": ["   "], "expect": 0},
+  {"args": ["aaaaaaaaaaaa b"], "expect": 12}
+]

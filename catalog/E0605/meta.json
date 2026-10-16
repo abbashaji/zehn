@@ -1,0 +1,1 @@
+{"strict": true, "dialect": {"effect_examples": "mock"}, "note": "the mock clauses must name exactly the effects the called function declares"}

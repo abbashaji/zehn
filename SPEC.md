@@ -118,6 +118,11 @@ Shadowing is forbidden: a name may be bound only once per scope chain (compile e
 - `match` must be exhaustive; non-exhaustive match is compile error `E0301`.
 - **Every path must return.** A body is accepted only if control can never reach its end: it must contain a `return`, or an `if` whose `then` *and* `else` both always return, or a `match` whose every case always returns. An `if` without `else` never counts. `?` can return early, but it never guarantees a return, so it does not count either. Violations are `E0310`, which lists *every* falling-through path in `falls_through` (`line` + `where`). A statement that follows a point that always returns can never run and is warning `W0102`. Zehn has no loops, so this analysis is exact, not conservative.
 - Out-of-range `list.get` returns `none`. The operators `/` and `%` are partial: dividing by zero raises the defined diagnostic `E0505` (blame: caller), never undefined behavior. Guard with `requires b != 0`.
+- **Unconditional recursion is rejected statically (`E0311`).** The static pass `recursion` (order 400) builds a call graph with an edge `f -> g` only when a call to the top-level function `g` is *certainly executed* whenever `f` runs up to that statement, and reports every cycle of that graph once (a function calling itself is a cycle of length 1). The diagnostic has `phase` `check`, `location {fn, line}` (the first function of the cycle and the line of its call), `cycle: [{"fn", "line"}, ...]` (the functions of the cycle in call order, each with the line of the call that leads to the next) and a `fix_hint`. Because `run` uses the same passes as `check`, a program with `E0311` never reaches its examples.
+- **What counts as certain.** A call in a straight-line statement of the body (`let`, `var`, `:=`, expression statement, `return`); a call inside an argument of such a call or inside an operand of an arithmetic, comparison or `==` / `!=` / `not` / unary-minus expression; a call in the condition of an `if` or the subject of a `match`. It counts only while nothing earlier can leave the body: no `return` and no `?` before it in the same expression (arguments are evaluated left to right, then the callee) or in an earlier statement (an `if` or `match` that contains a `return` or a `?` anywhere ends the certain part).
+- **What does not count.** Anything inside an `if` branch or a `match` case; the right operand of `and`, `or`, `implies`; anything after a `?` or a `return`; `requires`, `ensures` and `example` clauses; a function name used as a value (`list.map(xs, g)` is not a call); a call with the wrong number of arguments; a name hidden by a parameter, `let`, `var` or pattern binding of the same function. When unsure whether a call is certain, it is not counted.
+- **Contract.** No false positives: a function that can return normally is never reported. The check is deliberately incomplete: endless recursion that is guarded by a condition is still caught only at run time, by `E0801` / `E0802` (section 13). Run-time errors that can end a run before the recursive call (division by zero, a failing `requires`, `unwrap` of an `err`) are not modelled: such a function is still reported, because it can never *return*.
+- Error codes: add `E0311` (unconditional recursion) to the `E03xx` range.
 
 ## 6. Effects (capabilities)
 
@@ -140,6 +145,38 @@ Shadowing is forbidden: a name may be bound only once per scope chain (compile e
 - Contracts and examples must be pure (`E0602` otherwise).
 - `P implies Q` is `not P or Q`.
 - `intent` is documentation, but its hash is stored with the contract set. `zehn lock <file>` writes `<file>.lock` with, per function, a fingerprint of the intent and a fingerprint of everything else (canonical text without comments or intent). If, relative to the lock, body/contracts/examples changed while `intent` is untouched, `zehn check` emits `W0201` (intent drift). Re-read the intent, then change it or run `zehn lock` again to confirm. Functions not in the lock are never reported.
+
+### Mocked examples of effectful functions (dialect `effect_examples=mock`, unmeasured)
+
+In v0.3 an effectful function cannot have an example (`E0602`) while `--strict` demands one (`E0402`). Under the dialect flag `effect_examples=mock` (default `off`) an example may carry a mock handler after its expression:
+
+```
+example-clause = "example" expr { "with" effect "=" "mock" list } [ "prints" list ] ;
+```
+
+```
+example greet("Ada") with console = mock [] prints ["hello, Ada"]
+example age(1900) == 126 with time.now = mock [2026]
+```
+
+- `with <effect> = mock [r1, r2, ...]` lists, in order, the results of the successive calls to that effect's functions. `time.now` yields the listed `Int`s. The functions of `console` return `Unit`, which has no literal, so the list of `console` is `[]` and calls to it never use up results.
+- `prints [t1, t2, ...]` asserts the exact sequence of texts passed to `console.print`; it needs `with console = mock [...]`. A mismatch is `E0401`, with the printed and the expected texts in `values`.
+- An example with mock clauses may have type `Unit` instead of `Bool` (a call run for its effects): it passes when it finishes and `prints` matches.
+- A mocked example never touches the host and needs no `--grant`. It runs with the same fuel and depth limits as any example (section 13); the mock lists are evaluated inside that budget.
+- Without the flag the clause is a parse error `E0201`. `zehn fmt` prints `with` clauses sorted by effect name, then `prints`, and round-trips them.
+- Contracts (`requires`, `ensures`) and examples without a mock clause stay pure: calling an effectful function there is still `E0602`. Mock lists and `prints` lists are pure expressions too.
+
+New errors (all under the flag):
+
+| code | when | phase |
+|---|---|---|
+| `E0605` | the mock clauses are not exactly the effects the example needs: an effect declared in `uses` by a called function has no clause, a clause names an effect nobody uses, an effect has two clauses, or `prints` has no `console` clause | check |
+| `E0606` | a function made more calls to an effect than its mock list has results (blame: caller) | runtime |
+| `E0607` | a mock result does not have the result type of the effect's function (`time.now`: `Int`), or the list of a `Unit` effect is not empty | check |
+
+Strict mode: a mocked example counts as an example like any other, so an effectful function now *can* satisfy `E0402`. Whether `--strict` should demand a mocked example for effectful functions is a build-time switch (`STRICT_NEEDS_MOCKED_EXAMPLE` in `zehnlib/passes/effect_examples.py`, default off); the literal rule makes the benchmark's reference solutions of category `effect` fail `--strict` (ADR-0019).
+
+Limits: only user functions are mocked (an example that calls `console.print` or `time.now` directly is still `E0602`); the mock types come from the stdlib registry, so effects without stdlib functions (`fs`, `net`, `db`, `rand`, `clock`) accept only `[]`. Unused mock results are not an error.
 
 ## 8. Standard Library (core, deliberately tiny)
 
@@ -166,6 +203,32 @@ console.print  time.now                     (effectful, see section 6)
 
 No aliases. If two names could mean the same thing, only one exists.
 
+### Explicit Int division (added by TASK_06c)
+
+Three functions make the rounding of Int division visible in the name. All are `(Int, Int) -> Int`:
+
+```
+int.div_floor(a, b)     quotient rounded down toward negative infinity; same value as `a / b`
+int.div_trunc(a, b)     quotient rounded toward zero (the fraction is dropped)
+int.rem_euclid(a, b)    remainder r with 0 <= r < |b|; equals `a % b` only when b > 0
+```
+
+Examples: `int.div_floor(-7, 2) == -4`, `int.div_trunc(-7, 2) == -3`, `int.rem_euclid(-7, 2) == 1`,
+`int.rem_euclid(7, -2) == 1` (while `7 % -2 == -1`). A zero divisor is `E0505`, blamed on the caller, exactly
+like `/` and `%`. Fuel is the same as for the operators: the one step of the call expression, plus
+`wa * wb` words when either operand is above 128 bits (`w = (bit_length >> 6) + 1`), charged before the work
+and before the zero-divisor check. The floor remainder (`%` today) has no explicit name; there are no other
+division functions.
+
+The operators `/` and `%` keep their v0.3 meaning (floor semantics, ADR-0010) in the default dialect.
+
+**Dialect `int_ops`** (`--dialect int_ops=operators|explicit`, default `operators`): under `explicit`
+every `/` or `%` expression (in bodies, contracts and examples) is the error `E0312`; its `fix_hint` names the
+three functions above. Under `operators` nothing changes. The flag exists to run an A/B experiment
+(`bench/experiments/int_division/`); the decision between the options is ADR-0017 (status unmeasured).
+
+New error code: `E0312` (operator `/` or `%` on Int under `int_ops=explicit`).
+
 ## 9. Diagnostics format
 
 ```json
@@ -181,7 +244,15 @@ No aliases. If two names could mean the same thing, only one exists.
 }
 ```
 
-Error code ranges: `E01xx` lexing, `E02xx` parsing (`E0203` non-canonical layout under `--strict`), `E03xx` names, types, exhaustiveness and return paths (`E0306` mismatch, `E0308` record/field, `E0309` cannot infer, `E0310` path without `return`), `E04xx` examples (`E0401` failed, `E0402` missing in strict), `E05xx` contracts at runtime, `E06xx` effects (`E0601` static, `E0602` impure contract, `E0603` undeclared at runtime, `E0604` not granted by host), `E07xx` patching, `E08xx` resource limits (`E0801` fuel, `E0802` call depth). `E0204` is "source nested too deeply to analyze"; `E0001` is a bad command-line option value. Warnings: `W0101` no example, `W0102` unreachable statement, `W0201` intent drift, `W0301` non-canonical layout.
+Error code ranges: `E01xx` lexing, `E02xx` parsing (`E0203` non-canonical layout under `--strict`), `E03xx` names, types, exhaustiveness and return paths (`E0306` mismatch, `E0308` record/field, `E0309` cannot infer, `E0310` path without `return`, `E0311` unconditional recursion, `E0312` `/` or `%` under `int_ops=explicit`), `E04xx` examples (`E0401` failed, `E0402` missing in strict), `E05xx` contracts at runtime, `E06xx` effects (`E0601` static, `E0602` impure contract, `E0603` undeclared at runtime, `E0604` not granted by host, `E0605` to `E0607` mocked examples under `effect_examples=mock`), `E07xx` patching, `E08xx` resource limits (`E0801` fuel, `E0802` call depth). `E0204` is "source nested too deeply to analyze"; `E0001` is a bad command-line option value. Warnings: `W0101` no example, `W0102` unreachable statement, `W0201` intent drift, `W0301` non-canonical layout.
+
+### Stable diagnostics (schema 1)
+
+The diagnostics are a versioned contract. `zehn check <file> --json` prints one object whose first key is `"schema": 1`, followed by `ok`, `diagnostics`, `definitions` and `examples` (the shape is `docs/diagnostics.schema.json`, JSON Schema draft-07; the prose is `docs/DIAGNOSTICS.md`). A diagnostic has the required keys `code`, `severity`, `phase`, `message` and the optional keys `location` (`fn`, `line`, `clause`), `fix_hint`, `blame`, `values`, `falls_through`, `call_stack`, `via_example`; every object also allows additional keys.
+
+**Compatibility rule.** Within schema 1, keys are only ever added: no key is removed, renamed or retyped, a code is never reused for another meaning, and a consumer ignores keys and `phase` values it does not know. Removing, renaming or retyping a key means `"schema": 2`. The version lives in the envelope, once per output, not in each diagnostic.
+
+**Catalog.** Every code has an explanation (`zehn explain <code>`, at most 60 words, naming the cause and the fix) and a catalog entry `catalog/<CODE>/` with `broken.zehn`, `fixed.zehn` and `meta.json`; `docs/ERRORS.md` is generated from them. `E0001` (bad command-line option) now has an explanation like every other code. `E0503` and `E0603` are defensive run-time guards that the static passes (`E0310`, `E0601`) make unreachable from `zehn check` and `zehn run`; their catalog entries say so.
 
 ## 10. Structural editing
 

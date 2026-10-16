@@ -1,0 +1,4 @@
+fn double(n: Int) -> Int
+do
+  return n * 2
+end fn

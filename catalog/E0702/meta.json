@@ -1,0 +1,17 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "both definitions have refs that start with b82b",
+  "cli": [
+    "patch",
+    "{file}",
+    "delete",
+    "fn#b82b"
+  ],
+  "cli_fixed": [
+    "patch",
+    "{file}",
+    "delete",
+    "fn#b82b4"
+  ]
+}

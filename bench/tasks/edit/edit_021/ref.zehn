@@ -1,0 +1,39 @@
+fn block_cost(rate: Int, cap: Int) -> Int
+  intent "cost of one full 24-hour block: 24 hours at the rate, but at most the cap"
+  example block_cost(100, 1500) == 1500
+  example block_cost(50, 5000) == 1200
+do
+  return int.min(24 * rate, cap)
+end fn
+
+fn partial_cost(rest: Int, rate: Int, cap: Int) -> Int
+  intent "cost of a partial block of rest minutes: started hours at the rate, at most the cap"
+  example partial_cost(0, 100, 1500) == 0
+  example partial_cost(61, 100, 150) == 150
+  example partial_cost(61, 100, 1500) == 200
+do
+  return int.min((rest + 59) / 60 * rate, cap)
+end fn
+
+fn parking_fee(minutes: Int, rate: Int, daily_cap: Int) -> Result<Int, Text>
+  intent "parking fee in cents: started hours at the rate, at most the cap per 24-hour block, a stay of 15 minutes or less is free"
+  example parking_fee(120, 300, 2000) == ok(600)
+  example parking_fee(15, 300, 2000) == ok(0)
+  example parking_fee(1440, 100, 1500) == ok(1500)
+  example parking_fee(1441, 100, 1500) == ok(1600)
+  example parking_fee(-1, 100, 1500) == err("invalid minutes")
+do
+  if minutes < 0 then
+    return err("invalid minutes")
+  end if
+  if rate < 1 then
+    return err("invalid rate")
+  end if
+  if daily_cap < 1 then
+    return err("invalid cap")
+  end if
+  if minutes <= 15 then
+    return ok(0)
+  end if
+  return ok(minutes / 1440 * block_cost(rate, daily_cap) + partial_cost(minutes % 1440, rate, daily_cap))
+end fn

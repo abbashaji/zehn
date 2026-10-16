@@ -1,0 +1,22 @@
+{
+  "id": "pure_017",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Bill under a tiered tariff",
+  "description": "A tariff has tiers. The tier k covers the units above limits[k-1] (above 0 for the first tier) up to and including limits[k], and every unit in that tier costs rates[k]. The limits are the cumulative upper bounds of the tiers. The bill for a usage is the sum, over all tiers, of (units of the usage that fall in the tier) times the tier's rate; tiers above the usage add nothing. Return Ok with the bill. Check the input and return Err with exactly these messages, in this order, reporting the first one that applies: 'length mismatch' if the two lists differ in length; 'no tiers' if they are empty; 'bad limits' if the first limit is not above 0 or any limit is not above the one before it; 'bad rate' if any rate is negative; 'negative usage' if usage is below 0; 'usage above last tier' if usage is above the last limit.",
+  "entry": "tariff_bill",
+  "params": [
+    {"name": "limits", "type": "List<Int>"},
+    {"name": "rates", "type": "List<Int>"},
+    {"name": "usage", "type": "Int"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[10, 20], [2, 3], 15], "expect": {"$": "ok", "args": [35]}},
+    {"args": [[10], [2, 3], 5], "expect": {"$": "err", "args": ["length mismatch"]}}
+  ],
+  "notes": "Precedence is tested with inputs that have two problems at once. A usage exactly on a limit stays in that tier; usage 0 bills 0. The tier width is limit minus previous limit, not the limit itself."
+}

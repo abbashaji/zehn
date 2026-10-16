@@ -1,0 +1,35 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Account",
+      "ref": "type#301f"
+    },
+    {
+      "kind": "type",
+      "name": "TransferError",
+      "ref": "type#6ae4"
+    },
+    {
+      "kind": "type",
+      "name": "Transfer",
+      "ref": "type#ad49"
+    },
+    {
+      "kind": "fn",
+      "name": "debit",
+      "ref": "fn#2cff"
+    },
+    {
+      "kind": "fn",
+      "name": "credit",
+      "ref": "fn#cdd4"
+    },
+    {
+      "kind": "fn",
+      "name": "transfer",
+      "ref": "fn#9240"
+    }
+  ]
+}

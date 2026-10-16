@@ -1,0 +1,40 @@
+{
+  "examples": [
+    {
+      "fn": "too_many",
+      "fuel": 7,
+      "line": 4,
+      "status": "fail"
+    },
+    {
+      "fn": "not_a_tuple",
+      "fuel": 5,
+      "line": 13,
+      "status": "fail"
+    },
+    {
+      "fn": "wrong_size",
+      "fuel": 20,
+      "line": 22,
+      "status": "fail"
+    },
+    {
+      "fn": "wrong_element",
+      "fuel": 18,
+      "line": 28,
+      "status": "fail"
+    },
+    {
+      "fn": "missing_case",
+      "fuel": 11,
+      "line": 34,
+      "status": "pass"
+    },
+    {
+      "fn": "wrong_return",
+      "fuel": 22,
+      "line": 47,
+      "status": "fail"
+    }
+  ]
+}

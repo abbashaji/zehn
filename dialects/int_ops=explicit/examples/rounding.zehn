@@ -1,0 +1,8 @@
+fn rounding_sum(a: Int, b: Int) -> Int
+  intent "floor quotient, truncated quotient and non-negative remainder of a by b, added"
+  requires b != 0
+  example rounding_sum(-7, 2) == -6
+  example rounding_sum(7, 2) == 7
+do
+  return int.div_floor(a, b) + int.div_trunc(a, b) + int.rem_euclid(a, b)
+end fn

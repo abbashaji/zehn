@@ -1,0 +1,49 @@
+{
+  "id": "effect_008",
+  "category": "effect",
+  "level": 1,
+  "kind": "write",
+  "title": "Truncated listing",
+  "description": "Print at most limit items from the list, in order, each as `- ` followed by the item (a dash and one space). If some items were left out, print one last line `... and K more`, where K is how many were left out. A limit of zero or less prints no items at all. Return how many items were printed (not counting the `... and K more` line). An empty list prints nothing.",
+  "entry": "print_head",
+  "params": [
+    {
+      "name": "items",
+      "type": "List<Text>"
+    },
+    {
+      "name": "limit",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "milk",
+          "eggs",
+          "tea"
+        ],
+        2
+      ],
+      "expect": 2,
+      "stdout": "- milk\n- eggs\n... and 1 more\n"
+    },
+    {
+      "args": [
+        [
+          "a"
+        ],
+        5
+      ],
+      "expect": 1,
+      "stdout": "- a\n"
+    }
+  ],
+  "notes": "Level 1. Clamp the limit (negative acts as zero, larger than the list acts as the list length); the summary line appears only when something was cut, including when the limit is zero or negative and the list is not empty; empty items keep their line as `- `. Largest limit 9e15."
+}

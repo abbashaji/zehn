@@ -1,0 +1,17 @@
+[
+  {"args": [["cat on mat", "dog"], ["cat"]], "expect": ["cat on mat"]},
+  {"args": [[], ["x"]], "expect": []},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["rust"]], "expect": ["Rust and Python tips", "Learning RUST today", "rust, python, and go"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["python"]], "expect": ["Rust and Python tips", "python notes", "rust, python, and go", "PYTHON", "Gopher python"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["RUST", "python"]], "expect": ["Rust and Python tips", "rust, python, and go"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["go"]], "expect": ["rust, python, and go", "Go go go", "Gopher python"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["rust", "go"]], "expect": ["rust, python, and go"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], []], "expect": ["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"]},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["zebra"]], "expect": []},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["py", "go"]], "expect": ["rust, python, and go", "Gopher python"]},
+  {"args": [["A b", "a B", "ab"], ["a b"]], "expect": ["A b", "a B"]},
+  {"args": [["Ab"], ["AB", "ab", "Ab"]], "expect": ["Ab"]},
+  {"args": [[], []], "expect": []},
+  {"args": [["Rust and Python tips", "python notes", "Learning RUST today", "Weekend hike", "rust, python, and go", "", "PYTHON", "Go go go", "Gopher python"], ["hike", "weekend"]], "expect": ["Weekend hike"]},
+  {"args": [["x1 Y2", "X1", "y2 x1"], ["X1", "y2"]], "expect": ["x1 Y2", "y2 x1"]}
+]

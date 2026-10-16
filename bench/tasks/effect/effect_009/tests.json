@@ -1,0 +1,13 @@
+[
+  {"args": [[], 5], "expect": 0, "stdout": ""},
+  {"args": [[1, 2, 3], 5], "expect": 0, "stdout": ""},
+  {"args": [[10], 5], "expect": 1, "stdout": "ALERT 1: 10\nstill above at end\n"},
+  {"args": [[1, 9, 9, 2, 8, 3], 5], "expect": 2, "stdout": "ALERT 2: 9\nCLEAR 4: 2\nALERT 5: 8\nCLEAR 6: 3\n"},
+  {"args": [[5, 5, 6, 5], 5], "expect": 1, "stdout": "ALERT 3: 6\nCLEAR 4: 5\n"},
+  {"args": [[-3, -1, -4], -2], "expect": 1, "stdout": "ALERT 2: -1\nCLEAR 3: -4\n"},
+  {"args": [[7, 7, 7], 6], "expect": 1, "stdout": "ALERT 1: 7\nstill above at end\n"},
+  {"args": [[9, 1, 9, 1, 9], 5], "expect": 3, "stdout": "ALERT 1: 9\nCLEAR 2: 1\nALERT 3: 9\nCLEAR 4: 1\nALERT 5: 9\nstill above at end\n"},
+  {"args": [[6, 6, 5, 6, 5, 4, 7, 8, 9, 1], 5], "expect": 3, "stdout": "ALERT 1: 6\nCLEAR 3: 5\nALERT 4: 6\nCLEAR 5: 5\nALERT 7: 7\nCLEAR 10: 1\n"},
+  {"args": [[0, 0, 0], 0], "expect": 0, "stdout": ""},
+  {"args": [[9000000000000000, 8999999999999999, 9000000000000000], 8999999999999999], "expect": 2, "stdout": "ALERT 1: 9000000000000000\nCLEAR 2: 8999999999999999\nALERT 3: 9000000000000000\nstill above at end\n"}
+]

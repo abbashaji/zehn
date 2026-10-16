@@ -1,0 +1,21 @@
+[
+  {"args": [[10, 20], [2, 3], 15], "expect": {"$": "ok", "args": [35]}},
+  {"args": [[10], [2, 3], 5], "expect": {"$": "err", "args": ["length mismatch"]}},
+  {"args": [[10], [2], 11], "expect": {"$": "err", "args": ["usage above last tier"]}},
+  {"args": [[], [], 5], "expect": {"$": "err", "args": ["no tiers"]}},
+  {"args": [[10, 20], [2, 3], 0], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[10, 20], [2, 3], 10], "expect": {"$": "ok", "args": [20]}},
+  {"args": [[10, 20], [2, 3], 20], "expect": {"$": "ok", "args": [50]}},
+  {"args": [[10, 20], [2, 3], 21], "expect": {"$": "err", "args": ["usage above last tier"]}},
+  {"args": [[10, 10], [2, 3], 5], "expect": {"$": "err", "args": ["bad limits"]}},
+  {"args": [[0, 10], [2, 3], 5], "expect": {"$": "err", "args": ["bad limits"]}},
+  {"args": [[10, 5], [2, 3], -1], "expect": {"$": "err", "args": ["bad limits"]}},
+  {"args": [[10, 20], [2, -3], -1], "expect": {"$": "err", "args": ["bad rate"]}},
+  {"args": [[10, 20], [2, -3], 25], "expect": {"$": "err", "args": ["bad rate"]}},
+  {"args": [[10, 20], [2, 3], -1], "expect": {"$": "err", "args": ["negative usage"]}},
+  {"args": [[100, 200, 500], [1, 0, 7], 350], "expect": {"$": "ok", "args": [1150]}},
+  {"args": [[5], [1000000], 5], "expect": {"$": "ok", "args": [5000000]}},
+  {"args": [[5, 8], [3, 4], 7], "expect": {"$": "ok", "args": [23]}},
+  {"args": [[10], [2, 3], -5], "expect": {"$": "err", "args": ["length mismatch"]}},
+  {"args": [[-5], [2], 0], "expect": {"$": "err", "args": ["bad limits"]}}
+]

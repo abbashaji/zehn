@@ -1,0 +1,14 @@
+[
+  {"args": [[], 3], "expect": 0, "stdout": ""},
+  {"args": [[], 0], "expect": 0, "stdout": ""},
+  {"args": [["a", "b"], 5], "expect": 2, "stdout": "- a\n- b\n"},
+  {"args": [["a", "b", "c"], 2], "expect": 2, "stdout": "- a\n- b\n... and 1 more\n"},
+  {"args": [["a", "b"], 0], "expect": 0, "stdout": "... and 2 more\n"},
+  {"args": [["a", "b"], -3], "expect": 0, "stdout": "... and 2 more\n"},
+  {"args": [["a", "b"], 2], "expect": 2, "stdout": "- a\n- b\n"},
+  {"args": [["", "x"], 1], "expect": 1, "stdout": "- \n... and 1 more\n"},
+  {"args": [["a b", "c"], 1], "expect": 1, "stdout": "- a b\n... and 1 more\n"},
+  {"args": [["i1", "i2", "i3", "i4", "i5", "i6", "i7", "i8", "i9", "i10", "i11", "i12"], 10], "expect": 10, "stdout": "- i1\n- i2\n- i3\n- i4\n- i5\n- i6\n- i7\n- i8\n- i9\n- i10\n... and 2 more\n"},
+  {"args": [["only"], 1], "expect": 1, "stdout": "- only\n"},
+  {"args": [["a", "b"], 9000000000000000], "expect": 2, "stdout": "- a\n- b\n"}
+]

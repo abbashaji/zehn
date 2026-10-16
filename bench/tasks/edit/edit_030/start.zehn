@@ -1,0 +1,42 @@
+type Job = { id: Int, burst: Int }
+
+fn rest(jobs: List<Job>, i: Int, acc: List<Job>) -> List<Job>
+  intent "the jobs from index i on, in order, appended to acc"
+  example rest([], 1, []) == []
+  example rest([{id: 1, burst: 2}, {id: 2, burst: 3}], 1, []) == [{id: 2, burst: 3}]
+do
+  match list.get(jobs, i) do
+    case none =>
+      return acc
+    case some(job) =>
+      return rest(jobs, i + 1, list.append(acc, job))
+  end match
+end fn
+
+fn run(queue: List<Job>, quantum: Int, done: List<Int>) -> List<Int>
+  intent "serve the first job for one quantum; an unfinished job goes to the back of the queue"
+  example run([], 3, [7]) == [7]
+  example run([{id: 1, burst: 5}, {id: 2, burst: 2}], 3, []) == [2, 1]
+do
+  match list.get(queue, 0) do
+    case none =>
+      return done
+    case some(job) =>
+      let others = rest(queue, 1, [])
+      if job.burst < quantum then
+        return run(others, quantum, list.append(done, job.id))
+      end if
+      return run(list.append(others, {id: job.id, burst: job.burst - quantum}), quantum, done)
+  end match
+end fn
+
+fn finish_order(jobs: List<Job>, quantum: Int) -> Result<List<Int>, Text>
+  intent "ids of the jobs in the order in which round-robin scheduling finishes them"
+  example finish_order([{id: 1, burst: 5}, {id: 2, burst: 2}, {id: 3, burst: 4}], 3) == ok([2, 1, 3])
+  example finish_order([{id: 1, burst: 3}], 0) == err("invalid quantum")
+do
+  if quantum <= 0 then
+    return err("invalid quantum")
+  end if
+  return ok(run(jobs, quantum, []))
+end fn

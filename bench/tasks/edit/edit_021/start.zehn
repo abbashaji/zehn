@@ -1,0 +1,14 @@
+fn parking_fee(minutes: Int, rate: Int, daily_cap: Int) -> Result<Int, Text>
+  intent "parking fee in cents: every started hour is charged at the rate"
+  example parking_fee(120, 300, 2000) == ok(600)
+  example parking_fee(61, 100, 1500) == ok(200)
+  example parking_fee(-1, 100, 1500) == err("invalid minutes")
+do
+  if minutes < 0 then
+    return err("invalid minutes")
+  end if
+  if rate < 1 then
+    return err("invalid rate")
+  end if
+  return ok((minutes + 59) / 60 * rate)
+end fn

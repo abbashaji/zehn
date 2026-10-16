@@ -1,0 +1,15 @@
+[
+  {"args": [[4, 9, 7]], "expect": {"$": "some", "args": [7]}},
+  {"args": [[5]], "expect": {"$": "none"}},
+  {"args": [[]], "expect": {"$": "none"}},
+  {"args": [[6, 6]], "expect": {"$": "none"}},
+  {"args": [[9, 9, 4]], "expect": {"$": "some", "args": [4]}},
+  {"args": [[4, 9, 9]], "expect": {"$": "some", "args": [4]}},
+  {"args": [[9, 4, 9]], "expect": {"$": "some", "args": [4]}},
+  {"args": [[1, 2, 3, 4]], "expect": {"$": "some", "args": [3]}},
+  {"args": [[4, 3, 2, 1]], "expect": {"$": "some", "args": [3]}},
+  {"args": [[-5, -1, -9]], "expect": {"$": "some", "args": [-5]}},
+  {"args": [[-2, -2, -3, -3]], "expect": {"$": "some", "args": [-3]}},
+  {"args": [[7, 7, 7, 3, 3]], "expect": {"$": "some", "args": [3]}},
+  {"args": [[0, 0]], "expect": {"$": "none"}}
+]

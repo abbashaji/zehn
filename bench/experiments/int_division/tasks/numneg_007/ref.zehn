@@ -1,0 +1,10 @@
+fn cell_position(cell: Int, width: Int) -> Text
+  intent "row,col of a cell; the row is the quotient rounded down toward negative infinity and the column is what is left"
+  requires width > 0
+  example cell_position(5, 4) == "1,1"
+  example cell_position(8, 4) == "2,0"
+do
+  let row = int.div_floor(cell, width)
+  let col = cell - row * width
+  return text.concat(int.to_text(row), text.concat(",", int.to_text(col)))
+end fn

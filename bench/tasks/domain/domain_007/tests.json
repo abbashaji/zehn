@@ -1,0 +1,18 @@
+[
+  {"args": ["local", 1], "expect": {"$": "ok", "args": [300]}},
+  {"args": ["local", 1000], "expect": {"$": "ok", "args": [300]}},
+  {"args": ["local", 1001], "expect": {"$": "ok", "args": [350]}},
+  {"args": ["local", 2500], "expect": {"$": "ok", "args": [400]}},
+  {"args": ["national", 5000], "expect": {"$": "ok", "args": [900]}},
+  {"args": ["national", 999], "expect": {"$": "ok", "args": [500]}},
+  {"args": ["international", 20000], "expect": {"$": "ok", "args": [9100]}},
+  {"args": ["international", 20001], "expect": {"$": "err", "args": ["too heavy for international: limit is 20000 g"]}},
+  {"args": ["local", 30000], "expect": {"$": "ok", "args": [1750]}},
+  {"args": ["local", 30001], "expect": {"$": "err", "args": ["too heavy for local: limit is 30000 g"]}},
+  {"args": ["national", 30001], "expect": {"$": "err", "args": ["too heavy for national: limit is 30000 g"]}},
+  {"args": ["mars", 500], "expect": {"$": "err", "args": ["unknown zone: mars"]}},
+  {"args": ["Local", 500], "expect": {"$": "err", "args": ["unknown zone: Local"]}},
+  {"args": ["mars", 0], "expect": {"$": "err", "args": ["invalid weight"]}},
+  {"args": ["local", -5], "expect": {"$": "err", "args": ["invalid weight"]}},
+  {"args": ["international", 1500], "expect": {"$": "ok", "args": [1900]}}
+]

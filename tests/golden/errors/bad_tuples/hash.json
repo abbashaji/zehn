@@ -1,0 +1,40 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Color",
+      "ref": "type#cc18"
+    },
+    {
+      "kind": "fn",
+      "name": "too_many",
+      "ref": "fn#4883"
+    },
+    {
+      "kind": "fn",
+      "name": "not_a_tuple",
+      "ref": "fn#751e"
+    },
+    {
+      "kind": "fn",
+      "name": "wrong_size",
+      "ref": "fn#264d"
+    },
+    {
+      "kind": "fn",
+      "name": "wrong_element",
+      "ref": "fn#430b"
+    },
+    {
+      "kind": "fn",
+      "name": "missing_case",
+      "ref": "fn#6ea2"
+    },
+    {
+      "kind": "fn",
+      "name": "wrong_return",
+      "ref": "fn#8dbe"
+    }
+  ]
+}

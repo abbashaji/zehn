@@ -1,0 +1,9 @@
+fn divmod_toward_zero(a: Int, b: Int) -> Text
+  intent "the quotient rounded toward zero, a space, and the remainder a minus b times the quotient"
+  requires b != 0
+  example divmod_toward_zero(7, 2) == "3 1"
+  example divmod_toward_zero(8, 4) == "2 0"
+do
+  let q = int.div_trunc(a, b)
+  return text.concat(int.to_text(q), text.concat(" ", int.to_text(a - b * q)))
+end fn

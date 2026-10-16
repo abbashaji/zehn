@@ -1,0 +1,15 @@
+[
+  {"args": ["/a/./b/../c"], "expect": {"$": "ok", "args": ["/a/c"]}},
+  {"args": ["/a/../.."], "expect": {"$": "err", "args": ["path escapes root"]}},
+  {"args": ["/"], "expect": {"$": "ok", "args": ["/"]}},
+  {"args": ["/a/b/c"], "expect": {"$": "ok", "args": ["/a/b/c"]}},
+  {"args": ["//a//b/"], "expect": {"$": "ok", "args": ["/a/b"]}},
+  {"args": ["/a/b/../../c"], "expect": {"$": "ok", "args": ["/c"]}},
+  {"args": ["/a/b/../.."], "expect": {"$": "ok", "args": ["/"]}},
+  {"args": ["/.."], "expect": {"$": "err", "args": ["path escapes root"]}},
+  {"args": ["/a/./././b"], "expect": {"$": "ok", "args": ["/a/b"]}},
+  {"args": ["/a/b/c/../../../.."], "expect": {"$": "err", "args": ["path escapes root"]}},
+  {"args": ["/..a/b.."], "expect": {"$": "ok", "args": ["/..a/b.."]}},
+  {"args": ["/a/.../b"], "expect": {"$": "ok", "args": ["/a/.../b"]}},
+  {"args": ["/x/../y/../z"], "expect": {"$": "ok", "args": ["/z"]}}
+]

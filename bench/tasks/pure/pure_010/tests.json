@@ -1,0 +1,16 @@
+[
+  {"args": [[1, 1, -1, 1, -1, -1]], "expect": {"$": "ok", "args": [2]}},
+  {"args": [[1, -1, -1, 5]], "expect": {"$": "err", "args": ["closed too early"]}},
+  {"args": [[]], "expect": {"$": "ok", "args": [0]}},
+  {"args": [[1, -1]], "expect": {"$": "ok", "args": [1]}},
+  {"args": [[1, 1, 1, -1, -1, -1]], "expect": {"$": "ok", "args": [3]}},
+  {"args": [[1, -1, 1, -1, 1, -1]], "expect": {"$": "ok", "args": [1]}},
+  {"args": [[-1]], "expect": {"$": "err", "args": ["closed too early"]}},
+  {"args": [[1]], "expect": {"$": "err", "args": ["left open"]}},
+  {"args": [[1, 1, -1]], "expect": {"$": "err", "args": ["left open"]}},
+  {"args": [[1, 5, -1, -1, -1]], "expect": {"$": "err", "args": ["bad step"]}},
+  {"args": [[2]], "expect": {"$": "err", "args": ["bad step"]}},
+  {"args": [[0, 1, -1]], "expect": {"$": "err", "args": ["bad step"]}},
+  {"args": [[1, -1, -1, -1]], "expect": {"$": "err", "args": ["closed too early"]}},
+  {"args": [[1, 1, -1, -1, 1]], "expect": {"$": "err", "args": ["left open"]}}
+]

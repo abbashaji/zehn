@@ -1,0 +1,46 @@
+{
+  "id": "edit_020",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Second largest distinct number",
+  "description": "Bug report for a helper that returns the second largest number of a list of whole numbers (the numbers may be negative and come in any order). Symptom: when the largest number occurs more than once, that number is returned as the second largest. Fix the program. The complete rule is: the second largest is the largest value that is strictly smaller than the maximum; the result is some(value) for it, or none when the list has fewer than two distinct values (an empty list, a single element, or all elements equal).",
+  "entry": "second_largest",
+  "params": [
+    {
+      "name": "values",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          4,
+          9,
+          7
+        ]
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          7
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "One bug (repeated maximum counts as the second value), visible in lists with duplicates of the maximum, and in lists whose values are all equal. The visible examples have no duplicates and pass on the start."
+}

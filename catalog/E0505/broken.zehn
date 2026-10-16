@@ -1,0 +1,5 @@
+fn share(a: Int, b: Int) -> Int
+  example share(10, 0) == 0
+do
+  return a / b
+end fn

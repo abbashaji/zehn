@@ -1,0 +1,86 @@
+type Player = { id: Int, score: Int }
+
+type Ranked = { id: Int, rank: Int }
+
+fn ahead(q: Player, p: Player) -> Bool
+  intent "true when q is listed before p: higher score first, then lower id"
+  example ahead({id: 1, score: 9}, {id: 2, score: 5}) == true
+  example ahead({id: 2, score: 5}, {id: 1, score: 5}) == false
+  example ahead({id: 1, score: 5}, {id: 2, score: 5}) == true
+do
+  if q.score != p.score then
+    return q.score > p.score
+  end if
+  return q.id < p.id
+end fn
+
+fn count_ahead(players: List<Player>, p: Player, i: Int) -> Int
+  intent "how many of the players from index i on are listed before p"
+  example count_ahead([], {id: 1, score: 5}, 0) == 0
+  example count_ahead([{id: 2, score: 9}, {id: 3, score: 1}], {id: 1, score: 5}, 0) == 1
+do
+  match list.get(players, i) do
+    case none =>
+      return 0
+    case some(q) =>
+      if ahead(q, p) then
+        return 1 + count_ahead(players, p, i + 1)
+      end if
+      return count_ahead(players, p, i + 1)
+  end match
+end fn
+
+fn count_higher(players: List<Player>, p: Player, i: Int) -> Int
+  intent "how many of the players from index i on have a strictly higher score than p"
+  example count_higher([], {id: 1, score: 5}, 0) == 0
+  example count_higher([{id: 2, score: 9}, {id: 3, score: 5}], {id: 1, score: 5}, 0) == 1
+do
+  match list.get(players, i) do
+    case none =>
+      return 0
+    case some(q) =>
+      if q.score > p.score then
+        return 1 + count_higher(players, p, i + 1)
+      end if
+      return count_higher(players, p, i + 1)
+  end match
+end fn
+
+fn player_at(players: List<Player>, k: Int, i: Int) -> Option<Player>
+  intent "the player from index i on that has exactly k players listed before it"
+  example player_at([], 0, 0) == none
+  example player_at([{id: 1, score: 5}, {id: 2, score: 9}], 0, 0) == some({id: 2, score: 9})
+do
+  match list.get(players, i) do
+    case none =>
+      return none
+    case some(p) =>
+      if count_ahead(players, p, 0) == k then
+        return some(p)
+      end if
+      return player_at(players, k, i + 1)
+  end match
+end fn
+
+fn build(players: List<Player>, k: Int, acc: List<Ranked>) -> List<Ranked>
+  intent "append the entries for list positions k and on to acc"
+  example build([], 0, []) == []
+  example build([{id: 1, score: 5}, {id: 2, score: 5}], 0, []) == [{id: 1, rank: 1}, {id: 2, rank: 1}]
+do
+  match player_at(players, k, 0) do
+    case none =>
+      return acc
+    case some(p) =>
+      return build(players, k + 1, list.append(acc, {id: p.id, rank: count_higher(players, p, 0) + 1}))
+  end match
+end fn
+
+fn leaderboard(players: List<Player>) -> List<Ranked>
+  intent "players ordered by score then id, with shared competition ranks"
+  ensures list.len(out) == list.len(players)
+  example leaderboard([]) == []
+  example leaderboard([{id: 1, score: 50}, {id: 2, score: 70}, {id: 3, score: 60}]) == [{id: 2, rank: 1}, {id: 3, rank: 2}, {id: 1, rank: 3}]
+  example leaderboard([{id: 3, score: 50}, {id: 1, score: 50}, {id: 2, score: 40}]) == [{id: 1, rank: 1}, {id: 3, rank: 1}, {id: 2, rank: 3}]
+do
+  return build(players, 0, [])
+end fn

@@ -1,0 +1,9 @@
+fn wrap_index(i: Int, n: Int) -> Int
+  intent "slot 0 to n-1 of position i on a ring of n slots, for any integer i"
+  requires n > 0
+  ensures out >= 0 and out < n
+  example wrap_index(3, 5) == 3
+  example wrap_index(7, 5) == 2
+do
+  return int.rem_euclid(i, n)
+end fn

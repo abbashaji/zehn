@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "type Shape = Circle(Int) | Square(Int) | Dot\n\nfn audit(n: Int) -> Int\n  uses [console]\ndo\n  return n\nend fn\n\nfn area(s: Shape) -> Int\n  example area(Dot) == 0\ndo\n  match s do\n    case Circle(r) =>\n      return r * r * 3\n    case Square(w) =>\n      return w * w\n  end match\nend fn\n\nfn pure_user(n: Int) -> Int\ndo\n  let a = audit(n)\n  let b = undefined_name + 1\n  let c = list.reverse(n)\n  return a\nend fn\n\nfn parse_len(t: Text) -> Int\ndo\n  let x = text.len(t)?\n  return x\nend fn\n\nfn counter(n: Int) -> Int\ndo\n  let total = 0\n  total := total + n\n  return total\nend fn\n"
+}

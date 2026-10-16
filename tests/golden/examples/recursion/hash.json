@@ -1,0 +1,30 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "gcd",
+      "ref": "fn#ea61"
+    },
+    {
+      "kind": "fn",
+      "name": "sum_to",
+      "ref": "fn#7469"
+    },
+    {
+      "kind": "fn",
+      "name": "fib_from",
+      "ref": "fn#0031"
+    },
+    {
+      "kind": "fn",
+      "name": "fib",
+      "ref": "fn#74ca"
+    },
+    {
+      "kind": "fn",
+      "name": "sign",
+      "ref": "fn#6fbe"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+fn alert_line(pos: Int, v: Int) -> Text
+  intent "the line printed when an alert starts at position pos with reading v"
+  example alert_line(2, 9) == "ALERT 2: 9"
+  example alert_line(10, 0 - 1) == "ALERT 10: -1"
+do
+  return text.concat("ALERT ", text.concat(int.to_text(pos), text.concat(": ", int.to_text(v))))
+end fn
+
+fn clear_line(pos: Int, v: Int) -> Text
+  intent "the line printed when an alert ends at position pos with reading v"
+  example clear_line(4, 2) == "CLEAR 4: 2"
+  example clear_line(12, 0) == "CLEAR 12: 0"
+do
+  return text.concat("CLEAR ", text.concat(int.to_text(pos), text.concat(": ", int.to_text(v))))
+end fn
+
+fn scan_from(readings: List<Int>, i: Int, limit: Int, above: Bool) -> Int
+  intent "scan the readings from index i on, knowing whether an alert is active, and return how many alerts start"
+  uses [console]
+  requires i >= 0
+  ensures out >= 0
+  example alert_line(1, 7) == "ALERT 1: 7"
+  example clear_line(2, 3) == "CLEAR 2: 3"
+do
+  match list.get(readings, i) do
+    case none =>
+      if above then
+        console.print("still above at end")
+        return 0
+      else
+        return 0
+      end if
+    case some(v) =>
+      if v > limit then
+        if above then
+          return scan_from(readings, i + 1, limit, true)
+        else
+          console.print(alert_line(i + 1, v))
+          return 1 + scan_from(readings, i + 1, limit, true)
+        end if
+      else
+        if above then
+          console.print(clear_line(i + 1, v))
+          return scan_from(readings, i + 1, limit, false)
+        else
+          return scan_from(readings, i + 1, limit, false)
+        end if
+      end if
+  end match
+end fn
+
+fn scan_alerts(readings: List<Int>, limit: Int) -> Int
+  intent "report where readings rise above the limit and where they fall back, and return how many alerts started"
+  uses [console]
+  ensures out >= 0 and out <= list.len(readings)
+  example alert_line(3, 6) == "ALERT 3: 6"
+  example clear_line(4, 5) == "CLEAR 4: 5"
+do
+  return scan_from(readings, 0, limit, false)
+end fn

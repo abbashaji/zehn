@@ -1,0 +1,49 @@
+type Rule = { role: Text, action: Text, allow: Bool }
+
+fn applies(rule: Rule, roles: List<Text>, action: Text) -> Bool
+  intent "whether the rule applies: its role is one of the roles and its action is the requested one or *"
+  example applies({role: "admin", action: "*", allow: true}, ["admin"], "edit") == true
+  example applies({role: "admin", action: "edit", allow: true}, ["editor"], "edit") == false
+  example applies({role: "admin", action: "view", allow: true}, ["admin"], "edit") == false
+do
+  return list.contains(roles, rule.role) and (rule.action == action or rule.action == "*")
+end fn
+
+fn first_applying(rules: List<Rule>, roles: List<Text>, action: Text, allow: Bool, i: Int) -> Option<Rule>
+  intent "the first rule from index i on that applies and has the given allow flag"
+  example first_applying([{role: "a", action: "*", allow: true}, {role: "b", action: "x", allow: false}], ["a", "b"], "x", false, 0) == some({role: "b", action: "x", allow: false})
+  example first_applying([{role: "a", action: "*", allow: true}], ["b"], "x", true, 0) == none
+do
+  match list.get(rules, i) do
+    case none =>
+      return none
+    case some(rule) =>
+      if rule.allow == allow and applies(rule, roles, action) then
+        return some(rule)
+      end if
+      return first_applying(rules, roles, action, allow, i + 1)
+  end match
+end fn
+
+fn check_access(rules: List<Rule>, roles: List<Text>, action: Text) -> Result<Text, Text>
+  intent "decide a request: a denying rule wins over any allowing rule; the first applying rule of the winning kind is named"
+  example check_access([{role: "a", action: "*", allow: true}], ["a"], "x") == ok("allowed by role a")
+  example check_access([{role: "a", action: "*", allow: true}, {role: "b", action: "x", allow: false}], ["a", "b"], "x") == err("denied by role b")
+  example check_access([{role: "a", action: "y", allow: true}], ["a"], "x") == err("no rule for x")
+  example check_access([], ["a"], "") == err("action required")
+do
+  if action == "" then
+    return err("action required")
+  end if
+  match first_applying(rules, roles, action, false, 0) do
+    case some(rule) =>
+      return err(text.concat("denied by role ", rule.role))
+    case none =>
+      match first_applying(rules, roles, action, true, 0) do
+        case some(rule) =>
+          return ok(text.concat("allowed by role ", rule.role))
+        case none =>
+          return err(text.concat("no rule for ", action))
+      end match
+  end match
+end fn

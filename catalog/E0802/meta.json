@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "the base case is never reached (n is never negative), so the call depth limit is reached"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "edit_022",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Average score without the worst one",
+  "description": "Bug report for the grading helper that averages the scores of a student after dropping the single worst score. Scores are whole numbers from 0 to 100. Three symptoms: when the lowest score occurs several times, all of its copies are dropped instead of just one; a list of only 2 scores is averaged although it is too short; and the average is rounded down although it should be rounded to the nearest whole number. Fix the program. The complete rule is: fewer than 3 scores gives none; otherwise one copy of the lowest score is removed and the result is some(average of the remaining scores), rounded to the nearest whole number with exact halves rounded up.",
+  "entry": "average_without_worst",
+  "params": [
+    {
+      "name": "scores",
+      "type": "List<Int>"
+    }
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          50,
+          80,
+          90,
+          70
+        ]
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          80
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          75
+        ]
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "Three bugs: minimum threshold 2 instead of 3, every copy of the minimum is dropped, floor instead of round-half-up. Visible examples avoid all three. Operands are non-negative, so the half-up formula (2*sum+n)/(2*n) is safe in every language."
+}

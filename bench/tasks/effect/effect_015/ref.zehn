@@ -1,0 +1,94 @@
+fn window_of(t: Int, window: Int) -> Int
+  intent "the number of the time window that holds time t, counting from 0"
+  requires t >= 0
+  requires window >= 1
+  ensures out >= 0
+  example window_of(25, 10) == 2
+  example window_of(9, 10) == 0
+  example window_of(0, 10) == 0
+do
+  return t / window
+end fn
+
+fn used_in_window(w: Int, current: Int, count: Int) -> Int
+  intent "how many requests are already counted in window w: the running count when w is the current window, otherwise none"
+  example used_in_window(2, 2, 3) == 3
+  example used_in_window(3, 2, 3) == 0
+  example used_in_window(0, 0 - 1, 0) == 0
+do
+  if w == current then
+    return count
+  else
+    return 0
+  end if
+end fn
+
+fn allowed_line(t: Int, k: Int, limit: Int) -> Text
+  intent "the line for an allowed request at time t that is the k-th of its window"
+  example allowed_line(5, 1, 2) == "t=5 allowed (1/2)"
+  example allowed_line(40, 3, 3) == "t=40 allowed (3/3)"
+do
+  return text.concat("t=", text.concat(int.to_text(t), text.concat(" allowed (", text.concat(int.to_text(k), text.concat("/", text.concat(int.to_text(limit), ")"))))))
+end fn
+
+fn blocked_line(t: Int) -> Text
+  intent "the line for a blocked request at time t"
+  example blocked_line(7) == "t=7 blocked"
+  example blocked_line(0) == "t=0 blocked"
+do
+  return text.concat("t=", text.concat(int.to_text(t), " blocked"))
+end fn
+
+fn summary_line(blocked: Int) -> Text
+  intent "the closing line with the number of blocked requests"
+  example summary_line(0) == "blocked: 0"
+  example summary_line(12) == "blocked: 12"
+do
+  return text.concat("blocked: ", int.to_text(blocked))
+end fn
+
+fn requests_from(times: List<Int>, i: Int, window: Int, limit: Int, current: Int, count: Int) -> Int
+  intent "judge the requests from index i on, given the current window and its count, and return how many were blocked"
+  uses [console]
+  requires i >= 0
+  requires window >= 1
+  requires limit >= 0
+  ensures out >= 0
+  example allowed_line(1, 1, 1) == "t=1 allowed (1/1)"
+  example blocked_line(2) == "t=2 blocked"
+do
+  match list.get(times, i) do
+    case none =>
+      return 0
+    case some(t) =>
+      let w = window_of(t, window)
+      let used = used_in_window(w, current, count)
+      if used < limit then
+        console.print(allowed_line(t, used + 1, limit))
+        return requests_from(times, i + 1, window, limit, w, used + 1)
+      else
+        console.print(blocked_line(t))
+        return 1 + requests_from(times, i + 1, window, limit, w, used)
+      end if
+  end match
+end fn
+
+fn check_requests(times: List<Int>, window: Int, limit: Int) -> Result<Int, Text>
+  intent "judge each request time against a fixed-window limit, print the verdicts and the number blocked, and return that number or an error for bad settings"
+  uses [console]
+  ensures result.is_ok(out) == (window >= 1 and limit >= 0)
+  example summary_line(3) == "blocked: 3"
+  example window_of(10, 10) == 1
+do
+  if window < 1 then
+    return err("window must be positive")
+  else
+    if limit < 0 then
+      return err("limit must not be negative")
+    else
+      let blocked = requests_from(times, 0, window, limit, 0 - 1, 0)
+      console.print(summary_line(blocked))
+      return ok(blocked)
+    end if
+  end if
+end fn

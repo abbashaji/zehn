@@ -1,0 +1,27 @@
+fn join_from(parts: List<Text>, i: Int, sep: Text) -> Text
+  intent "the parts at index i and later joined with sep between them"
+  example join_from(["a", "b", "c"], 0, "-") == "a-b-c"
+  example join_from([], 0, "-") == ""
+do
+  match list.get(parts, i) do
+    case none =>
+      return ""
+    case some(p) =>
+      if i + 1 >= list.len(parts) then
+        return p
+      end if
+      return text.concat(text.concat(p, sep), join_from(parts, i + 1, sep))
+  end match
+end fn
+
+fn replace_all(source: Text, pattern: Text, replacement: Text) -> Text
+  intent "replace every non-overlapping occurrence of pattern, scanning left to right; an empty pattern changes nothing"
+  example replace_all("a-b-c", "-", "+") == "a+b+c"
+  example replace_all("aaa", "aa", "b") == "ba"
+  example replace_all("abc", "", "x") == "abc"
+do
+  if pattern == "" then
+    return source
+  end if
+  return join_from(text.split_on(source, pattern), 0, replacement)
+end fn

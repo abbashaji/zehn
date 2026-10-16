@@ -1,0 +1,57 @@
+type Loan = { kind: Text, days_late: Int }
+
+fn daily_rate(kind: Text) -> Option<Int>
+  intent "daily fine in cents for a kind of loan, none for an unknown kind"
+  example daily_rate("book") == some(10)
+  example daily_rate("game") == some(100)
+  example daily_rate("cd") == none
+do
+  if kind == "book" then
+    return some(10)
+  end if
+  if kind == "dvd" then
+    return some(50)
+  end if
+  if kind == "game" then
+    return some(100)
+  end if
+  return none
+end fn
+
+fn loan_fine(loan: Loan) -> Result<Int, Text>
+  intent "fine of one loan: days late times the daily rate"
+  example loan_fine({kind: "book", days_late: 5}) == ok(50)
+  example loan_fine({kind: "cd", days_late: 1}) == err("unknown kind")
+do
+  match daily_rate(loan.kind) do
+    case none =>
+      return err("unknown kind")
+    case some(rate) =>
+      if loan.days_late < 0 then
+        return err("invalid days")
+      end if
+      return ok(loan.days_late * rate)
+  end match
+end fn
+
+fn sum_fines(loans: List<Loan>, i: Int, acc: Int) -> Result<Int, Text>
+  intent "add up the fines of the loans from index i on, stopping at the first error"
+  example sum_fines([], 0, 7) == ok(7)
+  example sum_fines([{kind: "book", days_late: 2}, {kind: "cd", days_late: 1}], 0, 0) == err("unknown kind")
+do
+  match list.get(loans, i) do
+    case none =>
+      return ok(acc)
+    case some(loan) =>
+      let fine = loan_fine(loan)?
+      return sum_fines(loans, i + 1, acc + fine)
+  end match
+end fn
+
+fn total_fine(loans: List<Loan>, member: Bool) -> Result<Int, Text>
+  intent "total fine in cents for the late loans"
+  example total_fine([], false) == ok(0)
+  example total_fine([{kind: "book", days_late: 5}], false) == ok(50)
+do
+  return sum_fines(loans, 0, 0)
+end fn

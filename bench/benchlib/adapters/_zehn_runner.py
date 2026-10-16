@@ -1,6 +1,6 @@
 """Hidden-test runner for the Zehn adapter. Run as a subprocess:
 
-    python3 _zehn_runner.py <project_root> <program.zehn> <spec.json>
+    python3 _zehn_runner.py <project_root> <program.zehn> <spec.json> [--dialect flag=value ...]
 
 spec.json = {"entry": str, "console": bool, "cases": [{"args": [...], "expect": <json>, "stdout": str?}]}
 It imports the project's `zehn` module and uses only parse, Interp, to_value and show. Prints one JSON
@@ -34,6 +34,26 @@ def _err_text(ex: BaseException) -> str:
 
 
 def main(argv: List[str]) -> int:
+    """Parse and run under the dialect given as trailing `--dialect flag=value` arguments (merge of
+    TASK 06a: without them a program of a dialect variant was parsed under the default dialect)."""
+    values: Dict[str, str] = {}
+    rest = argv[4:]
+    while rest:
+        if rest[0] != "--dialect" or len(rest) < 2 or "=" not in rest[1]:
+            print("usage: _zehn_runner.py <root> <program> <spec> [--dialect flag=value ...]", file=sys.stderr)
+            return 2
+        k, v = rest[1].split("=", 1)
+        values[k] = v
+        rest = rest[2:]
+    if not values:
+        return _main(argv)
+    sys.path.insert(0, argv[1])
+    from zehnlib import dialect  # type: ignore[import-not-found]
+    with dialect.using(values):
+        return _main(argv)
+
+
+def _main(argv: List[str]) -> int:
     root, path, spec_path = argv[1], argv[2], argv[3]
     sys.path.insert(0, root)
     sys.setrecursionlimit(max(sys.getrecursionlimit(), 10000))

@@ -1,0 +1,5 @@
+fn shout(msg: Text) -> Unit
+  uses [console]
+do
+  return console.print(msg)
+end fn

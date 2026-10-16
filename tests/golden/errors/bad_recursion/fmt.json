@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "fn total(n: Int) -> Int\n  example total(1) == 1\ndo\n  return 1 + total(n - 1)\nend fn\n\nfn safe_total(n: Int) -> Int\n  example safe_total(3) == 3\ndo\n  if n <= 0 then\n    return 0\n  else\n    return 1 + safe_total(n - 1)\n  end if\nend fn\n"
+}

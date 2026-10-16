@@ -66,7 +66,10 @@ def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="run.py", description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
     _add_common(sub.add_parser("list", help="list the tasks"))
-    _add_common(sub.add_parser("verify-refs", help="check every ref.* and start.* against its adapter"))
+    vr = sub.add_parser("verify-refs", help="check every ref.* and start.* against its adapter")
+    _add_common(vr)
+    vr.add_argument("--variant", default="default",
+                    help="k=v[,k=v]: check the refs under this dialect variant (default: default)")
     r = sub.add_parser("run", help="run models against tasks")
     _add_common(r)
     _add_run(r)
@@ -128,6 +131,14 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 def cmd_verify(args: argparse.Namespace) -> int:
     tasks, langs = _tasks(args), _langs(args)
+    try:
+        pairs = loop.parse_variant(args.variant)
+    except ValueError as ex:
+        raise SystemExit(str(ex))
+    for ad in langs:
+        setter = getattr(ad, "set_variant", None)
+        if setter:
+            setter(pairs)
     bad = 0
     for ad in langs:
         ok, why = ad.available()

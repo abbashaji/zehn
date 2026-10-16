@@ -1,0 +1,17 @@
+[
+  {"args": [["rust", "go", "rust"], 5], "expect": {"$": "ok", "args": [["rust", "go"]]}},
+  {"args": [[], 3], "expect": {"$": "ok", "args": [[]]}},
+  {"args": [["Go", "go", "GO"], 3], "expect": {"$": "ok", "args": [["Go"]]}},
+  {"args": [["a", "", "b"], 5], "expect": {"$": "ok", "args": [["a", "b"]]}},
+  {"args": [["a", "b", "c"], 3], "expect": {"$": "ok", "args": [["a", "b", "c"]]}},
+  {"args": [["a", "b", "c"], 2], "expect": {"$": "err", "args": ["too many tags"]}},
+  {"args": [["A", "a", "B", "b", "C"], 2], "expect": {"$": "err", "args": ["too many tags"]}},
+  {"args": [["A", "a", "B", "b"], 2], "expect": {"$": "ok", "args": [["A", "B"]]}},
+  {"args": [[], 0], "expect": {"$": "err", "args": ["invalid limit"]}},
+  {"args": [["a"], -1], "expect": {"$": "err", "args": ["invalid limit"]}},
+  {"args": [["a", "b"], 0], "expect": {"$": "err", "args": ["invalid limit"]}},
+  {"args": [["", "", ""], 1], "expect": {"$": "ok", "args": [[]]}},
+  {"args": [["Rust", "rust ", "RUST"], 5], "expect": {"$": "ok", "args": [["Rust", "rust "]]}},
+  {"args": [["x", "X"], 1], "expect": {"$": "ok", "args": [["x"]]}},
+  {"args": [["a", "b", "c"], 1], "expect": {"$": "err", "args": ["too many tags"]}}
+]

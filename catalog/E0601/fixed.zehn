@@ -1,0 +1,12 @@
+fn audit(n: Int) -> Int
+  uses [console]
+do
+  let note = console.print("audit")
+  return n
+end fn
+
+fn charge(n: Int) -> Int
+  uses [console]
+do
+  return audit(n)
+end fn

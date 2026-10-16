@@ -1,0 +1,33 @@
+{
+  "id": "text_011",
+  "category": "text",
+  "level": 2,
+  "kind": "write",
+  "title": "Number the non-blank lines",
+  "description": "A text consists of lines separated by newline characters (a single \"\\n\" between two lines; the text may start or end with one, which makes an empty line there). Prefix every non-empty line with its number followed by a dot and a space (\"1. \", \"2. \", ...), where the numbers count only the non-empty lines, starting at 1. Empty lines stay empty and are not counted. The line structure is kept exactly: the result has the same number of newline characters as the input, and the empty text stays empty.",
+  "entry": "number_lines",
+  "params": [
+    {
+      "name": "body",
+      "type": "Text"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "a\nb"
+      ],
+      "expect": "1. a\n2. b"
+    },
+    {
+      "args": [
+        "a\n\nb\n"
+      ],
+      "expect": "1. a\n\n2. b\n"
+    }
+  ],
+  "notes": "Empty lines are kept but do not advance the counter; a trailing newline leaves a trailing empty line. A line holding only a space is not empty."
+}

@@ -1,0 +1,49 @@
+{
+  "id": "edit_025",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Days in a month with leap years",
+  "description": "Bug report for the calendar function that gives the number of days in a month of a given year. Some Februaries come out with 29 days that should have 28. Fix the program. The complete rule is: a month outside 1 to 12 is an error with the message \"invalid month\"; otherwise a year below 1 is an error with the message \"invalid year\" (the month is checked first). April, June, September and November have 30 days, the other months except February have 31. February has 29 days in a leap year and 28 otherwise. A year is a leap year when it is divisible by 4, except that a year divisible by 100 is a leap year only when it is also divisible by 400.",
+  "entry": "days_in_month",
+  "params": [
+    {
+      "name": "month",
+      "type": "Int"
+    },
+    {
+      "name": "year",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        2,
+        2024
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          29
+        ]
+      }
+    },
+    {
+      "args": [
+        13,
+        2024
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "invalid month"
+        ]
+      }
+    }
+  ],
+  "notes": "Bug: is_leap only tests divisibility by 4, so 1900, 2100 and every other century year that is not a multiple of 400 are wrongly leap. Everything else is right. Tests never use a negative operand for the remainder: year < 1 is rejected before any remainder is taken (tests with a negative year only reach the year check)."
+}

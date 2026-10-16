@@ -1,0 +1,82 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "safe_div",
+        "ref": "fn#9548"
+      },
+      {
+        "kind": "fn",
+        "name": "buggy_abs",
+        "ref": "fn#d0ee"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 2,
+      "passed": 1,
+      "results": [
+        {
+          "example": "safe_div(10, 2) == 5",
+          "fn": "safe_div",
+          "line": 4,
+          "status": "pass"
+        },
+        {
+          "diag": {
+            "code": "E0401",
+            "fix_hint": "the body or the example is wrong; left is the computed value, right is the expected value",
+            "location": {
+              "clause": "example safe_div(10, 3) == 4",
+              "fn": "safe_div",
+              "line": 5
+            },
+            "message": "example is not true",
+            "phase": "runtime",
+            "severity": "error",
+            "values": {
+              "left": "3",
+              "right": "4"
+            }
+          },
+          "example": "safe_div(10, 3) == 4",
+          "fn": "safe_div",
+          "line": 5,
+          "status": "fail"
+        },
+        {
+          "diag": {
+            "blame": "callee",
+            "code": "E0502",
+            "fix_hint": "fix the implementation or weaken the ensures clause",
+            "location": {
+              "clause": "out >= 0",
+              "fn": "buggy_abs",
+              "line": 11
+            },
+            "message": "postcondition failed",
+            "phase": "runtime",
+            "severity": "error",
+            "values": {
+              "left": "-3",
+              "out": "-3",
+              "right": "0"
+            },
+            "via_example": {
+              "fn": "buggy_abs",
+              "line": 12,
+              "text": "buggy_abs(-3) == 3"
+            }
+          },
+          "example": "buggy_abs(-3) == 3",
+          "fn": "buggy_abs",
+          "line": 12,
+          "status": "fail"
+        }
+      ]
+    },
+    "ok": false
+  }
+}

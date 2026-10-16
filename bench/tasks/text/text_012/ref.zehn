@@ -1,0 +1,44 @@
+fn wider(best: Int, v: Int) -> Int
+  intent "the larger of the best width so far and the width of v written in decimal"
+  example wider(2, 5) == 2
+  example wider(1, 1234) == 4
+do
+  return int.max(best, text.len(int.to_text(v)))
+end fn
+
+fn pad_left(t: Text, w: Int) -> Text
+  intent "t with spaces added on the left until it is at least w characters long"
+  example pad_left("7", 3) == "  7"
+  example pad_left("1234", 3) == "1234"
+do
+  if text.len(t) >= w then
+    return t
+  end if
+  return pad_left(text.concat(" ", t), w)
+end fn
+
+fn render_from(values: List<Int>, i: Int, w: Int) -> Text
+  intent "values at index i and later, each right-aligned to width w and joined with |"
+  example render_from([1, 22], 0, 2) == " 1|22"
+  example render_from([], 0, 2) == ""
+do
+  match list.get(values, i) do
+    case none =>
+      return ""
+    case some(v) =>
+      let cell = pad_left(int.to_text(v), w)
+      if i + 1 >= list.len(values) then
+        return cell
+      end if
+      return text.concat(text.concat(cell, "|"), render_from(values, i + 1, w))
+  end match
+end fn
+
+fn align_column(values: List<Int>) -> Text
+  intent "write every number in decimal, right-aligned with spaces to the width of the widest one, joined with |"
+  example align_column([5, 120, 33]) == "  5|120| 33"
+  example align_column([-7, 100]) == " -7|100"
+  example align_column([]) == ""
+do
+  return render_from(values, 0, list.fold(values, 0, wider))
+end fn

@@ -1,0 +1,8 @@
+fn first(p: (Int, Int)) -> Int
+  example first((1, 2)) == 1
+do
+  match p do
+    case (a, b) =>
+      return a
+  end match
+end fn

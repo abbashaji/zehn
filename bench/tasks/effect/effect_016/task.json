@@ -1,0 +1,83 @@
+{
+  "id": "effect_016",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Stack machine with a trace",
+  "description": "A stack machine starts with an empty stack and runs the commands in order, numbered from 1. Each command has an op and a number n. `push` puts n on top of the stack. `pop` removes the top item. `dup` pushes a copy of the top item. `add` and `mul` remove the top two items and push their sum or product. `swap` exchanges the top two items. For ops other than push, n is ignored. After every command that succeeds, print `N: [STACK]`, where STACK lists the items from the bottom to the top, separated by commas without spaces (an empty stack prints `N: []`). A command that needs more items than the stack holds stops the run at once with the error `stack underflow at command N`; a command with any other op stops it with the error `unknown op at command N` (ops are case-sensitive and an unknown op is reported even when the stack is empty). Nothing is printed for the failing command, but lines already printed stay. If every command succeeds, return the top item of the final stack as a success value; if the final stack is empty, return the error `empty stack at end`.",
+  "entry": "run_stack",
+  "params": [
+    {
+      "name": "cmds",
+      "type": "List<Cmd>"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [
+    {
+      "name": "Cmd",
+      "fields": [
+        {
+          "name": "op",
+          "type": "Text"
+        },
+        {
+          "name": "n",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "op": "push",
+            "n": 2
+          },
+          {
+            "op": "push",
+            "n": 3
+          },
+          {
+            "op": "add",
+            "n": 0
+          }
+        ]
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          5
+        ]
+      },
+      "stdout": "1: [2]\n2: [2,3]\n3: [5]\n"
+    },
+    {
+      "args": [
+        [
+          {
+            "op": "push",
+            "n": 1
+          },
+          {
+            "op": "add",
+            "n": 0
+          }
+        ]
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "stack underflow at command 2"
+        ]
+      },
+      "stdout": "1: [1]\n"
+    }
+  ],
+  "notes": "Level 3. Stack state threaded through the run; Result with early exit that keeps earlier output; the order of operands only matters for swap (the top item ends up below); n is ignored for every op except push (tests pass nonzero n to them); `pop` or `dup` on an empty stack and `add`, `mul` or `swap` on a one-item stack underflow; an empty final stack is an error and the trace for the last command is still printed; negative numbers print with their sign inside the list. Largest value 6e15."
+}

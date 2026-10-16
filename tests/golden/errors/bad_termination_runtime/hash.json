@@ -1,0 +1,25 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "spin",
+      "ref": "fn#3424"
+    },
+    {
+      "kind": "fn",
+      "name": "ping",
+      "ref": "fn#e7c2"
+    },
+    {
+      "kind": "fn",
+      "name": "pong",
+      "ref": "fn#9d54"
+    },
+    {
+      "kind": "fn",
+      "name": "fib",
+      "ref": "fn#10c4"
+    }
+  ]
+}

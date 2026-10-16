@@ -1,0 +1,1 @@
+{"strict": true, "dialect": {"effect_examples": "mock"}, "note": "the function called time.now twice but the mock list holds one result"}

@@ -1,0 +1,49 @@
+{
+  "id": "domain_009",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Parking fee with a grace period and a daily cap",
+  "description": "A car park charges by the minute counted from the car's entry. Times are whole minutes on a running clock that starts at 0. Write parking_fee, which takes the entry time and the exit time and returns the fee in cents. The stay is the exit time minus the entry time, and it is cut into consecutive blocks of 1440 minutes (one day) counted from the entry; the last block may be shorter, and a stay of exactly 1440 minutes is one block. The first 15 minutes of the whole stay are free, once, and they count against the first block only. In every block the remaining minutes are billed at 300 cents per started hour (a started hour is an hour that has begun, so 1 minute is one hour and 61 minutes are two hours), and the charge of one block never exceeds 1500 cents. The fee is the sum of the charges of all blocks; a stay of 15 minutes or less, including a stay of 0 minutes, costs nothing. Checks happen in this order, and the first failing one decides the result: an entry time below 0 gives the error \"invalid entry time\"; an exit time before the entry time gives \"exit before entry\".",
+  "entry": "parking_fee",
+  "params": [
+    {
+      "name": "entry",
+      "type": "Int"
+    },
+    {
+      "name": "exit",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        10,
+        85
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          300
+        ]
+      }
+    },
+    {
+      "args": [
+        0,
+        1441
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          1800
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: block splitting, ceiling division on positive numbers, a cap per block and a one-time grace period. Pitfalls: the 15 free minutes are not repeated in later blocks; the cap applies per 1440-minute block, not per calendar day and not once for the whole stay; a started hour is a ceiling; the stay is measured from the entry time, not from clock midnight; a negative entry time is checked before the exit-before-entry check."
+}

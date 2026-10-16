@@ -1,0 +1,39 @@
+{
+  "id": "numneg_017",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Clock hour after a shift",
+  "description": "A 24-hour clock shows hours 0 to 23. Return the hour shown after moving the clock by delta hours, forwards for a positive delta and backwards for a negative one, wrapping around midnight in both directions: 22 plus 5 gives 3, 2 minus 5 (delta -5) gives 21. hour is between 0 and 23, delta can be any integer. The result is always between 0 and 23.",
+  "entry": "hour_after",
+  "params": [
+    {
+      "name": "hour",
+      "type": "Int"
+    },
+    {
+      "name": "delta",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        10,
+        5
+      ],
+      "expect": 15
+    },
+    {
+      "args": [
+        22,
+        5
+      ],
+      "expect": 3
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

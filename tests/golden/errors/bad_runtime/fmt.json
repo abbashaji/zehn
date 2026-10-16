@@ -1,0 +1,4 @@
+{
+  "exit": 0,
+  "stdout": "fn safe_div(a: Int, b: Int) -> Int\n  requires b != 0\n  ensures out * b <= a\n  example safe_div(10, 2) == 5\n  example safe_div(10, 3) == 4\ndo\n  return a / b\nend fn\n\nfn buggy_abs(n: Int) -> Int\n  ensures out >= 0\n  example buggy_abs(-3) == 3\ndo\n  return n\nend fn\n"
+}

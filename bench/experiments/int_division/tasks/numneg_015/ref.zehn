@@ -1,0 +1,9 @@
+fn mod_nonneg(a: Int, b: Int) -> Int
+  intent "the remainder of a divided by b that satisfies 0 <= r < |b|"
+  requires b != 0
+  ensures out >= 0
+  example mod_nonneg(7, 3) == 1
+  example mod_nonneg(9, 3) == 0
+do
+  return int.rem_euclid(a, b)
+end fn

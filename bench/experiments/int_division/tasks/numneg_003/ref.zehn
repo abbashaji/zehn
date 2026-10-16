@@ -1,0 +1,8 @@
+fn floor_mod(a: Int, b: Int) -> Int
+  intent "a minus b times the quotient rounded down toward negative infinity"
+  requires b != 0
+  example floor_mod(7, 2) == 1
+  example floor_mod(6, -3) == 0
+do
+  return a - b * int.div_floor(a, b)
+end fn

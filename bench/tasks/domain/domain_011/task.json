@@ -1,0 +1,140 @@
+{
+  "id": "domain_011",
+  "category": "domain",
+  "level": 2,
+  "kind": "write",
+  "title": "Permission check where a deny overrides",
+  "description": "An access policy is a list of rules. Each rule names a role, an action and a flag that says whether the rule allows the action (true) or denies it (false). A rule applies to a request when its role is one of the user's roles and its action is either exactly the requested action or the single character \"*\", which stands for every action. Role and action names are compared exactly. Write check_access, which takes the list of rules, the user's roles and the requested action and decides the request. Checks happen in this order, and the first one that applies decides the result: an empty action name gives the error \"action required\"; if any applying rule denies, the request is refused with the error \"denied by role \" followed by the role of the first applying deny rule in the list of rules; otherwise, if any applying rule allows, the request is granted with the value \"allowed by role \" followed by the role of the first applying allow rule in the list of rules; otherwise the error is \"no rule for \" followed by the action name. A deny therefore beats an allow no matter where each stands in the list. A user with no roles matches no rule.",
+  "entry": "check_access",
+  "params": [
+    {
+      "name": "rules",
+      "type": "List<Rule>"
+    },
+    {
+      "name": "roles",
+      "type": "List<Text>"
+    },
+    {
+      "name": "action",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [
+    {
+      "name": "Rule",
+      "fields": [
+        {
+          "name": "role",
+          "type": "Text"
+        },
+        {
+          "name": "action",
+          "type": "Text"
+        },
+        {
+          "name": "allow",
+          "type": "Bool"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "role": "admin",
+            "action": "*",
+            "allow": true
+          },
+          {
+            "role": "guest",
+            "action": "delete",
+            "allow": false
+          },
+          {
+            "role": "editor",
+            "action": "edit",
+            "allow": true
+          },
+          {
+            "role": "editor",
+            "action": "delete",
+            "allow": false
+          },
+          {
+            "role": "viewer",
+            "action": "view",
+            "allow": true
+          },
+          {
+            "role": "banned",
+            "action": "*",
+            "allow": false
+          }
+        ],
+        [
+          "admin"
+        ],
+        "edit"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "allowed by role admin"
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "role": "admin",
+            "action": "*",
+            "allow": true
+          },
+          {
+            "role": "guest",
+            "action": "delete",
+            "allow": false
+          },
+          {
+            "role": "editor",
+            "action": "edit",
+            "allow": true
+          },
+          {
+            "role": "editor",
+            "action": "delete",
+            "allow": false
+          },
+          {
+            "role": "viewer",
+            "action": "view",
+            "allow": true
+          },
+          {
+            "role": "banned",
+            "action": "*",
+            "allow": false
+          }
+        ],
+        [
+          "admin",
+          "guest"
+        ],
+        "delete"
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "denied by role guest"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 2: rule matching with a wildcard, precedence between two kinds of rule, and which rule is named. Pitfalls: the role named in the message is the first applying rule in the RULE list, not the first of the user's roles; a deny anywhere beats an allow that comes earlier; the wildcard is on the rule side only (a request for the action \"*\" matches only rules whose action is \"*\"); an empty action is rejected before any rule is looked at."
+}

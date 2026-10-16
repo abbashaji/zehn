@@ -1,0 +1,40 @@
+fn is_leap(year: Int) -> Bool
+  intent "true for a leap year: divisible by 4"
+  example is_leap(2024) == true
+  example is_leap(2023) == false
+do
+  return year % 4 == 0
+end fn
+
+fn month_length(year: Int, month: Int) -> Int
+  intent "number of days of a month whose number is already known to be 1 to 12"
+  example month_length(2023, 1) == 31
+  example month_length(2023, 4) == 30
+  example month_length(2024, 2) == 29
+do
+  if month == 2 then
+    if is_leap(year) then
+      return 29
+    end if
+    return 28
+  end if
+  if month == 4 or month == 6 or month == 9 or month == 11 then
+    return 30
+  end if
+  return 31
+end fn
+
+fn days_in_month(year: Int, month: Int) -> Result<Int, Text>
+  intent "days in a month of a year; the year is validated before the month"
+  example days_in_month(2023, 1) == ok(31)
+  example days_in_month(2023, 2) == ok(28)
+  example days_in_month(0, 13) == err("invalid year")
+do
+  if year < 1 then
+    return err("invalid year")
+  end if
+  if month < 1 or month > 12 then
+    return err("invalid month")
+  end if
+  return ok(month_length(year, month))
+end fn

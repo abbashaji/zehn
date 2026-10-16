@@ -1,0 +1,56 @@
+{
+  "id": "edit_027",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "First index in a sorted list",
+  "description": "Bug report for a binary search over a list of integers that is sorted in ascending order and may contain duplicates. The function should return the smallest index at which the target value occurs, or no value when the target is not in the list. Two symptoms: the target is sometimes not found although it is in the list (for example a list with a single element, or a target at the end of the list), and when the target occurs several times the index of an arbitrary occurrence comes back instead of the first one. Fix the program. The list is never modified.",
+  "entry": "first_index",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    },
+    {
+      "name": "target",
+      "type": "Int"
+    }
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          3,
+          5,
+          7,
+          9
+        ],
+        7
+      ],
+      "expect": {
+        "$": "some",
+        "args": [
+          3
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          1,
+          3,
+          5
+        ],
+        4
+      ],
+      "expect": {
+        "$": "none"
+      }
+    }
+  ],
+  "notes": "Two bugs in a binary search: the loop condition lo < hi skips the one-element window (should include it), and an equal element returns at once instead of continuing to the left. The midpoint division only ever sees non-negative operands; list values may be negative but are never divided. Visible examples are chosen so that the start passes them."
+}

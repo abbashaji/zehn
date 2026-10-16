@@ -1,0 +1,34 @@
+{
+  "examples": [
+    {
+      "fn": "debit",
+      "fuel": 23,
+      "line": 11,
+      "status": "pass"
+    },
+    {
+      "fn": "debit",
+      "fuel": 18,
+      "line": 12,
+      "status": "pass"
+    },
+    {
+      "fn": "credit",
+      "fuel": 23,
+      "line": 24,
+      "status": "pass"
+    },
+    {
+      "fn": "transfer",
+      "fuel": 85,
+      "line": 34,
+      "status": "pass"
+    },
+    {
+      "fn": "transfer",
+      "fuel": 34,
+      "line": 35,
+      "status": "pass"
+    }
+  ]
+}

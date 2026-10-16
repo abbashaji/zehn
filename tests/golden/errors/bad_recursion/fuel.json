@@ -1,0 +1,16 @@
+{
+  "examples": [
+    {
+      "fn": "total",
+      "fuel": 70003,
+      "line": 2,
+      "status": "fail"
+    },
+    {
+      "fn": "safe_total",
+      "fuel": 43,
+      "line": 8,
+      "status": "pass"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"strict": false, "dialect": {"int_ops": "explicit"}, "note": "operator / used on Int under int_ops=explicit"}

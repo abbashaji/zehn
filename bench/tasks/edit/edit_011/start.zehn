@@ -1,0 +1,40 @@
+fn mentions_any(post: Text, tags: List<Text>, i: Int) -> Bool
+  intent "true when the post contains at least one tag from index i on"
+  example mentions_any("Rust and Python", ["rust", "Python"], 0) == true
+  example mentions_any("Rust only", ["python"], 0) == false
+  example mentions_any("anything", [], 0) == false
+do
+  match list.get(tags, i) do
+    case none =>
+      return false
+    case some(tag) =>
+      if text.contains(post, tag) then
+        return true
+      end if
+      return mentions_any(post, tags, i + 1)
+  end match
+end fn
+
+fn pick(posts: List<Text>, tags: List<Text>, i: Int, done: List<Text>) -> List<Text>
+  intent "the posts from index i on that mention a tag, appended to done in order"
+  example pick([], ["a"], 0, []) == []
+  example pick(["xa", "yb", "ab"], ["a"], 0, []) == ["xa", "ab"]
+do
+  match list.get(posts, i) do
+    case none =>
+      return done
+    case some(post) =>
+      if mentions_any(post, tags, 0) then
+        return pick(posts, tags, i + 1, list.append(done, post))
+      end if
+      return pick(posts, tags, i + 1, done)
+  end match
+end fn
+
+fn matching_posts(posts: List<Text>, tags: List<Text>) -> List<Text>
+  intent "posts that contain a tag, in their original order"
+  example matching_posts(["cat on mat", "dog"], ["cat"]) == ["cat on mat"]
+  example matching_posts([], ["x"]) == []
+do
+  return pick(posts, tags, 0, [])
+end fn

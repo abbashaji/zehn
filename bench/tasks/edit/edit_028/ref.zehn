@@ -1,0 +1,30 @@
+fn band_tax(income: Int, lower: Int, upper: Int, percent: Int) -> Int
+  intent "tax on the part of the income between lower and upper, rounded down"
+  example band_tax(25000, 10000, 30000, 15) == 2250
+  example band_tax(5000, 10000, 30000, 15) == 0
+  example band_tax(50000, 10000, 30000, 15) == 3000
+do
+  let top = int.min(income, upper)
+  if top <= lower then
+    return 0
+  end if
+  return (top - lower) * percent / 100
+end fn
+
+fn income_tax(income: Int, children: Int) -> Result<Int, Text>
+  intent "progressive income tax in whole units, after the credit per child"
+  ensures result.is_ok(out) implies result.unwrap(out) >= 0
+  example income_tax(8000, 0) == ok(0)
+  example income_tax(50000, 0) == ok(9000)
+  example income_tax(12000, 3) == ok(0)
+  example income_tax(-1, 0) == err("invalid income")
+do
+  if income < 0 then
+    return err("invalid income")
+  end if
+  if children < 0 then
+    return err("invalid children")
+  end if
+  let gross = band_tax(income, 10000, 30000, 15) + band_tax(income, 30000, 70000, 30) + band_tax(income, 70000, income, 45)
+  return ok(int.max(0, gross - 300 * children))
+end fn

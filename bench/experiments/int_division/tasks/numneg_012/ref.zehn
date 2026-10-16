@@ -1,0 +1,8 @@
+fn whole_steps(offset: Int, step: Int) -> Int
+  intent "complete steps between the origin and offset, negative to the left; offset divided by step rounded toward zero"
+  requires step > 0
+  example whole_steps(9, 3) == 3
+  example whole_steps(7, 3) == 2
+do
+  return int.div_trunc(offset, step)
+end fn

@@ -1,0 +1,6 @@
+fn twice() -> Int
+  uses [time.now]
+  example twice() == 3 with time.now = mock [1, 2]
+do
+  return time.now() + time.now()
+end fn

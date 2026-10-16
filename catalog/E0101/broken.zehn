@@ -1,0 +1,5 @@
+fn one() -> Int
+  example one() == 1
+do
+  return 1 @
+end fn

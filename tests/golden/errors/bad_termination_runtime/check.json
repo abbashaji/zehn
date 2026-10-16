@@ -1,0 +1,263 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "spin",
+        "ref": "fn#3424"
+      },
+      {
+        "kind": "fn",
+        "name": "ping",
+        "ref": "fn#e7c2"
+      },
+      {
+        "kind": "fn",
+        "name": "pong",
+        "ref": "fn#9d54"
+      },
+      {
+        "kind": "fn",
+        "name": "fib",
+        "ref": "fn#10c4"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 4,
+      "passed": 0,
+      "results": [
+        {
+          "diag": {
+            "blame": "callee",
+            "call_stack": {
+              "depth": 10000,
+              "innermost": [
+                {
+                  "fn": "spin",
+                  "times": 12
+                }
+              ],
+              "most_frequent": "spin",
+              "most_frequent_count": 10000
+            },
+            "code": "E0802",
+            "depth_limit": 10000,
+            "fix_hint": "function 'spin' is on the call stack 10000 times: check its base case; most likely unbounded recursion: add or fix the base case; Zehn has no tail-call optimization",
+            "location": {
+              "fn": "spin",
+              "line": 7
+            },
+            "message": "call depth limit of 10000 exceeded",
+            "phase": "runtime",
+            "severity": "error",
+            "via_example": {
+              "fn": "spin",
+              "line": 2,
+              "text": "spin(1) == 1"
+            }
+          },
+          "example": "spin(1) == 1",
+          "fn": "spin",
+          "line": 2,
+          "status": "fail"
+        },
+        {
+          "diag": {
+            "blame": "callee",
+            "call_stack": {
+              "depth": 10000,
+              "innermost": [
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                }
+              ],
+              "most_frequent": "ping",
+              "most_frequent_count": 5000
+            },
+            "code": "E0802",
+            "depth_limit": 10000,
+            "fix_hint": "function 'ping' is on the call stack 5000 times: check its base case; most likely unbounded recursion: add or fix the base case; Zehn has no tail-call optimization",
+            "location": {
+              "fn": "pong",
+              "line": 27
+            },
+            "message": "call depth limit of 10000 exceeded",
+            "phase": "runtime",
+            "severity": "error",
+            "via_example": {
+              "fn": "ping",
+              "line": 12,
+              "text": "ping(1) == 1"
+            }
+          },
+          "example": "ping(1) == 1",
+          "fn": "ping",
+          "line": 12,
+          "status": "fail"
+        },
+        {
+          "diag": {
+            "blame": "callee",
+            "call_stack": {
+              "depth": 10000,
+              "innermost": [
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                },
+                {
+                  "fn": "pong",
+                  "times": 1
+                },
+                {
+                  "fn": "ping",
+                  "times": 1
+                }
+              ],
+              "most_frequent": "pong",
+              "most_frequent_count": 5000
+            },
+            "code": "E0802",
+            "depth_limit": 10000,
+            "fix_hint": "function 'pong' is on the call stack 5000 times: check its base case; most likely unbounded recursion: add or fix the base case; Zehn has no tail-call optimization",
+            "location": {
+              "fn": "ping",
+              "line": 17
+            },
+            "message": "call depth limit of 10000 exceeded",
+            "phase": "runtime",
+            "severity": "error",
+            "via_example": {
+              "fn": "pong",
+              "line": 22,
+              "text": "pong(1) == 1"
+            }
+          },
+          "example": "pong(1) == 1",
+          "fn": "pong",
+          "line": 22,
+          "status": "fail"
+        },
+        {
+          "diag": {
+            "blame": "callee",
+            "call_stack": {
+              "depth": 33,
+              "innermost": [
+                {
+                  "fn": "fib",
+                  "times": 12
+                }
+              ],
+              "most_frequent": "fib",
+              "most_frequent_count": 33
+            },
+            "code": "E0801",
+            "fix_hint": "function 'fib' is on the call stack 33 times: check its base case; most likely non-terminating recursion: check that every recursive call moves toward a base case",
+            "fuel_limit": 1000000,
+            "location": {
+              "fn": "fib",
+              "line": 37
+            },
+            "message": "fuel exhausted after 1000000 steps",
+            "phase": "runtime",
+            "severity": "error",
+            "via_example": {
+              "fn": "fib",
+              "line": 32,
+              "text": "fib(40) == 102334155"
+            }
+          },
+          "example": "fib(40) == 102334155",
+          "fn": "fib",
+          "line": 32,
+          "status": "fail"
+        }
+      ]
+    },
+    "ok": false
+  }
+}

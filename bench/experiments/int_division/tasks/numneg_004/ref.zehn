@@ -1,0 +1,24 @@
+fn floor_each_from(xs: List<Int>, d: Int, i: Int) -> List<Int>
+  intent "elements of xs from position i on, each divided by d and rounded down toward negative infinity"
+  requires d != 0
+  requires i >= 0
+  example floor_each_from([7, -7], 2, 0) == [3, -4]
+  example floor_each_from([7, -7], 2, 1) == [-4]
+  example floor_each_from([7, -7], 2, 2) == []
+do
+  match list.get(xs, i) do
+    case none =>
+      return []
+    case some(x) =>
+      return list.concat([int.div_floor(x, d)], floor_each_from(xs, d, i + 1))
+  end match
+end fn
+
+fn floor_each(xs: List<Int>, d: Int) -> List<Int>
+  intent "every element of xs divided by d and rounded down toward negative infinity"
+  requires d != 0
+  example floor_each([10, 20], 5) == [2, 4]
+  example floor_each([], 3) == []
+do
+  return floor_each_from(xs, d, 0)
+end fn

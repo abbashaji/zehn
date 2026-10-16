@@ -1,0 +1,73 @@
+{
+  "id": "edit_029",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Library fines for late loans",
+  "description": "Feature request for the library fine function. It receives the loans that are returned late, each with a kind (\"book\", \"dvd\" or \"game\") and the number of days it was late, and a flag that says whether the borrower is a member. It returns the total fine in cents. The daily rate is 10 for a book, 50 for a dvd and 100 for a game. Today the fine of a loan is the daily rate times the days late, the total is the sum of the loan fines, and the flag is ignored. Change it so that: (1) for a member the first 3 days late of every loan are free (a loan that is at most 3 days late costs nothing); (2) the fine of one loan is never more than 1500; (3) the total fine is never more than 4000. The cap of one loan is applied after the free days, and the cap of the total after the sum. All loans are checked before anything is added up, in list order; for each loan the kind is checked first, so the first problem found decides the error message: a kind other than the three above (kinds are case sensitive): \"unknown kind\"; negative days late: \"invalid days\". An empty list costs 0.",
+  "entry": "total_fine",
+  "params": [
+    {
+      "name": "loans",
+      "type": "List<Loan>"
+    },
+    {
+      "name": "member",
+      "type": "Bool"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [
+    {
+      "name": "Loan",
+      "fields": [
+        {
+          "name": "kind",
+          "type": "Text"
+        },
+        {
+          "name": "days_late",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "book",
+            "days_late": 5
+          }
+        ],
+        false
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          50
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "kind": "cd",
+            "days_late": 2
+          }
+        ],
+        false
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "unknown kind"
+        ]
+      }
+    }
+  ],
+  "notes": "Feature with three rules and an error order that stays as it is: a later invalid loan beats an earlier valid one, kind is checked before days within a loan, and a negative days_late is an error for a member too (the free days must not hide it: max(0, days - 3) would). Start ignores the flag and both caps. Visible examples are chosen so that the start passes them (no member, no cap reached)."
+}

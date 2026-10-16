@@ -397,6 +397,8 @@ class ResourceLimits(unittest.TestCase):
     """SPEC 13: fuel and call depth turn non-termination into diagnostics."""
 
     SPIN = fn_src("  return f(n + 1)", ex="f(1) == 1")
+    # same endless recursion, but conditional, so the static E0311 lets it reach run time
+    SPIN_RT = fn_src("  if n < 0 then\n    return 0\n  else\n    return f(n + 1)\n  end if", ex="f(1) == 1")
 
     def call(self, src, fname, args, **kw):
         prog = zehn.parse(src)
@@ -418,7 +420,7 @@ class ResourceLimits(unittest.TestCase):
 
     def test_default_depth_is_10000(self):
         self.assertEqual(zehn.DEFAULT_DEPTH, 10_000)
-        _, diags, ex = zehn.analyze(self.SPIN)
+        _, diags, ex = zehn.analyze(self.SPIN_RT)
         self.assertEqual(ex[0]["diag"]["depth_limit"], 10_000)
 
     def test_mutual_recursion_is_summarised_as_a_cycle(self):
@@ -452,8 +454,8 @@ class ResourceLimits(unittest.TestCase):
         self.assertGreater(used[0], 100)
 
     def test_diagnostics_are_identical_across_runs(self):
-        a = zehn.analyze(self.SPIN)[2][0]["diag"]
-        b = zehn.analyze(self.SPIN)[2][0]["diag"]
+        a = zehn.analyze(self.SPIN_RT)[2][0]["diag"]
+        b = zehn.analyze(self.SPIN_RT)[2][0]["diag"]
         self.assertEqual(a, b)
 
     def test_each_example_gets_a_fresh_budget(self):
@@ -465,7 +467,7 @@ class ResourceLimits(unittest.TestCase):
         self.assertTrue(all(x["status"] == "pass" for x in ex), ex)
 
     def test_contracts_are_metered_too(self):
-        src = ("fn loop(n: Int) -> Int\n  example loop(1) == 1\ndo\n  return loop(n)\nend fn\n\n"
+        src = ("fn loop(n: Int) -> Int\n  example loop(1) == 1\ndo\n  if n < 0 then\n    return 0\n  else\n    return loop(n)\n  end if\nend fn\n\n"
                "fn g(n: Int) -> Int\n  requires loop(n) == 0\n  example g(1) == 1\ndo\n  return n\nend fn\n")
         _, diags, ex = zehn.analyze(src, max_depth=50)
         self.assertEqual({x["diag"]["code"] for x in ex if x["status"] == "fail"}, {"E0802"})
@@ -511,7 +513,7 @@ class ResourceLimits(unittest.TestCase):
         self.assertIn("E0204", [d["code"] for d in diags])
 
     def test_bad_termination_file(self):
-        _, diags, ex = zehn.analyze(read(ERR, "bad_termination.zehn"))
+        _, diags, ex = zehn.analyze(read(ERR, "bad_termination_runtime.zehn"))
         got = [x["diag"]["code"] for x in ex if x["status"] == "fail"]
         self.assertEqual(sorted(got), ["E0801", "E0802", "E0802", "E0802"])
 
@@ -522,13 +524,13 @@ class ResourceLimits(unittest.TestCase):
 
 class LimitCLI(unittest.TestCase):
     def test_run_reports_fuel_as_json_not_a_traceback(self):
-        rc, out, err = cli("run", os.path.join(ERR, "bad_termination.zehn"), "fib", "[40]")
+        rc, out, err = cli("run", os.path.join(ERR, "bad_termination_runtime.zehn"), "fib", "[40]")
         self.assertEqual(rc, 1)
         self.assertEqual(json.loads(out)["code"], "E0801")
         self.assertNotIn("Traceback", err)
 
     def test_run_infinite_recursion_exits_cleanly(self):
-        rc, out, err = cli("run", os.path.join(ERR, "bad_termination.zehn"), "spin", "[0]")
+        rc, out, err = cli("run", os.path.join(ERR, "bad_termination_runtime.zehn"), "spin", "[0]")
         self.assertEqual(rc, 1)
         self.assertEqual(json.loads(out)["code"], "E0802")
         self.assertNotIn("Traceback", err)

@@ -1,0 +1,39 @@
+{
+  "id": "numneg_015",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Non-negative remainder",
+  "description": "Return the remainder r of a divided by b that is never negative: r is the one integer with 0 <= r < |b| for which a - r is a multiple of b. For example -7 and 3 give 2, 7 and 3 give 1, and -7 and -3 give 2 (the sign of b does not matter). b is never 0 and may be negative.",
+  "entry": "mod_nonneg",
+  "params": [
+    {
+      "name": "a",
+      "type": "Int"
+    },
+    {
+      "name": "b",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        7,
+        3
+      ],
+      "expect": 1
+    },
+    {
+      "args": [
+        9,
+        3
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

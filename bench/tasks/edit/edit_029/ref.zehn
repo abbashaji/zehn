@@ -1,0 +1,67 @@
+type Loan = { kind: Text, days_late: Int }
+
+fn daily_rate(kind: Text) -> Option<Int>
+  intent "daily fine in cents for a kind of loan, none for an unknown kind"
+  example daily_rate("book") == some(10)
+  example daily_rate("game") == some(100)
+  example daily_rate("cd") == none
+do
+  if kind == "book" then
+    return some(10)
+  end if
+  if kind == "dvd" then
+    return some(50)
+  end if
+  if kind == "game" then
+    return some(100)
+  end if
+  return none
+end fn
+
+fn loan_fine(loan: Loan, member: Bool) -> Result<Int, Text>
+  intent "fine of one loan after free days for members, at most 1500"
+  example loan_fine({kind: "book", days_late: 5}, false) == ok(50)
+  example loan_fine({kind: "book", days_late: 5}, true) == ok(20)
+  example loan_fine({kind: "game", days_late: 30}, false) == ok(1500)
+  example loan_fine({kind: "cd", days_late: 1}, false) == err("unknown kind")
+do
+  match daily_rate(loan.kind) do
+    case none =>
+      return err("unknown kind")
+    case some(rate) =>
+      if loan.days_late < 0 then
+        return err("invalid days")
+      end if
+      var days = loan.days_late
+      if member then
+        days := int.max(0, days - 3)
+      end if
+      return ok(int.min(days * rate, 1500))
+  end match
+end fn
+
+fn sum_fines(loans: List<Loan>, member: Bool, i: Int, acc: Int) -> Result<Int, Text>
+  intent "add up the fines of the loans from index i on, stopping at the first error"
+  example sum_fines([], false, 0, 7) == ok(7)
+  example sum_fines([{kind: "book", days_late: 2}], false, 0, 0) == ok(20)
+  example sum_fines([{kind: "book", days_late: 2}, {kind: "cd", days_late: 1}], false, 0, 0) == err("unknown kind")
+do
+  match list.get(loans, i) do
+    case none =>
+      return ok(acc)
+    case some(loan) =>
+      let fine = loan_fine(loan, member)?
+      return sum_fines(loans, member, i + 1, acc + fine)
+  end match
+end fn
+
+fn total_fine(loans: List<Loan>, member: Bool) -> Result<Int, Text>
+  intent "total fine in cents for the late loans, at most 4000"
+  ensures result.is_ok(out) implies result.unwrap(out) <= 4000
+  example total_fine([], false) == ok(0)
+  example total_fine([{kind: "dvd", days_late: 4}], true) == ok(50)
+  example total_fine([{kind: "game", days_late: 15}, {kind: "game", days_late: 15}, {kind: "game", days_late: 15}], false) == ok(4000)
+do
+  let sum = sum_fines(loans, member, 0, 0)?
+  return ok(int.min(sum, 4000))
+end fn

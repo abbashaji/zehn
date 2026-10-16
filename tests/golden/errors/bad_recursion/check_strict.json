@@ -1,0 +1,42 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "total",
+        "ref": "fn#c994"
+      },
+      {
+        "kind": "fn",
+        "name": "safe_total",
+        "ref": "fn#19a7"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0311",
+        "cycle": [
+          {
+            "fn": "total",
+            "line": 4
+          }
+        ],
+        "fix_hint": "put the recursive call under an `if` or a `match` case and add a base case that returns without recursing",
+        "location": {
+          "fn": "total",
+          "line": 4
+        },
+        "message": "function 'total' always calls itself (line 4): it can never return",
+        "phase": "check",
+        "severity": "error"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false
+  }
+}

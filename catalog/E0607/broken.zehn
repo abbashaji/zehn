@@ -1,0 +1,6 @@
+fn stamp() -> Int
+  uses [time.now]
+  example stamp() == 1 with time.now = mock ["now"]
+do
+  return time.now()
+end fn

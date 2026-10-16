@@ -1,0 +1,49 @@
+{
+  "id": "domain_007",
+  "category": "domain",
+  "level": 1,
+  "kind": "write",
+  "title": "Parcel shipping fee by zone and weight",
+  "description": "A carrier prices parcels by zone and weight. Write parcel_fee, which takes a zone name and a weight in grams and returns the fee in cents. The zones are \"local\", \"national\" and \"international\" (lower case, compared exactly). Each zone has a base fee that covers the first started kilogram, a surcharge for every further started kilogram, and a weight limit: local costs 300 base plus 50 per further kilogram with a limit of 30000 grams; national costs 500 plus 100 with a limit of 30000 grams; international costs 1500 plus 400 with a limit of 20000 grams. A started kilogram is a kilogram that has begun, so 1000 grams is one kilogram and 1001 grams is two. A weight equal to the limit is allowed. Checks happen in this order, and the first failing one decides the result: a weight of zero or less gives the error \"invalid weight\"; a zone that is not one of the three names gives \"unknown zone: \" followed by the zone text; a weight above the zone's limit gives \"too heavy for \" followed by the zone, then \": limit is \", the limit and \" g\" (for example \"too heavy for international: limit is 20000 g\").",
+  "entry": "parcel_fee",
+  "params": [
+    {
+      "name": "zone",
+      "type": "Text"
+    },
+    {
+      "name": "grams",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "local",
+        1001
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          350
+        ]
+      }
+    },
+    {
+      "args": [
+        "international",
+        20001
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "too heavy for international: limit is 20000 g"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 1: lookup by name, ceiling division on positive numbers, three ordered checks. Pitfalls: the weight check precedes the zone check (a bad weight with an unknown zone is a weight error); exactly 1000 g has no surcharge; the limit itself is allowed; the limit differs for international."
+}

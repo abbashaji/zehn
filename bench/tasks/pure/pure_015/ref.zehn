@@ -1,0 +1,32 @@
+fn slots_from(tasks: List<Int>, i: Int, cooldown: Int, now: Int, last: Map<Int, Int>) -> Int
+  intent "slot number of the last task when the tasks from index i on are placed one after the other, given the slot now of the previous task and the slot of the last run of every kind in last"
+  requires i >= 0
+  requires cooldown >= 0
+  example slots_from([1, 1], 0, 2, 0, map.empty()) == 4
+  example slots_from([2], 1, 0, 3, map.empty()) == 3
+  example slots_from([1], 0, 2, 5, map.set(map.empty(), 1, 4)) == 7
+do
+  match list.get(tasks, i) do
+    case none =>
+      return now
+    case some(kind) =>
+      match map.get(last, kind) do
+        case none =>
+          return slots_from(tasks, i + 1, cooldown, now + 1, map.set(last, kind, now + 1))
+        case some(prev) =>
+          let at = int.max(now + 1, prev + cooldown + 1)
+          return slots_from(tasks, i + 1, cooldown, at, map.set(last, kind, at))
+      end match
+  end match
+end fn
+
+fn schedule_length(tasks: List<Int>, cooldown: Int) -> Int
+  intent "number of slots used when the tasks run in the given order, one per slot, with at least cooldown other slots between two runs of the same kind; idle slots are allowed"
+  requires cooldown >= 0
+  ensures out >= list.len(tasks)
+  example schedule_length([1, 1, 1], 2) == 7
+  example schedule_length([1, 2, 1], 2) == 4
+  example schedule_length([], 3) == 0
+do
+  return slots_from(tasks, 0, cooldown, 0, map.empty())
+end fn

@@ -1,0 +1,20 @@
+{
+  "id": "pure_007",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Second largest distinct value",
+  "description": "Given a list of integers, return the second largest distinct value, wrapped in some. If the list has fewer than two distinct values (it is empty, or every element is equal), return none. Repeats of the largest value do not count as the second largest. Values may be negative.",
+  "entry": "second_largest",
+  "params": [
+    {"name": "values", "type": "List<Int>"}
+  ],
+  "returns": "Option<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[3, 1, 2]], "expect": {"$": "some", "args": [2]}},
+    {"args": [[5, 5, 5]], "expect": {"$": "none"}}
+  ],
+  "notes": "The trap is a repeated maximum: [9, 9, 4] gives some(4), not some(9). Also single-element and empty lists, negatives, large values."
+}

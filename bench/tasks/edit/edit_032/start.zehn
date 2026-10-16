@@ -1,0 +1,56 @@
+type Player = { id: Int, score: Int }
+
+type Ranked = { id: Int, rank: Int }
+
+fn count_ahead(players: List<Player>, p: Player, pi: Int, i: Int) -> Int
+  intent "how many of the players from index i on are listed before p, which sits at index pi"
+  example count_ahead([], {id: 1, score: 5}, 0, 0) == 0
+  example count_ahead([{id: 1, score: 5}, {id: 2, score: 9}], {id: 1, score: 5}, 0, 0) == 1
+do
+  match list.get(players, i) do
+    case none =>
+      return 0
+    case some(q) =>
+      if q.score > p.score or q.score == p.score and i < pi then
+        return 1 + count_ahead(players, p, pi, i + 1)
+      end if
+      return count_ahead(players, p, pi, i + 1)
+  end match
+end fn
+
+fn player_at(players: List<Player>, k: Int, i: Int) -> Option<Player>
+  intent "the player from index i on that has exactly k players listed before it"
+  example player_at([], 0, 0) == none
+  example player_at([{id: 1, score: 5}, {id: 2, score: 9}], 0, 0) == some({id: 2, score: 9})
+do
+  match list.get(players, i) do
+    case none =>
+      return none
+    case some(p) =>
+      if count_ahead(players, p, i, 0) == k then
+        return some(p)
+      end if
+      return player_at(players, k, i + 1)
+  end match
+end fn
+
+fn build(players: List<Player>, k: Int, acc: List<Ranked>) -> List<Ranked>
+  intent "append the entries for list positions k and on to acc, rank is the position"
+  example build([], 0, []) == []
+  example build([{id: 1, score: 5}, {id: 2, score: 9}], 0, []) == [{id: 2, rank: 1}, {id: 1, rank: 2}]
+do
+  match player_at(players, k, 0) do
+    case none =>
+      return acc
+    case some(p) =>
+      return build(players, k + 1, list.append(acc, {id: p.id, rank: k + 1}))
+  end match
+end fn
+
+fn leaderboard(players: List<Player>) -> List<Ranked>
+  intent "players ordered by score, with their position as rank"
+  example leaderboard([]) == []
+  example leaderboard([{id: 1, score: 50}, {id: 2, score: 70}, {id: 3, score: 60}]) == [{id: 2, rank: 1}, {id: 3, rank: 2}, {id: 1, rank: 3}]
+do
+  return build(players, 0, [])
+end fn

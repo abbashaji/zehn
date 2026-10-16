@@ -1,0 +1,7 @@
+fn share(total: Int, people: Int) -> Int
+  intent "whole share each person gets, rounding down"
+  requires people > 0
+  example share(7, 2) == 3
+do
+  return int.div_floor(total, people)
+end fn

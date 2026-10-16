@@ -1,0 +1,55 @@
+type Binding = { key: Text, value: Text }
+
+fn lookup(bindings: List<Binding>, key: Text, i: Int) -> Option<Text>
+  intent "the value of the first binding at index i or later whose key matches"
+  example lookup([{key: "a", value: "1"}], "a", 0) == some("1")
+  example lookup([{key: "a", value: "1"}], "b", 0) == none
+do
+  match list.get(bindings, i) do
+    case none =>
+      return none
+    case some(b) =>
+      if b.key == key then
+        return some(b.value)
+      end if
+      return lookup(bindings, key, i + 1)
+  end match
+end fn
+
+fn expand(parts: List<Text>, bindings: List<Binding>, i: Int) -> Result<Text, Text>
+  intent "expand the pieces at index i and later; each piece reads key}literal and follows an opening brace"
+  example expand(["a}!"], [{key: "a", value: "X"}], 0) == ok("X!")
+  example expand(["a"], [], 0) == err("unclosed placeholder")
+  example expand(["a}"], [], 0) == err("unknown placeholder: a")
+do
+  match list.get(parts, i) do
+    case none =>
+      return ok("")
+    case some(p) =>
+      let halves = text.split_on(p, "}")
+      if list.len(halves) != 2 then
+        return err("unclosed placeholder")
+      end if
+      let key = option.unwrap_or(list.get(halves, 0), "")
+      let literal = option.unwrap_or(list.get(halves, 1), "")
+      match lookup(bindings, key, 0) do
+        case none =>
+          return err(text.concat("unknown placeholder: ", key))
+        case some(v) =>
+          let tail = expand(parts, bindings, i + 1)?
+          return ok(text.concat(text.concat(v, literal), tail))
+      end match
+  end match
+end fn
+
+fn fill_template(template: Text, bindings: List<Binding>) -> Result<Text, Text>
+  intent "replace every {key} in the template by the value of the first binding with that key; report the first unclosed or unknown placeholder"
+  example fill_template("Hi {n}!", [{key: "n", value: "Bo"}]) == ok("Hi Bo!")
+  example fill_template("Hi {n", [{key: "n", value: "Bo"}]) == err("unclosed placeholder")
+  example fill_template("Hi {x}", [{key: "n", value: "Bo"}]) == err("unknown placeholder: x")
+do
+  let parts = text.split_on(template, "{")
+  let head = option.unwrap_or(list.get(parts, 0), "")
+  let tail = expand(parts, bindings, 1)?
+  return ok(text.concat(head, tail))
+end fn

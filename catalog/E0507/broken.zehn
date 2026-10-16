@@ -1,0 +1,15 @@
+fn parse_pos(n: Int) -> Result<Int, Text>
+  example parse_pos(2) == ok(2)
+  example parse_pos(-1) == err("negative")
+do
+  if n < 0 then
+    return err("negative")
+  end if
+  return ok(n)
+end fn
+
+fn must_pos(n: Int) -> Int
+  example must_pos(-1) == 0
+do
+  return result.unwrap(parse_pos(n))
+end fn

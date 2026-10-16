@@ -1,0 +1,65 @@
+{
+  "id": "effect_015",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Fixed-window rate limiter",
+  "description": "Requests arrive at the given times (whole seconds, never negative, in non-decreasing order). Time is cut into fixed windows of window seconds: window 0 covers times 0 to window - 1, window 1 covers times window to 2 * window - 1, and so on. Each window allows at most limit requests; the count starts again from zero in every new window. For each request, in order: if its window still has room, print `t=T allowed (K/LIMIT)`, where K is how many requests of that window have been allowed so far, this one included; otherwise print `t=T blocked`. After the last request print `blocked: B` with the number of blocked requests and return B as a success value. Blocked requests do not use up room. If window is less than 1, return the error `window must be positive` and print nothing; otherwise, if limit is negative, return the error `limit must not be negative` and print nothing (the window is checked first). A limit of 0 blocks every request. An empty list prints only `blocked: 0`.",
+  "entry": "check_requests",
+  "params": [
+    {
+      "name": "times",
+      "type": "List<Int>"
+    },
+    {
+      "name": "window",
+      "type": "Int"
+    },
+    {
+      "name": "limit",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          0,
+          1,
+          2
+        ],
+        10,
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          1
+        ]
+      },
+      "stdout": "t=0 allowed (1/2)\nt=1 allowed (2/2)\nt=2 blocked\nblocked: 1\n"
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        0,
+        3
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "window must be positive"
+        ]
+      },
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 3. Window number is floor division of non-negative times by a positive window (no negative operands anywhere); the counter resets on a window change, also when the previous window had blocked requests; the first request always starts a fresh window (time 0 included); two settings errors, window checked first, both print nothing; summary line printed on success only. Largest time and window 9e15; naive Math.floor(t / window) is exact on every test input."
+}

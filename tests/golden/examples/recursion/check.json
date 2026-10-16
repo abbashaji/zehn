@@ -1,0 +1,94 @@
+{
+  "exit": 0,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "gcd",
+        "ref": "fn#ea61"
+      },
+      {
+        "kind": "fn",
+        "name": "sum_to",
+        "ref": "fn#7469"
+      },
+      {
+        "kind": "fn",
+        "name": "fib_from",
+        "ref": "fn#0031"
+      },
+      {
+        "kind": "fn",
+        "name": "fib",
+        "ref": "fn#74ca"
+      },
+      {
+        "kind": "fn",
+        "name": "sign",
+        "ref": "fn#6fbe"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 0,
+      "passed": 9,
+      "results": [
+        {
+          "example": "gcd(12, 18) == 6",
+          "fn": "gcd",
+          "line": 9,
+          "status": "pass"
+        },
+        {
+          "example": "gcd(7, 0) == 7",
+          "fn": "gcd",
+          "line": 10,
+          "status": "pass"
+        },
+        {
+          "example": "sum_to(0) == 0",
+          "fn": "sum_to",
+          "line": 22,
+          "status": "pass"
+        },
+        {
+          "example": "sum_to(1000) == 500500",
+          "fn": "sum_to",
+          "line": 23,
+          "status": "pass"
+        },
+        {
+          "example": "fib_from(0, 1, 10) == 55",
+          "fn": "fib_from",
+          "line": 35,
+          "status": "pass"
+        },
+        {
+          "example": "fib(50) == 12586269025",
+          "fn": "fib",
+          "line": 47,
+          "status": "pass"
+        },
+        {
+          "example": "sign(-9) == -1",
+          "fn": "sign",
+          "line": 54,
+          "status": "pass"
+        },
+        {
+          "example": "sign(0) == 0",
+          "fn": "sign",
+          "line": 55,
+          "status": "pass"
+        },
+        {
+          "example": "sign(4) == 1",
+          "fn": "sign",
+          "line": 56,
+          "status": "pass"
+        }
+      ]
+    },
+    "ok": true
+  }
+}

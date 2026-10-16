@@ -1,0 +1,86 @@
+{
+  "id": "edit_014",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Leaderboard with shared ranks",
+  "description": "Bug report for the leaderboard function. It receives the players in any order and returns every player with a rank, sorted by points from high to low; players with equal points keep the order in which they appeared in the input. Two symptoms: the ranks after a tie are too low, and players with 0 points still get a rank. Fix the program. The complete rule is: players with equal points share the same rank, which is the position (counting from 1) of the first of them in the sorted result, so the points 90 80 80 70 give the ranks 1 2 2 4; a player with 0 points is not ranked and gets rank 0, whatever the position. Points are never negative.",
+  "entry": "rank_players",
+  "params": [
+    {
+      "name": "entries",
+      "type": "List<Entry>"
+    }
+  ],
+  "returns": "List<Ranked>",
+  "types": [
+    {
+      "name": "Entry",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "points",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "name": "Ranked",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "rank",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "ana",
+            "points": 50
+          },
+          {
+            "name": "bo",
+            "points": 70
+          },
+          {
+            "name": "cy",
+            "points": 60
+          }
+        ]
+      ],
+      "expect": [
+        {
+          "name": "bo",
+          "rank": 1
+        },
+        {
+          "name": "cy",
+          "rank": 2
+        },
+        {
+          "name": "ana",
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Two bugs: the start numbers ranks densely (1 2 2 3 instead of 1 2 2 4) and ranks 0-point players. The sorting (stable, descending) is already right in the start. Visible examples have no ties and no zeros so that the start passes them. Names in the tests are unique so a wrongly unstable sort would show."
+}

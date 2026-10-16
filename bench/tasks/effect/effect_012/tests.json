@@ -1,0 +1,14 @@
+[
+  {"args": [[]], "expect": "closed", "stdout": ""},
+  {"args": [["open"]], "expect": "open", "stdout": "closed -> open\n"},
+  {"args": [["open", "close", "lock", "unlock"]], "expect": "closed", "stdout": "closed -> open\nopen -> closed\nclosed -> locked\nlocked -> closed\n"},
+  {"args": [["lock", "open"]], "expect": "locked", "stdout": "closed -> locked\nignored open in locked\n"},
+  {"args": [["unlock"]], "expect": "closed", "stdout": "ignored unlock in closed\n"},
+  {"args": [["close"]], "expect": "closed", "stdout": "ignored close in closed\n"},
+  {"args": [["open", "lock"]], "expect": "open", "stdout": "closed -> open\nignored lock in open\n"},
+  {"args": [["open", "open"]], "expect": "open", "stdout": "closed -> open\nignored open in open\n"},
+  {"args": [["OPEN"]], "expect": "closed", "stdout": "ignored OPEN in closed\n"},
+  {"args": [["", "open"]], "expect": "open", "stdout": "ignored  in closed\nclosed -> open\n"},
+  {"args": [["open", "close", "close", "lock", "lock", "unlock", "open", "wave", "close"]], "expect": "closed", "stdout": "closed -> open\nopen -> closed\nignored close in closed\nclosed -> locked\nignored lock in locked\nlocked -> closed\nclosed -> open\nignored wave in open\nopen -> closed\n"},
+  {"args": [["lock", "lock", "unlock", "unlock", "open", "close", "lock"]], "expect": "locked", "stdout": "closed -> locked\nignored lock in locked\nlocked -> closed\nignored unlock in closed\nclosed -> open\nopen -> closed\nclosed -> locked\n"}
+]

@@ -1,0 +1,23 @@
+fn started_hours(minutes: Int) -> Int
+  intent "number of started hours: 0 minutes is 0, 1 to 60 minutes is 1, and so on"
+  example started_hours(0) == 0
+  example started_hours(60) == 1
+  example started_hours(61) == 2
+do
+  return (minutes + 59) / 60
+end fn
+
+fn parking_fee(minutes: Int, rate: Int, grace: Int, cap: Int) -> Result<Int, Text>
+  intent "parking fee in cents: every started hour at the hourly rate"
+  ensures result.is_ok(out) implies result.unwrap(out) >= 0
+  example parking_fee(90, 200, 15, 5000) == ok(400)
+  example parking_fee(-5, 200, 15, 1000) == err("invalid duration")
+do
+  if minutes < 0 then
+    return err("invalid duration")
+  end if
+  if rate < 0 then
+    return err("invalid rate")
+  end if
+  return ok(started_hours(minutes) * rate)
+end fn

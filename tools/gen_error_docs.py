@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Write docs/ERRORS.md from the explain registry (zehnlib.errors.EXPLAIN) and the catalog/ folders.
+
+    python3 tools/gen_error_docs.py            write docs/ERRORS.md
+    python3 tools/gen_error_docs.py --check    exit 1 if docs/ERRORS.md is not what would be written
+    python3 tools/gen_error_docs.py --out FILE write FILE instead of docs/ERRORS.md
+
+The output depends only on the registry and on catalog/, never on the clock or on paths, so two
+runs give byte-identical files. Severity and phase are not stored in the catalog: they are read
+from the diagnostic the broken program really produces, so the document cannot drift from the code.
+"""
+from __future__ import annotations
+
+import contextlib
+import io
+import json
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+import zehn  # noqa: E402,F401  (imports zehnlib: fills every registry, including other branches')
+from zehnlib.cli import main, to_value  # noqa: E402
+from zehnlib.errors import EXPLAIN, ZehnError  # noqa: E402
+
+CATALOG = os.path.join(ROOT, "catalog")
+OUT = os.path.join(ROOT, "docs", "ERRORS.md")
+LONG_LINE = 100      # lines longer than this are abbreviated in the document (E0204 is 6 000 characters)
+
+
+def read(path):
+    with open(path, encoding="utf-8") as fh:
+        return fh.read()
+
+
+def entry(code):
+    """{dir, meta, broken, fixed} of catalog/<code>, or None when the folder is missing."""
+    d = os.path.join(CATALOG, code)
+    if not os.path.isdir(d):
+        return None
+    return {"dir": d, "meta": json.loads(read(os.path.join(d, "meta.json"))),
+            "broken": read(os.path.join(d, "broken.zehn")), "fixed": read(os.path.join(d, "fixed.zehn"))}
+
+
+def _diag_with(code, found):
+    return next((d for d in found if isinstance(d, dict) and d.get("code") == code), None)
+
+
+def observe(code, e):
+    """The diagnostic with this code that the broken program produces (a dict), or None."""
+    meta, path = e["meta"], os.path.join(e["dir"], "broken.zehn")
+    if "cli" in meta:
+        argv = [a.replace("{file}", path).replace("{dir}", e["dir"]) for a in meta["cli"]]
+        buf, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
+            main(["zehn.py"] + argv)
+        try:
+            out = json.loads(buf.getvalue())
+        except ValueError:
+            return None
+        return _diag_with(code, out if isinstance(out, list) else [out])
+    if "unreachable" in meta:
+        prog = zehn.parse(e["broken"])
+        probe = meta.get("probe")
+        try:
+            if probe:
+                it = zehn.Interp(prog, granted=probe.get("grant", []))
+                it.fresh_budget()
+                it.call_fn(prog.funcs[probe["fn"]], [to_value(a) for a in probe.get("args", [])])
+                return None
+            found = [x["diag"] for x in zehn.Interp(prog).run_examples() if x["status"] == "fail"]
+        except ZehnError as z:
+            found = [z.diag]
+        return _diag_with(code, found)
+    _, diags, examples = zehn.analyze(e["broken"], meta.get("strict", False), path,
+                                      dialect=meta.get("dialect") or {})
+    return _diag_with(code, list(diags) + [x["diag"] for x in examples if x["status"] == "fail"])
+
+
+def shorten(src):
+    out = []
+    for line in src.rstrip("\n").split("\n"):
+        if len(line) > LONG_LINE:
+            line = "%s … (%d more characters)" % (line[:40], len(line) - 40)
+        out.append(line)
+    return "\n".join(out)
+
+
+def command(argv):
+    return "zehn.py " + " ".join(a.replace("{file}", "program.zehn").replace("{dir}", ".") for a in argv)
+
+
+def section(code):
+    e = entry(code)
+    lines = ["## %s" % code, ""]
+    if e is None:
+        return lines + ["No catalog entry yet (`catalog/%s/` is missing).\n" % code, "", EXPLAIN[code], ""]
+    meta = e["meta"]
+    d = observe(code, e)
+    sev = d["severity"] if d else ("error" if code.startswith("E") else "warning")
+    phase = d["phase"] if d else "runtime"
+    lines += ["**Severity:** %s · **Phase:** %s" % (sev, phase), "", EXPLAIN[code], "", "*%s*" % meta["note"], ""]
+    if "unreachable" in meta:
+        lines += ["**Not reachable from `check` or `run`:** %s." % meta["unreachable"], ""]
+    if "cli" in meta:
+        lines += ["Broken, run as: `%s`" % command(meta["cli"]), "",
+                  "Fixed, run as: `%s`" % command(meta["cli_fixed"]), ""]
+    elif meta.get("strict"):
+        lines += ["Check with `--strict`.", ""]
+    lines += ["Broken (`catalog/%s/broken.zehn`):" % code, "", "```zehn", shorten(e["broken"]), "```", "",
+              "Fixed (`catalog/%s/fixed.zehn`):" % code, "", "```zehn", shorten(e["fixed"]), "```", ""]
+    return lines
+
+
+def render():
+    codes = sorted(EXPLAIN)
+    lines = ["# Zehn diagnostic codes", "",
+             "Generated by `python3 tools/gen_error_docs.py` from the explain registry and `catalog/`; "
+             "do not edit by hand. `zehn explain <code>` prints the same text as the paragraph under each code. "
+             "The JSON shape of a diagnostic is in `docs/DIAGNOSTICS.md`.", "",
+             "| Code | Severity | Phase | What |", "|---|---|---|---|"]
+    for code in codes:
+        e = entry(code)
+        d = observe(code, e) if e else None
+        lines.append("| [%s](#%s) | %s | %s | %s |" % (
+            code, code.lower(), d["severity"] if d else "", d["phase"] if d else "",
+            e["meta"]["note"].replace("|", "\\|") if e else "no catalog entry"))
+    lines.append("")
+    for code in codes:
+        lines += section(code)
+    return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def main_cli(argv):
+    text = render()
+    if "--check" in argv:
+        same = os.path.exists(OUT) and read(OUT) == text
+        print("docs/ERRORS.md is %s" % ("up to date" if same else "OUT OF DATE: run tools/gen_error_docs.py"))
+        return 0 if same else 1
+    out = argv[argv.index("--out") + 1] if "--out" in argv and argv.index("--out") + 1 < len(argv) else OUT
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    with open(out, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+    print("wrote %s (%d codes)" % (os.path.relpath(out, ROOT) if out == OUT else out, len(EXPLAIN)))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main_cli(sys.argv[1:]))

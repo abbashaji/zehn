@@ -1,0 +1,22 @@
+{
+  "examples": [
+    {
+      "fn": "safe_div",
+      "fuel": 17,
+      "line": 4,
+      "status": "pass"
+    },
+    {
+      "fn": "safe_div",
+      "fuel": 34,
+      "line": 5,
+      "status": "fail"
+    },
+    {
+      "fn": "buggy_abs",
+      "fuel": 12,
+      "line": 12,
+      "status": "fail"
+    }
+  ]
+}

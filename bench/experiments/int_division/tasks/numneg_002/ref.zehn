@@ -1,0 +1,7 @@
+fn floor_average(a: Int, b: Int) -> Int
+  intent "average of a and b rounded down toward negative infinity"
+  example floor_average(4, 8) == 6
+  example floor_average(3, 4) == 3
+do
+  return int.div_floor(a + b, 2)
+end fn

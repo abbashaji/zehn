@@ -1,0 +1,10 @@
+type Money = { cents: Int }
+
+type Cart = { cents: Int }
+
+fn size() -> Int
+  example size() == 5
+do
+  let m: Money = {cents: 5}
+  return m.cents
+end fn

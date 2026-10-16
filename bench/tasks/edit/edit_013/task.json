@@ -1,0 +1,148 @@
+{
+  "id": "edit_013",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Renew a library loan",
+  "description": "Feature request for the loan renewal function. It receives the list of loans, the id of the loan to renew, today's day number, the list of ids that other readers have reserved, and the maximum number of renewals. Today it renews every loan it can find: the due day moves 14 days later and the renewal count goes up by 1, in the returned list that keeps the original order, while all other loans stay as they are. Add the missing rules. The checks are made in this order and the first one that applies decides the error message: no loan with that id: \"unknown loan\"; today is later than the due day: \"overdue\" (renewing on the due day itself is allowed); the loan id is in the reserved list: \"reserved\"; the renewal count is already at or above the maximum: \"renewal limit\". Otherwise the loan is renewed as described. Loan ids are unique.",
+  "entry": "renew",
+  "params": [
+    {
+      "name": "loans",
+      "type": "List<Loan>"
+    },
+    {
+      "name": "id",
+      "type": "Int"
+    },
+    {
+      "name": "today",
+      "type": "Int"
+    },
+    {
+      "name": "reserved",
+      "type": "List<Int>"
+    },
+    {
+      "name": "max_renewals",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Loan>, Text>",
+  "types": [
+    {
+      "name": "Loan",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "due",
+          "type": "Int"
+        },
+        {
+          "name": "renewals",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "due": 100,
+            "renewals": 0
+          },
+          {
+            "id": 2,
+            "due": 105,
+            "renewals": 1
+          },
+          {
+            "id": 3,
+            "due": 90,
+            "renewals": 2
+          },
+          {
+            "id": 4,
+            "due": 200,
+            "renewals": 0
+          }
+        ],
+        2,
+        90,
+        [],
+        2
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "id": 1,
+              "due": 100,
+              "renewals": 0
+            },
+            {
+              "id": 2,
+              "due": 119,
+              "renewals": 2
+            },
+            {
+              "id": 3,
+              "due": 90,
+              "renewals": 2
+            },
+            {
+              "id": 4,
+              "due": 200,
+              "renewals": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "due": 100,
+            "renewals": 0
+          },
+          {
+            "id": 2,
+            "due": 105,
+            "renewals": 1
+          },
+          {
+            "id": 3,
+            "due": 90,
+            "renewals": 2
+          },
+          {
+            "id": 4,
+            "due": 200,
+            "renewals": 0
+          }
+        ],
+        9,
+        90,
+        [],
+        2
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "unknown loan"
+        ]
+      }
+    }
+  ],
+  "notes": "Feature: three new checks with a fixed precedence (overdue, reserved, renewal limit) on top of the existing unknown-loan error and renewal. Start has no checks other than the unknown id. Tests cover each precedence pair (overdue vs reserved, reserved vs limit, unknown vs reserved), the due-day boundary and max_renewals 0. Parameter is called reserved in the task; the Rust start prefixes unused ones with _."
+}

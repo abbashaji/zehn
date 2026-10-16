@@ -1,0 +1,11 @@
+fn one() -> Int
+  example one() == 1
+do
+  return 1
+end fn
+
+fn two() -> Int
+  example two() == 2
+do
+  return 2
+end fn

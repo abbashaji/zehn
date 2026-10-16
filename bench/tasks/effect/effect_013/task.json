@@ -1,0 +1,60 @@
+{
+  "id": "effect_013",
+  "category": "effect",
+  "level": 3,
+  "kind": "write",
+  "title": "Aligned stock table",
+  "description": "Print the rows as an aligned text table. The name column is as wide as the longest name but at least 4 characters wide; the quantity column is as wide as the longest quantity written in decimal but at least 3 characters wide. The first line is the word `item` padded on the right with spaces to the name width, then ` | ` (space, bar, space), then the word `qty` padded on the left with spaces to the quantity width. The second line is as many dashes as the name width, then `-+-`, then as many dashes as the quantity width. After that print one line per row, in order, in the same layout: the name padded on the right, ` | `, the quantity padded on the left. Quantities are never negative; names have no line breaks and may contain spaces, which are kept. Return the width of one table line (name width + 3 + quantity width). An empty list still prints the first two lines.",
+  "entry": "print_table",
+  "params": [
+    {
+      "name": "rows",
+      "type": "List<Row>"
+    }
+  ],
+  "returns": "Int",
+  "types": [
+    {
+      "name": "Row",
+      "fields": [
+        {
+          "name": "name",
+          "type": "Text"
+        },
+        {
+          "name": "qty",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "name": "pen",
+            "qty": 3
+          },
+          {
+            "name": "notebook",
+            "qty": 12
+          }
+        ]
+      ],
+      "expect": 14,
+      "stdout": "item     | qty\n---------+----\npen      |   3\nnotebook |  12\n"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": 10,
+      "stdout": "item | qty\n-----+----\n"
+    }
+  ],
+  "notes": "Level 3. Two passes (measure, then print) with padding on both sides. Minimum widths 4 and 3 apply even for an empty list; a quantity of 0 is one character; a name of exactly 4 characters adds no padding; the quantity is the last column, so its left padding is the only trailing layout. Largest quantity 9e15 (16 digits)."
+}

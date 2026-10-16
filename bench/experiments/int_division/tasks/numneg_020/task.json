@@ -1,0 +1,49 @@
+{
+  "id": "numneg_020",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Rotate a list",
+  "description": "Rotate xs to the left by k positions: the first k elements move to the end, so [1, 2, 3, 4] rotated by 1 is [2, 3, 4, 1]. A negative k rotates to the right ([1, 2, 3, 4] with k = -1 gives [4, 1, 2, 3]), and k may be larger than the length of the list (a full turn changes nothing). An empty list stays empty.",
+  "entry": "rotate_left",
+  "params": [
+    {
+      "name": "xs",
+      "type": "List<Int>"
+    },
+    {
+      "name": "k",
+      "type": "Int"
+    }
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        1
+      ],
+      "expect": [
+        2,
+        3,
+        4,
+        1
+      ]
+    },
+    {
+      "args": [
+        [],
+        3
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

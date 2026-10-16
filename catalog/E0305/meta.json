@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`total` is declared with `let`, so it cannot be assigned"
+}

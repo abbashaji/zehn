@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "`?` needs a function that returns Option or Result; `head` returns Int"
+}

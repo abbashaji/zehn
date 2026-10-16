@@ -1,0 +1,33 @@
+{
+  "id": "text_015",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Word frequency report",
+  "description": "Count how often each word occurs in a text. The words are the space-separated words of the text; empty pieces from extra spaces are not words. Words are compared ignoring case, and every word is reported in upper case. The report lists \"WORD=COUNT\" for each distinct word, in the order of the first appearance of the word in the text, joined with a comma and a space. A text without words gives the empty text.",
+  "entry": "word_counts",
+  "params": [
+    {
+      "name": "body",
+      "type": "Text"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "the cat The dog"
+      ],
+      "expect": "THE=2, CAT=1, DOG=1"
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expect": ""
+    }
+  ],
+  "notes": "The order is first appearance, not alphabetical and not by count. Case folding merges 'The' and 'the'. Natural for a Map in Zehn but the signature stays Text."
+}

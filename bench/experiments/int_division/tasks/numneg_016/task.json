@@ -1,0 +1,39 @@
+{
+  "id": "numneg_016",
+  "category": "pure",
+  "level": 1,
+  "kind": "write",
+  "title": "Wrap an index into a ring",
+  "description": "A ring has n slots numbered 0 to n-1. Walking past the last slot continues at slot 0, and walking backwards from slot 0 arrives at slot n-1. Return the slot of position i, for any integer i, possibly negative: 7 on a ring of 5 gives 2, -1 on a ring of 5 gives 4. The result is always between 0 and n-1. n is positive.",
+  "entry": "wrap_index",
+  "params": [
+    {
+      "name": "i",
+      "type": "Int"
+    },
+    {
+      "name": "n",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        3,
+        5
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        7,
+        5
+      ],
+      "expect": 2
+    }
+  ],
+  "notes": "Experiment int_division: hidden tests use negative operands; the description states Euclidean-style non-negative remainder in words. The ref.zehn is written with int.div_floor / int.div_trunc / int.rem_euclid so it is valid under int_ops=operators and int_ops=explicit."
+}

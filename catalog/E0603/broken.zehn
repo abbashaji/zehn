@@ -1,0 +1,4 @@
+fn shout(msg: Text) -> Unit
+do
+  return console.print(msg)
+end fn

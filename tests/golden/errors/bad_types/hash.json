@@ -1,0 +1,80 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Account",
+      "ref": "type#301f"
+    },
+    {
+      "kind": "type",
+      "name": "Money",
+      "ref": "type#4086"
+    },
+    {
+      "kind": "type",
+      "name": "Cart",
+      "ref": "type#1b59"
+    },
+    {
+      "kind": "type",
+      "name": "AppError",
+      "ref": "type#b1d9"
+    },
+    {
+      "kind": "type",
+      "name": "OtherError",
+      "ref": "type#270d"
+    },
+    {
+      "kind": "fn",
+      "name": "label",
+      "ref": "fn#000b"
+    },
+    {
+      "kind": "fn",
+      "name": "add_text",
+      "ref": "fn#0807"
+    },
+    {
+      "kind": "fn",
+      "name": "first",
+      "ref": "fn#c11f"
+    },
+    {
+      "kind": "fn",
+      "name": "lookup",
+      "ref": "fn#a82d"
+    },
+    {
+      "kind": "fn",
+      "name": "wrong_err",
+      "ref": "fn#43d3"
+    },
+    {
+      "kind": "fn",
+      "name": "bad_field",
+      "ref": "fn#225f"
+    },
+    {
+      "kind": "fn",
+      "name": "ambiguous",
+      "ref": "fn#1398"
+    },
+    {
+      "kind": "fn",
+      "name": "bad_call",
+      "ref": "fn#3de4"
+    },
+    {
+      "kind": "fn",
+      "name": "wrong_arity",
+      "ref": "fn#dcb1"
+    },
+    {
+      "kind": "fn",
+      "name": "bad_cond",
+      "ref": "fn#71cb"
+    }
+  ]
+}

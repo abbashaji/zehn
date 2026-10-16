@@ -1,0 +1,6 @@
+fn first(n: Int) -> Int
+  example first(1) == 1
+do
+  return n
+  let unused = 1
+end fn

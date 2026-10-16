@@ -1,0 +1,127 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Color",
+        "ref": "type#cc18"
+      },
+      {
+        "kind": "fn",
+        "name": "too_many",
+        "ref": "fn#4883"
+      },
+      {
+        "kind": "fn",
+        "name": "not_a_tuple",
+        "ref": "fn#751e"
+      },
+      {
+        "kind": "fn",
+        "name": "wrong_size",
+        "ref": "fn#264d"
+      },
+      {
+        "kind": "fn",
+        "name": "wrong_element",
+        "ref": "fn#430b"
+      },
+      {
+        "kind": "fn",
+        "name": "missing_case",
+        "ref": "fn#6ea2"
+      },
+      {
+        "kind": "fn",
+        "name": "wrong_return",
+        "ref": "fn#8dbe"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0301",
+        "fix_hint": "add the missing case(s) or `case _ =>`",
+        "location": {
+          "fn": "missing_case",
+          "line": 36
+        },
+        "message": "non-exhaustive match: missing (Red, false)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0313",
+        "expected": "(Int, Int)",
+        "fix_hint": "write a pattern with exactly 2 element(s)",
+        "found": "(_, _, _)",
+        "location": {
+          "fn": "too_many",
+          "line": 7
+        },
+        "message": "tuple pattern has 3 element(s) but the matched value (Int, Int) has 2",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0315",
+        "expected": "Int",
+        "fix_hint": "a tuple pattern matches only a tuple value; use a pattern for Int",
+        "found": "(_, _)",
+        "location": {
+          "fn": "not_a_tuple",
+          "line": 16
+        },
+        "message": "tuple pattern of 2 elements cannot match a value of type Int",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0314",
+        "expected": "(Int, Int)",
+        "fix_hint": "a tuple type is fixed in size: give the tuple exactly 2 element(s)",
+        "found": "(Int, Int, Int)",
+        "location": {
+          "fn": "wrong_size",
+          "line": 24
+        },
+        "message": "tuple has 3 element(s) but 2 expected in return: expected (Int, Int), found (Int, Int, Int)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0306",
+        "expected": "Text",
+        "fix_hint": "convert with int.to_text(...)",
+        "found": "Int",
+        "location": {
+          "fn": "wrong_element",
+          "line": 30
+        },
+        "message": "type mismatch in tuple element 2: expected Text, found Int",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0314",
+        "expected": "(Int, Int, Int)",
+        "fix_hint": "a tuple type is fixed in size: give the tuple exactly 3 element(s)",
+        "found": "(Int, Int)",
+        "location": {
+          "fn": "wrong_return",
+          "line": 49
+        },
+        "message": "tuple has 2 element(s) but 3 expected in return: expected (Int, Int, Int), found (Int, Int)",
+        "phase": "check",
+        "severity": "error"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false,
+    "schema": 1
+  }
+}

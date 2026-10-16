@@ -1,0 +1,28 @@
+{
+  "examples": [
+    {
+      "fn": "sign",
+      "fuel": 10,
+      "line": 4,
+      "status": "pass"
+    },
+    {
+      "fn": "pick",
+      "fuel": 10,
+      "line": 12,
+      "status": "pass"
+    },
+    {
+      "fn": "area",
+      "fuel": 8,
+      "line": 22,
+      "status": "pass"
+    },
+    {
+      "fn": "dead",
+      "fuel": 6,
+      "line": 35,
+      "status": "pass"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {"args": ["the cat The dog"], "expect": "THE=2, CAT=1, DOG=1"},
+  {"args": [""], "expect": ""},
+  {"args": ["a  b a"], "expect": "A=2, B=1"},
+  {"args": ["Hello hello HELLO"], "expect": "HELLO=3"},
+  {"args": ["x"], "expect": "X=1"},
+  {"args": ["b a b a c"], "expect": "B=2, A=2, C=1"},
+  {"args": ["  a  "], "expect": "A=1"},
+  {"args": ["   "], "expect": ""},
+  {"args": ["one two three two one one"], "expect": "ONE=3, TWO=2, THREE=1"},
+  {"args": ["aA Aa aa"], "expect": "AA=3"}
+]

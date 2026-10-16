@@ -1,0 +1,50 @@
+fn sign_of(x: Int) -> Int
+  intent "1 for a positive number, -1 for a negative number, 0 for zero"
+  example sign_of(7) == 1
+  example sign_of(-7) == -1
+  example sign_of(0) == 0
+do
+  if x > 0 then
+    return 1
+  else
+    if x < 0 then
+      return -1
+    else
+      return 0
+    end if
+  end if
+end fn
+
+fn flips_from(values: List<Int>, i: Int, prev: Int, count: Int) -> Int
+  intent "count plus the sign changes among the non-zero values from index i on, where prev is the sign of the last non-zero value before i (0 if there is none)"
+  requires i >= 0
+  example flips_from([1, -1], 0, 0, 0) == 1
+  example flips_from([0, 2], 0, -1, 0) == 1
+  example flips_from([0, 2], 0, 1, 4) == 4
+do
+  match list.get(values, i) do
+    case none =>
+      return count
+    case some(x) =>
+      let s = sign_of(x)
+      if s == 0 then
+        return flips_from(values, i + 1, prev, count)
+      else
+        if prev != 0 and s != prev then
+          return flips_from(values, i + 1, s, count + 1)
+        else
+          return flips_from(values, i + 1, s, count)
+        end if
+      end if
+  end match
+end fn
+
+fn sign_changes(values: List<Int>) -> Int
+  intent "how many times the sign flips between consecutive non-zero values, zeros being skipped"
+  ensures out >= 0
+  example sign_changes([1, -1, 0, 2]) == 2
+  example sign_changes([0, 0]) == 0
+  example sign_changes([3, 0, 5]) == 0
+do
+  return flips_from(values, 0, 0, 0)
+end fn

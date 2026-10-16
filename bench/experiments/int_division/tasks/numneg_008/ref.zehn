@@ -1,0 +1,8 @@
+fn percent_of(amount: Int, pct: Int) -> Int
+  intent "amount times pct divided by 100, rounded down toward negative infinity"
+  requires pct >= 0 and pct <= 100
+  example percent_of(200, 5) == 10
+  example percent_of(100, 100) == 100
+do
+  return int.div_floor(amount * pct, 100)
+end fn

@@ -1,0 +1,15 @@
+[
+  {"args": [90], "expect": 90},
+  {"args": [370], "expect": 10},
+  {"args": [-90], "expect": 270},
+  {"args": [-360], "expect": 0},
+  {"args": [360], "expect": 0},
+  {"args": [0], "expect": 0},
+  {"args": [359], "expect": 359},
+  {"args": [-1], "expect": 359},
+  {"args": [-361], "expect": 359},
+  {"args": [720], "expect": 0},
+  {"args": [-721], "expect": 359},
+  {"args": [-1000000001], "expect": 79},
+  {"args": [1000000001], "expect": 281}
+]

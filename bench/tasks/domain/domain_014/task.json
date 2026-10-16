@@ -1,0 +1,136 @@
+{
+  "id": "domain_014",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Pay a bill with gift cards",
+  "description": "A shop accepts gift cards. A card has an id, a balance in cents and an expiry day (a day number). A card can be used on a day when its balance is above zero and its expiry day is on or after that day, so a card is still good on its expiry day. Write pay_bill, which takes the list of cards, the bill in cents and today's day number and returns the list of cards after paying the bill: the same cards in the same order, with the balances of the cards that were used reduced and everything else unchanged (unusable cards keep their balance as it is). Cards are tried in list order. Each usable card pays as much of the bill as it can, which is its whole balance or what is still owed if that is less, and once the bill is covered the remaining cards are left alone. A card that paid nothing counts as unused. Checks happen in this order, and the first failing one decides the result: a bill of zero or less gives the error \"invalid bill\"; if all usable cards together cannot cover the bill the error is \"short by \" followed by the number of cents still owed after every usable card has been emptied; otherwise, if more than 3 cards would be used, the error is \"too many cards: needs \" followed by the number of cards that would be used. When a check fails nothing is paid.",
+  "entry": "pay_bill",
+  "params": [
+    {
+      "name": "cards",
+      "type": "List<Card>"
+    },
+    {
+      "name": "bill",
+      "type": "Int"
+    },
+    {
+      "name": "today",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Card>, Text>",
+  "types": [
+    {
+      "name": "Card",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Text"
+        },
+        {
+          "name": "balance",
+          "type": "Int"
+        },
+        {
+          "name": "expires",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "id": "a",
+            "balance": 500,
+            "expires": 100
+          },
+          {
+            "id": "b",
+            "balance": 300,
+            "expires": 50
+          },
+          {
+            "id": "c",
+            "balance": 1000,
+            "expires": 200
+          },
+          {
+            "id": "d",
+            "balance": 200,
+            "expires": 300
+          }
+        ],
+        400,
+        60
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "id": "a",
+              "balance": 100,
+              "expires": 100
+            },
+            {
+              "id": "b",
+              "balance": 300,
+              "expires": 50
+            },
+            {
+              "id": "c",
+              "balance": 1000,
+              "expires": 200
+            },
+            {
+              "id": "d",
+              "balance": 200,
+              "expires": 300
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "id": "a",
+            "balance": 500,
+            "expires": 100
+          },
+          {
+            "id": "b",
+            "balance": 300,
+            "expires": 50
+          },
+          {
+            "id": "c",
+            "balance": 1000,
+            "expires": 200
+          },
+          {
+            "id": "d",
+            "balance": 200,
+            "expires": 300
+          }
+        ],
+        1701,
+        60
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "short by 1"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: sequential state threading with a skip rule, two derived quantities (shortfall and number of cards used) that decide two different errors, and a list rebuilt with some elements changed. Pitfalls: the expiry day itself is still valid; expired or empty cards are skipped and never count as used; cards after the one that covers the bill are untouched and not counted; the shortfall check comes before the too-many-cards check (a bill that cannot be covered is a shortfall even if it would also need many cards); a card with a negative balance is unusable."
+}

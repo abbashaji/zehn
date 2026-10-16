@@ -1,0 +1,9 @@
+fn fib(n: Int) -> Int
+  example fib(40) == 102334155
+do
+  if n < 2 then
+    return n
+  else
+    return fib(n - 1) + fib(n - 2)
+  end if
+end fn

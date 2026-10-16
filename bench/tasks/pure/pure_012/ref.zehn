@@ -1,0 +1,30 @@
+fn drawdown_from(prices: List<Int>, i: Int, peak: Int, worst: Int) -> Int
+  intent "largest drop seen so far (worst), extended by the prices from index i on, where peak is the highest price before i"
+  requires i >= 0
+  requires worst >= 0
+  example drawdown_from([4, 9], 0, 10, 0) == 6
+  example drawdown_from([12, 3], 0, 10, 0) == 9
+  example drawdown_from([], 0, 10, 5) == 5
+do
+  match list.get(prices, i) do
+    case none =>
+      return worst
+    case some(p) =>
+      return drawdown_from(prices, i + 1, int.max(peak, p), int.max(worst, peak - p))
+  end match
+end fn
+
+fn max_drawdown(prices: List<Int>) -> Int
+  intent "largest fall from an earlier price to a later price; 0 if the price never falls"
+  ensures out >= 0
+  example max_drawdown([10, 7, 12, 4, 9]) == 8
+  example max_drawdown([1, 2, 3]) == 0
+  example max_drawdown([]) == 0
+do
+  match list.get(prices, 0) do
+    case none =>
+      return 0
+    case some(first) =>
+      return drawdown_from(prices, 1, first, 0)
+  end match
+end fn

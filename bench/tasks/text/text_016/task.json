@@ -1,0 +1,43 @@
+{
+  "id": "text_016",
+  "category": "text",
+  "level": 3,
+  "kind": "write",
+  "title": "Normalise a path",
+  "description": "Simplify an absolute path, a text that starts with a slash and has directory names separated by slashes. Empty names (from doubled or trailing slashes) and the name \".\" are dropped; the name \"..\" removes the directory before it. A \"..\" with no directory left to remove is an error with the message \"path escapes root\"; scanning is from left to right and the first such \"..\" counts. The result starts with a slash and has the remaining names separated by single slashes, without a trailing slash; the path with no names left is \"/\". Names that merely contain dots, such as \"..a\" or \"...\", are ordinary names.",
+  "entry": "normalize_path",
+  "params": [
+    {
+      "name": "path",
+      "type": "Text"
+    }
+  ],
+  "returns": "Result<Text, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "/a/./b/../c"
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          "/a/c"
+        ]
+      }
+    },
+    {
+      "args": [
+        "/a/../.."
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "path escapes root"
+        ]
+      }
+    }
+  ],
+  "notes": "Needs a stack discipline (the Zehn reference pops by rebuilding the list). Names like '..a' and '...' must not be mistaken for '..'. Paths always start with a slash."
+}

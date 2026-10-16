@@ -1,0 +1,21 @@
+{
+  "id": "pure_013",
+  "category": "pure",
+  "level": 2,
+  "kind": "write",
+  "title": "Rotate a list to the left",
+  "description": "Move the first k positions of a list to its back, keeping the order of every element: rotating [1, 2, 3, 4, 5] left by 2 gives [3, 4, 5, 1, 2]. k is 0 or more and may be larger than the list length, in which case the rotation wraps around (rotating by the length gives the list unchanged). An empty list stays empty for any k.",
+  "entry": "rotate_left",
+  "params": [
+    {"name": "items", "type": "List<Int>"},
+    {"name": "k", "type": "Int"}
+  ],
+  "returns": "List<Int>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [[1, 2, 3, 4, 5], 2], "expect": [3, 4, 5, 1, 2]},
+    {"args": [[1, 2, 3], 4], "expect": [2, 3, 1]}
+  ],
+  "notes": "k larger than the length must wrap (k mod length); the empty list must be handled before taking k mod length. k is never negative in the tests."
+}

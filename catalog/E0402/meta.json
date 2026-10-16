@@ -1,0 +1,5 @@
+{
+  "strict": true,
+  "dialect": {},
+  "note": "under --strict every function needs an example"
+}

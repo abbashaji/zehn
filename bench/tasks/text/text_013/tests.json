@@ -1,0 +1,17 @@
+[
+  {"args": ["Hi {n}!", [{"key": "n", "value": "Bo"}]], "expect": {"$": "ok", "args": ["Hi Bo!"]}},
+  {"args": ["Hi {x}", [{"key": "n", "value": "Bo"}]], "expect": {"$": "err", "args": ["unknown placeholder: x"]}},
+  {"args": ["no placeholders", []], "expect": {"$": "ok", "args": ["no placeholders"]}},
+  {"args": ["{a}{b}", [{"key": "a", "value": "1"}, {"key": "b", "value": "2"}]], "expect": {"$": "ok", "args": ["12"]}},
+  {"args": ["{a} and {a}", [{"key": "a", "value": "x"}]], "expect": {"$": "ok", "args": ["x and x"]}},
+  {"args": ["x {k", [{"key": "k", "value": "v"}]], "expect": {"$": "err", "args": ["unclosed placeholder"]}},
+  {"args": ["{a} then {b", [{"key": "a", "value": "1"}]], "expect": {"$": "err", "args": ["unclosed placeholder"]}},
+  {"args": ["{z} {unclosed", []], "expect": {"$": "err", "args": ["unknown placeholder: z"]}},
+  {"args": ["{a} {z", [{"key": "a", "value": "1"}]], "expect": {"$": "err", "args": ["unclosed placeholder"]}},
+  {"args": ["{a{b}", [{"key": "a", "value": "1"}, {"key": "b", "value": "2"}]], "expect": {"$": "err", "args": ["unclosed placeholder"]}},
+  {"args": ["{a}", [{"key": "a", "value": "{b}"}, {"key": "b", "value": "no"}]], "expect": {"$": "ok", "args": ["{b}"]}},
+  {"args": ["{a}", [{"key": "a", "value": "1"}, {"key": "a", "value": "2"}]], "expect": {"$": "ok", "args": ["1"]}},
+  {"args": ["", []], "expect": {"$": "ok", "args": [""]}},
+  {"args": ["{a}", []], "expect": {"$": "err", "args": ["unknown placeholder: a"]}},
+  {"args": ["{a}!", [{"key": "a", "value": "}"}]], "expect": {"$": "ok", "args": ["}!"]}}
+]

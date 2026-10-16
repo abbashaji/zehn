@@ -1,0 +1,42 @@
+{
+  "id": "effect_012",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Door state machine",
+  "description": "A door starts in the state `closed`. Process the events in order. The only legal moves are: event `open` while `closed` gives `open`; event `close` while `open` gives `closed`; event `lock` while `closed` gives `locked`; event `unlock` while `locked` gives `closed`. For a legal move print `OLD -> NEW` (the old and the new state). Any other event, including an unknown event name, leaves the state unchanged and prints `ignored EVENT in STATE`, with the event as given and the current state. Event names are case-sensitive. Return the final state.",
+  "entry": "run_door",
+  "params": [
+    {
+      "name": "events",
+      "type": "List<Text>"
+    }
+  ],
+  "returns": "Text",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          "open",
+          "close"
+        ]
+      ],
+      "expect": "closed",
+      "stdout": "closed -> open\nopen -> closed\n"
+    },
+    {
+      "args": [
+        [
+          "unlock"
+        ]
+      ],
+      "expect": "closed",
+      "stdout": "ignored unlock in closed\n"
+    }
+  ],
+  "notes": "Level 2. Transition table on (state, event) pairs with a default that keeps the state; an ignored event does not stop the run; the same event can be legal or ignored depending on the state (open while open or locked); `Open` is unknown; the empty event prints `ignored  in closed` with two spaces."
+}

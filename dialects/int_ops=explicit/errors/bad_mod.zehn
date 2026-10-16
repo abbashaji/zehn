@@ -1,0 +1,8 @@
+fn wrap(i: Int, n: Int) -> Int
+  intent "slot of position i on a ring of n slots"
+  requires n > 0
+  ensures out >= 0 and out < n
+  example wrap(7, 5) == 2
+do
+  return (i + n) % n
+end fn

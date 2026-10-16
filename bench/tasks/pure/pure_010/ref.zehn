@@ -1,0 +1,41 @@
+fn depth_from(steps: List<Int>, i: Int, depth: Int, deepest: Int) -> Result<Int, Text>
+  intent "deepest nesting reached by the steps from index i on, starting at the given depth with deepest as the maximum so far, or the first problem found"
+  requires i >= 0
+  requires depth >= 0
+  example depth_from([1, 1, -1, -1], 0, 0, 0) == ok(2)
+  example depth_from([-1], 0, 0, 0) == err("closed too early")
+  example depth_from([1], 0, 0, 0) == err("left open")
+  example depth_from([3], 0, 0, 0) == err("bad step")
+do
+  match list.get(steps, i) do
+    case none =>
+      if depth > 0 then
+        return err("left open")
+      else
+        return ok(deepest)
+      end if
+    case some(s) =>
+      if s == 1 then
+        return depth_from(steps, i + 1, depth + 1, int.max(deepest, depth + 1))
+      else
+        if s == -1 then
+          if depth == 0 then
+            return err("closed too early")
+          else
+            return depth_from(steps, i + 1, depth - 1, deepest)
+          end if
+        else
+          return err("bad step")
+        end if
+      end if
+  end match
+end fn
+
+fn max_depth(steps: List<Int>) -> Result<Int, Text>
+  intent "deepest nesting reached by a sequence of open (1) and close (-1) steps, or the first problem found"
+  example max_depth([1, 1, -1, 1, -1, -1]) == ok(2)
+  example max_depth([]) == ok(0)
+  example max_depth([1, -1, -1, 5]) == err("closed too early")
+do
+  return depth_from(steps, 0, 0, 0)
+end fn

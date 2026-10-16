@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "an `if` without `else` lets control reach the end of the body"
+}

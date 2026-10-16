@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "3000 nested parentheses overflow the parser's recursion limit (`zehn check` needs --max-depth 100 to lower its raised limit that far)"
+}

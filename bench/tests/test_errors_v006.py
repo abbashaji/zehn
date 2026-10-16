@@ -75,6 +75,22 @@ class ErrorHandlingTests(unittest.TestCase):
             self.assertNotIn("Runs left out", report.build_report([d]))
 
 
+    def test_exclude_errors_flag_changes_n_not_other_metrics(self):
+        with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as clean:
+            ok = [rec("a", "zehn", 1), rec("b", "zehn", 1, passed=False), rec("a", "python_plain", 1)]
+            write(os.path.join(d, "records.jsonl"), ok + [rec("c", "zehn", 1, error=API_ERR)])
+            write(os.path.join(clean, "records.jsonl"), ok)
+            with_err = report.build_report([d], exclude_errors=True)
+            without = report.build_report([clean], exclude_errors=True)
+        self.assertIn("| zehn | 2 | 1 | ModelError: giving up after 6 attempts (HTTP 503: { \"error\": {} (x1) |", with_err)
+        self.assertIn("| zehn | 2 | 0 | - |", without)          # zero row printed when nothing was dropped
+        self.assertIn("| python_plain | 1 | 0 | - |", without)
+        pick = lambda text, lang: [x for x in text.split("\n") if x.startswith("| %s | default |" % lang)]
+        self.assertEqual(pick(with_err, "zehn"), pick(without, "zehn"))               # same n and metrics
+        self.assertEqual(pick(with_err, "python_plain"), pick(without, "python_plain"))
+        self.assertIn("| 2 | 2 |", pick(with_err, "zehn")[0])                           # 2 tasks, 2 runs: errored one not counted
+
+
 class DiagMessageTests(unittest.TestCase):
     def test_failed_round_records_messages_and_validates(self):
         from benchlib.models import get_model

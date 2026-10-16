@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "the body returns -5 although the contract says `out >= 0`"
+}

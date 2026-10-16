@@ -1,0 +1,126 @@
+{
+  "id": "domain_013",
+  "category": "domain",
+  "level": 3,
+  "kind": "write",
+  "title": "Make change from a cash drawer",
+  "description": "A till drawer is a list of slots. Each slot holds one denomination (a value in cents) and the number of notes or coins of that denomination currently in the drawer. Write make_change, which takes the drawer and an amount in cents to pay out and returns the drawer as it is after paying out that amount: the same slots in the same order, with the counts reduced. The amount is paid out greedily by walking through the slots in the order they appear in the list (not sorted by value): from each slot it takes as many pieces as possible without going above what is still owed and without taking more than the slot holds, then moves on to the next slot. Slots may repeat a denomination, and each slot is handled on its own. If after the last slot something is still owed, the payout is impossible and nothing is taken. Checks happen in this order, and the first failing one decides the result: a drawer that has a slot with a denomination of zero or less or a count below zero gives the error \"invalid drawer\"; an amount of zero or less gives \"invalid amount\"; an amount that cannot be paid out completely gives \"cannot make change: \" followed by the number of cents still owed after the last slot, then \" short\" (for example \"cannot make change: 10 short\").",
+  "entry": "make_change",
+  "params": [
+    {
+      "name": "drawer",
+      "type": "List<Slot>"
+    },
+    {
+      "name": "amount",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Slot>, Text>",
+  "types": [
+    {
+      "name": "Slot",
+      "fields": [
+        {
+          "name": "denom",
+          "type": "Int"
+        },
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "denom": 500,
+            "count": 2
+          },
+          {
+            "denom": 200,
+            "count": 3
+          },
+          {
+            "denom": 100,
+            "count": 5
+          },
+          {
+            "denom": 50,
+            "count": 4
+          },
+          {
+            "denom": 10,
+            "count": 10
+          }
+        ],
+        1200
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            {
+              "denom": 500,
+              "count": 0
+            },
+            {
+              "denom": 200,
+              "count": 2
+            },
+            {
+              "denom": 100,
+              "count": 5
+            },
+            {
+              "denom": 50,
+              "count": 4
+            },
+            {
+              "denom": 10,
+              "count": 10
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "denom": 500,
+            "count": 2
+          },
+          {
+            "denom": 200,
+            "count": 3
+          },
+          {
+            "denom": 100,
+            "count": 5
+          },
+          {
+            "denom": 50,
+            "count": 4
+          },
+          {
+            "denom": 10,
+            "count": 10
+          }
+        ],
+        5
+      ],
+      "expect": {
+        "$": "err",
+        "args": [
+          "cannot make change: 5 short"
+        ]
+      }
+    }
+  ],
+  "notes": "Level 3: a greedy walk with limited stock that threads a remaining amount through the list and rebuilds it. Pitfalls: slots are used in list order, so an unsorted drawer pays out small pieces first; the greedy walk can fail although another combination would work (50x1 and 20x3 cannot pay 60 here); the shortfall in the message is what is left after the last slot; the drawer is validated before the amount; repeated denominations are separate slots; a failed payout returns only the error, never a partial drawer."
+}

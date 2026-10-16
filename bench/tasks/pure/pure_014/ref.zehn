@@ -1,0 +1,111 @@
+fn drop_from(items: List<Int>, i: Int) -> List<Int>
+  intent "the elements of items from index i on"
+  requires i >= 0
+  example drop_from([1, 2, 3], 1) == [2, 3]
+  example drop_from([1, 2, 3], 3) == []
+  example drop_from([], 0) == []
+do
+  match list.get(items, i) do
+    case none =>
+      return []
+    case some(x) =>
+      return list.concat([x], drop_from(items, i + 1))
+  end match
+end fn
+
+fn is_known(op: Text) -> Bool
+  intent "true for the seven instruction names of the machine"
+  example is_known("push") == true
+  example is_known("jump") == false
+do
+  return op == "push" or op == "dup" or op == "drop" or op == "swap" or op == "add" or op == "sub" or op == "mul"
+end fn
+
+fn apply_op(op: Text, arg: Int, stack: List<Int>) -> Option<List<Int>>
+  intent "the stack (top first) after one known instruction, or none when the stack has too few values"
+  example apply_op("push", 4, [1]) == some([4, 1])
+  example apply_op("sub", 0, [1, 5, 9]) == some([4, 9])
+  example apply_op("swap", 0, [1, 5, 9]) == some([5, 1, 9])
+  example apply_op("add", 0, [1]) == none
+do
+  match list.get(stack, 0) do
+    case none =>
+      if op == "push" then
+        return some([arg])
+      else
+        return none
+      end if
+    case some(y) =>
+      if op == "push" then
+        return some(list.concat([arg], stack))
+      end if
+      if op == "dup" then
+        return some(list.concat([y], stack))
+      end if
+      if op == "drop" then
+        return some(drop_from(stack, 1))
+      end if
+      match list.get(stack, 1) do
+        case none =>
+          return none
+        case some(x) =>
+          let rest = drop_from(stack, 2)
+          if op == "swap" then
+            return some(list.concat([x, y], rest))
+          end if
+          if op == "add" then
+            return some(list.concat([x + y], rest))
+          end if
+          if op == "sub" then
+            return some(list.concat([x - y], rest))
+          end if
+          return some(list.concat([x * y], rest))
+      end match
+  end match
+end fn
+
+fn run_from(ops: List<Text>, args: List<Int>, i: Int, stack: List<Int>) -> Result<Int, Text>
+  intent "result of running the instructions from index i on with the given stack (top first), or the first problem found"
+  requires i >= 0
+  example run_from(["push", "add"], [2, 0], 0, []) == err("stack underflow at 1")
+  example run_from(["mul"], [0], 0, [3, 4]) == ok(12)
+  example run_from(["jump"], [0], 0, []) == err("unknown op at 0")
+  example run_from([], [], 0, []) == err("empty stack")
+do
+  match list.get(ops, i) do
+    case none =>
+      match list.get(stack, 0) do
+        case none =>
+          return err("empty stack")
+        case some(top) =>
+          return ok(top)
+      end match
+    case some(op) =>
+      match list.get(args, i) do
+        case none =>
+          return err("length mismatch")
+        case some(arg) =>
+          if not is_known(op) then
+            return err(text.concat("unknown op at ", int.to_text(i)))
+          end if
+          match apply_op(op, arg, stack) do
+            case none =>
+              return err(text.concat("stack underflow at ", int.to_text(i)))
+            case some(next) =>
+              return run_from(ops, args, i + 1, next)
+          end match
+      end match
+  end match
+end fn
+
+fn run_machine(ops: List<Text>, args: List<Int>) -> Result<Int, Text>
+  intent "run a stack machine program given as parallel instruction and argument lists and return the top of the stack"
+  example run_machine(["push", "push", "add"], [2, 3, 0]) == ok(5)
+  example run_machine(["push"], [1, 2]) == err("length mismatch")
+  example run_machine(["push", "dup", "mul"], [7, 0, 0]) == ok(49)
+do
+  if list.len(ops) != list.len(args) then
+    return err("length mismatch")
+  end if
+  return run_from(ops, args, 0, [])
+end fn

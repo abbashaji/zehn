@@ -1,0 +1,57 @@
+{
+  "id": "edit_019",
+  "category": "edit",
+  "level": 2,
+  "kind": "edit",
+  "title": "Moving sum over a window",
+  "description": "Feature request for a function that smooths a series of readings. It receives a list of whole numbers (they may be negative) and a window size. Today it returns the running total after each value and ignores the window. Change it so that the result has one number per input value, and each number is the sum of the last window values up to and including that position (at the start, where fewer than window values exist yet, it is the sum of all values so far). A window of 1 returns the values unchanged, and a window larger than the list behaves like the running total. A window below 1 is an error with the message \"invalid window\".",
+  "entry": "moving_sum",
+  "params": [
+    {
+      "name": "values",
+      "type": "List<Int>"
+    },
+    {
+      "name": "window",
+      "type": "Int"
+    }
+  ],
+  "returns": "Result<List<Int>, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ],
+        10
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          [
+            1,
+            3,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        [],
+        3
+      ],
+      "expect": {
+        "$": "ok",
+        "args": [
+          []
+        ]
+      }
+    }
+  ],
+  "notes": "Feature, two parts: window sums (sliding, not cumulative) and the invalid-window error. The visible examples use a window that is at least the list length, so the start (running totals) passes them."
+}

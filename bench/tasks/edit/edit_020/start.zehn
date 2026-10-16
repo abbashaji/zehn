@@ -1,0 +1,37 @@
+fn scan(values: List<Int>, i: Int, top: Option<Int>, second: Option<Int>) -> Option<Int>
+  intent "walk the values from index i on, tracking the largest and the second largest seen so far"
+  example scan([], 0, none, none) == none
+  example scan([4, 9, 7], 0, none, none) == some(7)
+  example scan([5], 0, none, none) == none
+do
+  match list.get(values, i) do
+    case none =>
+      return second
+    case some(v) =>
+      match top do
+        case none =>
+          return scan(values, i + 1, some(v), second)
+        case some(t) =>
+          if v > t then
+            return scan(values, i + 1, some(v), top)
+          end if
+          match second do
+            case none =>
+              return scan(values, i + 1, top, some(v))
+            case some(s) =>
+              if v > s then
+                return scan(values, i + 1, top, some(v))
+              end if
+              return scan(values, i + 1, top, second)
+          end match
+      end match
+  end match
+end fn
+
+fn second_largest(values: List<Int>) -> Option<Int>
+  intent "the second largest value, none when there are fewer than two values"
+  example second_largest([]) == none
+  example second_largest([4, 9, 7]) == some(7)
+do
+  return scan(values, 0, none, none)
+end fn

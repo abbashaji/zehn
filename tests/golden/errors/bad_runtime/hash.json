@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "safe_div",
+      "ref": "fn#9548"
+    },
+    {
+      "kind": "fn",
+      "name": "buggy_abs",
+      "ref": "fn#d0ee"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "both Money and Cart have exactly the field `cents`, so the literal needs an annotation"
+}

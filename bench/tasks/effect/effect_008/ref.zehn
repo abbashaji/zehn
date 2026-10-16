@@ -1,0 +1,54 @@
+fn item_line(item: Text) -> Text
+  intent "the line printed for one shown item"
+  example item_line("milk") == "- milk"
+  example item_line("") == "- "
+do
+  return text.concat("- ", item)
+end fn
+
+fn more_line(k: Int) -> Text
+  intent "the line that says how many items were left out"
+  example more_line(2) == "... and 2 more"
+  example more_line(1) == "... and 1 more"
+do
+  return text.concat("... and ", text.concat(int.to_text(k), " more"))
+end fn
+
+fn show_from(items: List<Text>, i: Int, shown: Int) -> Int
+  intent "print the items from index i up to but not including index shown and return how many were printed"
+  uses [console]
+  requires i >= 0
+  ensures out >= 0
+  example item_line("a") == "- a"
+  example item_line("b c") == "- b c"
+do
+  if i >= shown then
+    return 0
+  else
+    match list.get(items, i) do
+      case none =>
+        return 0
+      case some(item) =>
+        console.print(item_line(item))
+        return 1 + show_from(items, i + 1, shown)
+    end match
+  end if
+end fn
+
+fn print_head(items: List<Text>, limit: Int) -> Int
+  intent "print at most limit items, then a line with the number left out when there are any, and return how many items were printed"
+  uses [console]
+  ensures out >= 0 and out <= list.len(items)
+  example more_line(3) == "... and 3 more"
+  example item_line("x") == "- x"
+do
+  let total = list.len(items)
+  let shown = int.min(int.max(limit, 0), total)
+  let printed = show_from(items, 0, shown)
+  if total > shown then
+    console.print(more_line(total - shown))
+    return printed
+  else
+    return printed
+  end if
+end fn

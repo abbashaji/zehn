@@ -1,0 +1,30 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Shape",
+      "ref": "type#0f5d"
+    },
+    {
+      "kind": "fn",
+      "name": "sign",
+      "ref": "fn#8158"
+    },
+    {
+      "kind": "fn",
+      "name": "pick",
+      "ref": "fn#7643"
+    },
+    {
+      "kind": "fn",
+      "name": "area",
+      "ref": "fn#5dc3"
+    },
+    {
+      "kind": "fn",
+      "name": "dead",
+      "ref": "fn#5eff"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+fn flat_rate(income: Int) -> Int
+  intent "percentage applied to the whole income, chosen by the income level"
+  example flat_rate(5000) == 0
+  example flat_rate(50000) == 30
+do
+  if income <= 10000 then
+    return 0
+  end if
+  if income <= 30000 then
+    return 15
+  end if
+  if income <= 70000 then
+    return 30
+  end if
+  return 45
+end fn
+
+fn income_tax(income: Int, children: Int) -> Result<Int, Text>
+  intent "income tax in whole units, after the credit per child"
+  example income_tax(8000, 0) == ok(0)
+  example income_tax(-1, 0) == err("invalid income")
+do
+  if income < 0 then
+    return err("invalid income")
+  end if
+  if children < 0 then
+    return err("invalid children")
+  end if
+  return ok(income * flat_rate(income) / 100 - 300 * children)
+end fn

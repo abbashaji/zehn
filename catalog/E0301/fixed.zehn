@@ -1,0 +1,13 @@
+type Color = Red | Green
+
+fn code(c: Color) -> Int
+  example code(Red) == 1
+  example code(Green) == 2
+do
+  match c do
+    case Red =>
+      return 1
+    case Green =>
+      return 2
+  end match
+end fn

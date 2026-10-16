@@ -1,0 +1,7 @@
+fn sign(n: Int) -> Int
+  example sign(-5) == 0
+do
+  if n > 0 then
+    return 1
+  end if
+end fn

@@ -1,0 +1,88 @@
+{
+  "exit": 0,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Shape",
+        "ref": "type#8377"
+      },
+      {
+        "kind": "fn",
+        "name": "area",
+        "ref": "fn#154f"
+      },
+      {
+        "kind": "fn",
+        "name": "describe",
+        "ref": "fn#5077"
+      },
+      {
+        "kind": "fn",
+        "name": "total_area",
+        "ref": "fn#d17a"
+      },
+      {
+        "kind": "fn",
+        "name": "first_area",
+        "ref": "fn#ee34"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 0,
+      "passed": 8,
+      "results": [
+        {
+          "example": "area(Circle(2)) == 12",
+          "fn": "area",
+          "line": 6,
+          "status": "pass"
+        },
+        {
+          "example": "area(Rect(3, 4)) == 12",
+          "fn": "area",
+          "line": 7,
+          "status": "pass"
+        },
+        {
+          "example": "area(Dot) == 0",
+          "fn": "area",
+          "line": 8,
+          "status": "pass"
+        },
+        {
+          "example": "describe(Dot) == \"dot\"",
+          "fn": "describe",
+          "line": 21,
+          "status": "pass"
+        },
+        {
+          "example": "describe(Rect(1, 2)) == \"rect 1x2\"",
+          "fn": "describe",
+          "line": 22,
+          "status": "pass"
+        },
+        {
+          "example": "total_area([Circle(1), Rect(2, 5), Dot]) == 13",
+          "fn": "total_area",
+          "line": 35,
+          "status": "pass"
+        },
+        {
+          "example": "first_area([]) == none",
+          "fn": "first_area",
+          "line": 41,
+          "status": "pass"
+        },
+        {
+          "example": "first_area([Dot]) == some(0)",
+          "fn": "first_area",
+          "line": 42,
+          "status": "pass"
+        }
+      ]
+    },
+    "ok": true
+  }
+}

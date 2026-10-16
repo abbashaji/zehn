@@ -1,0 +1,13 @@
+[
+  {"args": ["Hello World", ["hello", "WORLD"]], "expect": true},
+  {"args": ["Hello World", ["hello", "bye"]], "expect": false},
+  {"args": ["abc", []], "expect": true},
+  {"args": ["", []], "expect": true},
+  {"args": ["The Quick Brown Fox", ["quick", "fox", "the"]], "expect": true},
+  {"args": ["The Quick", ["ick"]], "expect": true},
+  {"args": ["abc", ["abcd"]], "expect": false},
+  {"args": ["", ["a"]], "expect": false},
+  {"args": ["Mississippi", ["ISS", "pp"]], "expect": true},
+  {"args": ["aaa", ["aaaa"]], "expect": false},
+  {"args": ["ab", ["b", "a", "AB"]], "expect": true}
+]

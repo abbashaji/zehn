@@ -1,0 +1,14 @@
+[
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 0}, 20], "expect": {"$": "ok", "args": [{"item": "Dune", "due_day": 34, "renewals": 1}]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 0}, 17], "expect": {"$": "ok", "args": [{"item": "Dune", "due_day": 34, "renewals": 1}]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 1}, 18], "expect": {"$": "ok", "args": [{"item": "Dune", "due_day": 34, "renewals": 2}]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 0}, 16], "expect": {"$": "err", "args": ["too early: renew from day 17"]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 0}, 21], "expect": {"$": "err", "args": ["overdue by 1 days"]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 0}, 30], "expect": {"$": "err", "args": ["overdue by 10 days"]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 2}, 19], "expect": {"$": "err", "args": ["renewal limit reached for Dune"]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 2}, 21], "expect": {"$": "err", "args": ["overdue by 1 days"]}},
+  {"args": [{"item": "Dune", "due_day": 20, "renewals": 2}, 5], "expect": {"$": "err", "args": ["renewal limit reached for Dune"]}},
+  {"args": [{"item": "Emma", "due_day": 3, "renewals": 0}, 0], "expect": {"$": "ok", "args": [{"item": "Emma", "due_day": 17, "renewals": 1}]}},
+  {"args": [{"item": "Emma", "due_day": 3, "renewals": 0}, -1], "expect": {"$": "err", "args": ["too early: renew from day 0"]}},
+  {"args": [{"item": "Emma", "due_day": 3, "renewals": 1}, 3], "expect": {"$": "ok", "args": [{"item": "Emma", "due_day": 17, "renewals": 2}]}}
+]

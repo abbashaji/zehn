@@ -1,0 +1,5 @@
+fn double(n: Int) -> Int
+  example double(4) == 8
+do
+  return n * 2
+end fn

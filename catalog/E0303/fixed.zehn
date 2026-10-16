@@ -1,0 +1,5 @@
+fn pick(n: Int) -> Int
+  example pick(2) == 2
+do
+  return int.max(n, 0)
+end fn

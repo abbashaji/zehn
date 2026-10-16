@@ -1,0 +1,86 @@
+{
+  "id": "edit_032",
+  "category": "edit",
+  "level": 3,
+  "kind": "edit",
+  "title": "Leaderboard with shared ranks",
+  "description": "Bug report for the leaderboard function. It receives players, each with an id and a score, and returns the leaderboard as a list of entries with the player id and the rank. The list is ordered by score, highest first; players with the same score are ordered by id, lowest first. Players with the same score share the same rank, and the rank is 1 plus the number of players with a strictly higher score, so scores 90, 80, 80, 70 give the ranks 1, 2, 2, 4. Today the ranks are simply the positions 1, 2, 3, 4 in the list, and players with the same score stay in the order of the input list instead of being ordered by id. Fix the program. Player ids are unique. An empty list gives an empty leaderboard.",
+  "entry": "leaderboard",
+  "params": [
+    {
+      "name": "players",
+      "type": "List<Player>"
+    }
+  ],
+  "returns": "List<Ranked>",
+  "types": [
+    {
+      "name": "Player",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "score",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "name": "Ranked",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "rank",
+          "type": "Int"
+        }
+      ]
+    }
+  ],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          {
+            "id": 1,
+            "score": 50
+          },
+          {
+            "id": 2,
+            "score": 70
+          },
+          {
+            "id": 3,
+            "score": 60
+          }
+        ]
+      ],
+      "expect": [
+        {
+          "id": 2,
+          "rank": 1
+        },
+        {
+          "id": 3,
+          "rank": 2
+        },
+        {
+          "id": 1,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expect": []
+    }
+  ],
+  "notes": "Two bugs: tie order follows the input order (stable sort on score only) instead of ascending id, and the rank is the list position (dense positions) instead of competition ranking (1 + strictly higher scores). Visible examples have distinct scores and an empty list, so the start passes them. Zehn has no sort function: the reference places each player by counting how many players are listed before it, which is O(n^2) but fine for the tests."
+}

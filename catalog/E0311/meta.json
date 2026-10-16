@@ -1,0 +1,1 @@
+{"strict": false, "dialect": {}, "note": "total calls itself in an argument of an unconditional `return`, so it has no base case"}

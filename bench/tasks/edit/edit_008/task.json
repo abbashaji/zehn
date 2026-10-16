@@ -1,0 +1,49 @@
+{
+  "id": "edit_008",
+  "category": "edit",
+  "level": 1,
+  "kind": "edit",
+  "title": "Late fee with a cap",
+  "description": "Feature request for the library's late fee function. Today it charges a fee per day of lateness after a grace period and ignores its third parameter, an optional cap. Make the cap work. The complete rule is: the first 3 days late are free; every further day costs the daily amount, so the plain fee is (days late minus 3) times the daily amount, and 0 when the loan is at most 3 days late or not late at all (days late of 0 or below). With no cap the plain fee is charged. With a cap of c the fee is the plain fee but never more than c, and a cap below 0 counts as 0. The daily amount is never negative.",
+  "entry": "late_fee",
+  "params": [
+    {
+      "name": "days_late",
+      "type": "Int"
+    },
+    {
+      "name": "daily",
+      "type": "Int"
+    },
+    {
+      "name": "cap",
+      "type": "Option<Int>"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        10,
+        50,
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 350
+    },
+    {
+      "args": [
+        2,
+        50,
+        {
+          "$": "none"
+        }
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Feature: apply the clamped cap. Start already has the grace period and the non-negative floor, and ignores cap. A cap of some(0) must give 0, some(-20) too (counts as 0). Multiplication only, no division."
+}

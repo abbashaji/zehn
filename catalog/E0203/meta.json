@@ -1,0 +1,5 @@
+{
+  "strict": true,
+  "dialect": {},
+  "note": "under --strict the source must already be in canonical form (indentation is two spaces)"
+}

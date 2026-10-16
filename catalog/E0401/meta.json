@@ -1,0 +1,5 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "the example expects 9 but double(4) is 8"
+}

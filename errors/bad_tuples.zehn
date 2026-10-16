@@ -1,0 +1,50 @@
+type Color = Red | Green | Blue
+
+fn too_many(p: (Int, Int)) -> Int
+  example too_many((1, 2)) == 1
+do
+  match p do
+    case (a, b, c) =>
+      return a + b + c
+  end match
+end fn
+
+fn not_a_tuple(n: Int) -> Int
+  example not_a_tuple(1) == 1
+do
+  match n do
+    case (a, b) =>
+      return a
+  end match
+end fn
+
+fn wrong_size() -> (Int, Int)
+  example wrong_size() == (1, 2)
+do
+  return (1, 2, 3)
+end fn
+
+fn wrong_element() -> (Int, Text)
+  example wrong_element() == (1, "a")
+do
+  return (1, 2)
+end fn
+
+fn missing_case(c: Color, flag: Bool) -> Int
+  example missing_case(Red, true) == 1
+do
+  match (c, flag) do
+    case (Red, true) =>
+      return 1
+    case (Green, _) =>
+      return 2
+    case (Blue, false) =>
+      return 3
+  end match
+end fn
+
+fn wrong_return(p: (Int, Int)) -> (Int, Int, Int)
+  example wrong_return((1, 2)) == (1, 2, 3)
+do
+  return p
+end fn

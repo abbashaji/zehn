@@ -1,0 +1,5 @@
+fn first(p: (Int, Int)) -> Int
+  example first((1, 2)) == 1
+do
+  return p.0
+end fn

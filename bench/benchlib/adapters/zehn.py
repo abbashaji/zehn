@@ -115,7 +115,8 @@ class ZehnAdapter(Adapter):
     def _canonical(self, code: str, workdir: str) -> Any:
         path = self._write_as(code, workdir, "to_format.zehn")
         try:
-            p = subprocess.run([sys.executable, os.path.join(self.root, "zehn.py"), "fmt", path], cwd=self.root,
+            p = subprocess.run([sys.executable, os.path.join(self.root, "zehn.py"), "fmt", path] + self._dialect_args(),
+                               cwd=self.root,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True,
                                timeout=CHECK_TIMEOUT)
         except subprocess.TimeoutExpired:
@@ -159,7 +160,7 @@ class ZehnAdapter(Adapter):
         spec_path = os.path.join(workdir, "spec.json")
         with open(spec_path, "w", encoding="utf-8") as f:
             json.dump({"entry": task["entry"], "console": "console" in task["effects"], "cases": tests}, f)
-        cmd = [sys.executable, os.path.join(_HERE, "_zehn_runner.py"), self.root, path, spec_path]
+        cmd = [sys.executable, os.path.join(_HERE, "_zehn_runner.py"), self.root, path, spec_path] + self._dialect_args()
         try:
             p = subprocess.run(cmd, cwd=workdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                universal_newlines=True, timeout=RUN_TIMEOUT)

@@ -1,0 +1,35 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "type",
+      "name": "Shape",
+      "ref": "type#0f5d"
+    },
+    {
+      "kind": "fn",
+      "name": "audit",
+      "ref": "fn#0e3a"
+    },
+    {
+      "kind": "fn",
+      "name": "area",
+      "ref": "fn#9af0"
+    },
+    {
+      "kind": "fn",
+      "name": "pure_user",
+      "ref": "fn#2868"
+    },
+    {
+      "kind": "fn",
+      "name": "parse_len",
+      "ref": "fn#2418"
+    },
+    {
+      "kind": "fn",
+      "name": "counter",
+      "ref": "fn#4632"
+    }
+  ]
+}

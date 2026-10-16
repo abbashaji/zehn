@@ -1,0 +1,166 @@
+{
+  "exit": 1,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "type",
+        "name": "Shape",
+        "ref": "type#0f5d"
+      },
+      {
+        "kind": "fn",
+        "name": "audit",
+        "ref": "fn#0e3a"
+      },
+      {
+        "kind": "fn",
+        "name": "area",
+        "ref": "fn#9af0"
+      },
+      {
+        "kind": "fn",
+        "name": "pure_user",
+        "ref": "fn#2868"
+      },
+      {
+        "kind": "fn",
+        "name": "parse_len",
+        "ref": "fn#2418"
+      },
+      {
+        "kind": "fn",
+        "name": "counter",
+        "ref": "fn#4632"
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "audit",
+          "line": 3
+        },
+        "message": "function 'audit' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0301",
+        "fix_hint": "add the missing case(s) or `case _ =>`",
+        "location": {
+          "fn": "area",
+          "line": 12
+        },
+        "message": "non-exhaustive match: missing Dot",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0302",
+        "fix_hint": "define it first",
+        "location": {
+          "fn": "pure_user",
+          "line": 23
+        },
+        "message": "unknown name 'undefined_name'",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0302",
+        "fix_hint": "available: list.filter, list.sum, list.len",
+        "location": {
+          "fn": "pure_user",
+          "line": 24
+        },
+        "message": "unknown stdlib function 'list.reverse'",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0601",
+        "fix_hint": "add console to the `uses [...]` of pure_user",
+        "location": {
+          "fn": "pure_user",
+          "line": 22
+        },
+        "message": "calls 'audit' which needs effects ['console'] that 'pure_user' does not declare",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "pure_user",
+          "line": 20
+        },
+        "message": "function 'pure_user' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0304",
+        "fix_hint": "change the return type to Result<...> or handle the value with match",
+        "location": {
+          "fn": "parse_len",
+          "line": 30
+        },
+        "message": "`?` used in 'parse_len' whose return type Int is not Result/Option",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "parse_len",
+          "line": 28
+        },
+        "message": "function 'parse_len' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0305",
+        "fix_hint": "declare it with `var`",
+        "location": {
+          "fn": "counter",
+          "line": 37
+        },
+        "message": "cannot assign to 'total': it was declared with `let`",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0402",
+        "fix_hint": "add at least one `example` clause",
+        "location": {
+          "fn": "counter",
+          "line": 34
+        },
+        "message": "function 'counter' has no example (strict mode)",
+        "phase": "check",
+        "severity": "error"
+      },
+      {
+        "code": "E0203",
+        "fix_hint": "run `zehn fmt <file> --write`",
+        "location": {
+          "fn": null,
+          "line": 24
+        },
+        "message": "source is not in canonical form (first difference at line 24)",
+        "phase": "check",
+        "severity": "error"
+      }
+    ],
+    "examples": {
+      "failed": 0,
+      "passed": 0,
+      "results": []
+    },
+    "ok": false
+  }
+}

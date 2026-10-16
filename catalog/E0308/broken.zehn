@@ -1,0 +1,7 @@
+type Account = { balance: Int }
+
+fn cash(a: Account) -> Int
+  example cash({balance: 5}) == 5
+do
+  return a.cash
+end fn

@@ -1,0 +1,51 @@
+{
+  "id": "effect_009",
+  "category": "effect",
+  "level": 2,
+  "kind": "write",
+  "title": "Threshold alerts on a reading stream",
+  "description": "Scan the readings in order, numbering them from 1. At the start no alert is active. A reading strictly above limit while no alert is active starts an alert: print `ALERT N: V` (N the position, V the reading). A reading at or below limit while an alert is active ends it: print `CLEAR N: V`. Every other reading prints nothing, so staying above the limit does not repeat the alert, and a reading equal to limit counts as not above. If an alert is still active after the last reading, print `still above at end` as the final line. Return how many alerts were started.",
+  "entry": "scan_alerts",
+  "params": [
+    {
+      "name": "readings",
+      "type": "List<Int>"
+    },
+    {
+      "name": "limit",
+      "type": "Int"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [
+    "console"
+  ],
+  "visible_examples": [
+    {
+      "args": [
+        [
+          1,
+          9,
+          9,
+          2
+        ],
+        5
+      ],
+      "expect": 1,
+      "stdout": "ALERT 2: 9\nCLEAR 4: 2\n"
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        5
+      ],
+      "expect": 0,
+      "stdout": ""
+    }
+  ],
+  "notes": "Level 2. One bit of state carried across the scan (edge detection, not per-reading filtering). A reading equal to limit is not above, so it ends an active alert; negative readings and limits are only compared; the closing line appears only when the scan ends inside an alert."
+}

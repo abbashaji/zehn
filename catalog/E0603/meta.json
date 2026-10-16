@@ -1,0 +1,15 @@
+{
+  "strict": false,
+  "dialect": {},
+  "note": "no program reaches this guard through check or run: E0601 rejects it first",
+  "unreachable": "E0601 rejects a body that calls an effectful stdlib function without declaring the effect, and check/run refuse to execute a program with errors; E0603 can only be seen by calling the interpreter on a program that skipped the static passes",
+  "probe": {
+    "fn": "shout",
+    "args": [
+      "hi"
+    ],
+    "grant": [
+      "console"
+    ]
+  }
+}

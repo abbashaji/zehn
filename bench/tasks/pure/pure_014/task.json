@@ -1,0 +1,21 @@
+{
+  "id": "pure_014",
+  "category": "pure",
+  "level": 3,
+  "kind": "write",
+  "title": "Run a small stack machine",
+  "description": "A program for a stack machine is given as two parallel lists: ops[i] is the instruction name and args[i] is its integer argument, which only 'push' uses (other instructions ignore it). The stack starts empty. Instructions: 'push' puts args[i] on top; 'dup' puts a copy of the top value on top; 'drop' removes the top value; 'swap' exchanges the top two values; 'add', 'sub' and 'mul' remove the top value y and then the value x below it and put x + y, x - y or x * y on top (so 'sub' computes the lower value minus the top value). Return Ok with the top value of the stack after the last instruction. Return Err with exactly these messages: 'length mismatch' if the lists differ in length (checked first); otherwise run the instructions from the first and stop at the first problem: 'unknown op at N' for a name that is not one of the seven (N is the 0-based position), or 'stack underflow at N' if the stack holds too few values for that instruction. If the program finishes with an empty stack, return Err 'empty stack'.",
+  "entry": "run_machine",
+  "params": [
+    {"name": "ops", "type": "List<Text>"},
+    {"name": "args", "type": "List<Int>"}
+  ],
+  "returns": "Result<Int, Text>",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {"args": [["push", "push", "add"], [2, 3, 0]], "expect": {"$": "ok", "args": [5]}},
+    {"args": [["push"], [1, 2]], "expect": {"$": "err", "args": ["length mismatch"]}}
+  ],
+  "notes": "Operand order of sub (x - y with y on top) is part of the spec. Unknown op is reported even when the stack is also too small; the first problem in program order wins. A push never underflows. Products in the tests stay within 2^53."
+}

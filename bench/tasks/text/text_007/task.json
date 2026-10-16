@@ -1,0 +1,33 @@
+{
+  "id": "text_007",
+  "category": "text",
+  "level": 1,
+  "kind": "write",
+  "title": "Length of the longest word",
+  "description": "A line is a text whose words are separated by single spaces. Return the length of its longest word, counted in characters. Extra spaces (at the start, at the end or between words) produce empty pieces of length 0, not words of their own. A line without any word, including the empty line, gives 0.",
+  "entry": "longest_word",
+  "params": [
+    {
+      "name": "line",
+      "type": "Text"
+    }
+  ],
+  "returns": "Int",
+  "types": [],
+  "effects": [],
+  "visible_examples": [
+    {
+      "args": [
+        "a bb ccc"
+      ],
+      "expect": 3
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expect": 0
+    }
+  ],
+  "notes": "Empty pieces from consecutive spaces have length 0 so they never win. Tests include lines of only spaces."
+}

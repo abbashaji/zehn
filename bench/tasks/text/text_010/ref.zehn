@@ -1,0 +1,39 @@
+fn pad3(n: Int) -> Text
+  intent "three-digit text of 0..999 with leading zeros"
+  requires n >= 0 and n < 1000
+  example pad3(7) == "007"
+  example pad3(42) == "042"
+  example pad3(512) == "512"
+do
+  if n < 10 then
+    return text.concat("00", int.to_text(n))
+  end if
+  if n < 100 then
+    return text.concat("0", int.to_text(n))
+  end if
+  return int.to_text(n)
+end fn
+
+fn group(n: Int) -> Text
+  intent "non-negative n in decimal with a comma between every group of three digits"
+  requires n >= 0
+  example group(999) == "999"
+  example group(1005000) == "1,005,000"
+do
+  if n < 1000 then
+    return int.to_text(n)
+  end if
+  return text.concat(text.concat(group(n / 1000), ","), pad3(n % 1000))
+end fn
+
+fn with_commas(n: Int) -> Result<Text, Text>
+  intent "write n with commas between groups of three digits; a negative n is an error"
+  example with_commas(1234567) == ok("1,234,567")
+  example with_commas(0) == ok("0")
+  example with_commas(-5) == err("negative number: -5")
+do
+  if n < 0 then
+    return err(text.concat("negative number: ", int.to_text(n)))
+  end if
+  return ok(group(n))
+end fn

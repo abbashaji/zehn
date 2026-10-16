@@ -1,0 +1,45 @@
+fn count_words(words: List<Text>, i: Int, counts: Map<Text, Int>) -> Map<Text, Int>
+  intent "count the upper-cased words at index i and later into counts, skipping empty pieces"
+  example count_words(["a", "A", "b"], 0, map.empty()) == map.set(map.set(map.empty(), "A", 2), "B", 1)
+  example count_words(["", ""], 0, map.empty()) == map.empty()
+do
+  match list.get(words, i) do
+    case none =>
+      return counts
+    case some(w) =>
+      if w == "" then
+        return count_words(words, i + 1, counts)
+      end if
+      let u = text.to_upper(w)
+      let n = option.unwrap_or(map.get(counts, u), 0)
+      return count_words(words, i + 1, map.set(counts, u, n + 1))
+  end match
+end fn
+
+fn render_counts(counts: Map<Text, Int>, keys: List<Text>, i: Int) -> Text
+  intent "the entries for the keys at index i and later as KEY=COUNT joined with a comma and a space"
+  example render_counts(map.set(map.empty(), "A", 2), ["A"], 0) == "A=2"
+  example render_counts(map.empty(), [], 0) == ""
+do
+  match list.get(keys, i) do
+    case none =>
+      return ""
+    case some(k) =>
+      let n = option.unwrap_or(map.get(counts, k), 0)
+      let piece = text.concat(text.concat(k, "="), int.to_text(n))
+      if i + 1 >= list.len(keys) then
+        return piece
+      end if
+      return text.concat(text.concat(piece, ", "), render_counts(counts, keys, i + 1))
+  end match
+end fn
+
+fn word_counts(body: Text) -> Text
+  intent "count the space-separated words ignoring case and report WORD=COUNT, upper-cased, in order of first appearance, joined with a comma and a space"
+  example word_counts("the cat The dog") == "THE=2, CAT=1, DOG=1"
+  example word_counts("") == ""
+  example word_counts("  a  ") == "A=1"
+do
+  let counts = count_words(text.split_on(body, " "), 0, map.empty())
+  return render_counts(counts, map.keys(counts), 0)
+end fn
