@@ -135,6 +135,8 @@ jobs:
       - name: Attach branch bench-experiments as bench/results
         run: |
           set -euo pipefail
+          # main tracks the baseline runs in bench/results; a worktree needs an empty or missing path
+          rm -rf bench/results
           if git ls-remote --exit-code --heads origin bench-experiments >/dev/null 2>&1; then
             git fetch --no-tags origin bench-experiments:refs/remotes/origin/bench-experiments
             git worktree add -B bench-experiments bench/results origin/bench-experiments
