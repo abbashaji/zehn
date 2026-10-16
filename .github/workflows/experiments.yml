@@ -1,0 +1,280 @@
+# A/B experiments under bench/experiments/<name>/ (experiment.json + RUN.md).
+# One dispatch = one experiment x one model. Side A and side B run as two parallel jobs (run ids
+# "<experiment>-<model-slug>-a" and "...-b"); progress lives in the branch bench-experiments, kept apart
+# from the baseline's branch bench-data. Not executed by its author: review before the first run.
+# Dispatch it again with the same inputs to continue an interrupted run (it always resumes).
+name: experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      experiment:
+        description: "Experiment folder name under bench/experiments/"
+        required: true
+        type: choice
+        options:
+          - int_division
+          - effect_examples
+      model:
+        description: "One model spec, e.g. gemini:gemma-4-31b-it (empty = repository variable EXPERIMENT_MODEL)"
+        required: false
+        default: ""
+      repeats:
+        description: "Repeats per task (empty = value in experiment.json)"
+        required: false
+        default: ""
+      only:
+        description: "Optional comma list of task ids, for a pilot (empty = the experiment's own list)"
+        required: false
+        default: ""
+      dry_run_only:
+        description: "Only print run counts, call no model"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: experiments-${{ inputs.experiment }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sides: ${{ steps.plan.outputs.sides }}
+      tasks_dir_args: ${{ steps.plan.outputs.tasks_dir_args }}
+      only: ${{ steps.plan.outputs.only }}
+      repeats: ${{ steps.plan.outputs.repeats }}
+      simpler: ${{ steps.plan.outputs.simpler }}
+      model: ${{ steps.plan.outputs.model }}
+      prefix: ${{ steps.plan.outputs.prefix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read experiment.json and build the plan
+        id: plan
+        env:
+          EXPERIMENT: ${{ inputs.experiment }}
+          MODEL: ${{ inputs.model || vars.EXPERIMENT_MODEL }}
+          REPEATS_IN: ${{ inputs.repeats }}
+          ONLY_IN: ${{ inputs.only }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys
+          exp = os.environ["EXPERIMENT"]
+          if not re.match(r"^[A-Za-z0-9_]+$", exp):
+              sys.exit("bad experiment name %r" % exp)
+          path = os.path.join("bench", "experiments", exp, "experiment.json")
+          if not os.path.isfile(path):
+              sys.exit("missing %s" % path)
+          cfg = json.load(open(path))
+
+          model = os.environ.get("MODEL", "").strip()
+          if not re.match(r"^(gemini|openai):[A-Za-z0-9._/-]+$", model):
+              sys.exit("bad or missing model spec %r (one spec, gemini:<id> or openai:<id>; set the "
+                       "input or the repository variable EXPERIMENT_MODEL)" % model)
+          slug = re.sub(r"[^a-z0-9]+", "-", model.lower()).strip("-")
+
+          variant_re = r"^[A-Za-z0-9_.=,-]+$"
+          for k in ("a", "b"):
+              if not re.match(variant_re, cfg[k]):
+                  sys.exit("bad variant %r" % cfg[k])
+          prefix = "%s-%s" % (exp, slug)
+          sides = [{"side": k, "variant": cfg[k], "run_id": "%s-%s" % (prefix, k)} for k in ("a", "b")]
+
+          dirs = cfg.get("tasks_dirs") or ([cfg["tasks_dir"]] if cfg.get("tasks_dir") else ["bench/tasks"])
+          for d in dirs:
+              if not re.match(r"^[A-Za-z0-9_./-]+$", d) or ".." in d:
+                  sys.exit("bad tasks dir %r" % d)
+          tasks_dir_args = " ".join("--tasks-dir %s" % d for d in dirs)
+
+          only = os.environ.get("ONLY_IN", "").strip() or ",".join(cfg.get("only", []))
+          if only and not re.match(r"^[A-Za-z0-9_,]+$", only):
+              sys.exit("bad task id list")
+          repeats = os.environ.get("REPEATS_IN", "").strip() or str(cfg.get("repeats", 5))
+          if not repeats.isdigit() or int(repeats) < 1:
+              sys.exit("bad repeats %r" % repeats)
+          simpler = cfg.get("simpler", "a")
+          if simpler not in ("a", "b"):
+              sys.exit("bad simpler %r" % simpler)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("sides=" + json.dumps(sides) + "\n")
+              f.write("tasks_dir_args=" + tasks_dir_args + "\n")
+              f.write("only=" + only + "\n")
+              f.write("repeats=" + repeats + "\n")
+              f.write("simpler=" + simpler + "\n")
+              f.write("model=" + model + "\n")
+              f.write("prefix=" + prefix + "\n")
+          print("experiment %s, model %s, repeats %s, %d tasks" % (exp, model, repeats, len(only.split(",")) if only else 0))
+          PY
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        side: ${{ fromJSON(needs.plan.outputs.sides) }}
+    env:
+      RUN_NAME: ${{ matrix.side.run_id }}
+      VARIANT: ${{ matrix.side.variant }}
+      TASKS_DIR_ARGS: ${{ needs.plan.outputs.tasks_dir_args }}
+      ONLY: ${{ needs.plan.outputs.only }}
+      REPEATS: ${{ needs.plan.outputs.repeats }}
+      MODEL_SPEC: ${{ needs.plan.outputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Attach branch bench-experiments as bench/results
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin bench-experiments >/dev/null 2>&1; then
+            git fetch --no-tags origin bench-experiments:refs/remotes/origin/bench-experiments
+            git worktree add -B bench-experiments bench/results origin/bench-experiments
+          else
+            mkdir -p bench/results
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: doctor
+        run: python3 bench/run.py doctor --lang zehn
+
+      - name: Run counts (dry run)
+        run: |
+          set -euo pipefail
+          args=(--lang zehn $TASKS_DIR_ARGS --repeats "$REPEATS" --models "$MODEL_SPEC" \
+                --variant "$VARIANT" --run-id "$RUN_NAME")
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 bench/run.py run "${args[@]}" --dry-run
+
+      - name: status
+        id: status
+        if: ${{ !inputs.dry_run_only }}
+        run: |
+          set -euo pipefail
+          args=(--lang zehn $TASKS_DIR_ARGS --repeats "$REPEATS" --models "$MODEL_SPEC" \
+                --variant "$VARIANT" --run-id "$RUN_NAME")
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 bench/run.py status "${args[@]}" | tee status.txt
+          echo "remaining=$(sed -n 's/^remaining: //p' status.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: run
+        if: ${{ !inputs.dry_run_only && steps.status.outputs.remaining != '0' }}
+        env:
+          GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
+          OPENAI_COMPAT_API_KEYS: ${{ secrets.OPENAI_COMPAT_API_KEYS }}
+          OPENAI_COMPAT_BASE_URL: ${{ vars.OPENAI_COMPAT_BASE_URL }}
+        run: |
+          set -euo pipefail
+          args=(--lang zehn $TASKS_DIR_ARGS --repeats "$REPEATS" --models "$MODEL_SPEC" \
+                --variant "$VARIANT" --run-id "$RUN_NAME" --resume --yes --time-budget-minutes 330)
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 bench/run.py run "${args[@]}"
+
+      - name: Upload run folder
+        if: ${{ always() && !inputs.dry_run_only }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.side.side }}
+          path: bench/results/${{ env.RUN_NAME }}/
+          if-no-files-found: ignore
+
+  persist:
+    needs: [plan, run]
+    if: ${{ always() && needs.plan.result == 'success' && !inputs.dry_run_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      PREFIX: ${{ needs.plan.outputs.prefix }}
+      SIMPLER: ${{ needs.plan.outputs.simpler }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Attach branch bench-experiments as data/
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin bench-experiments >/dev/null 2>&1; then
+            git fetch --no-tags origin bench-experiments:refs/remotes/origin/bench-experiments
+            git worktree add -B bench-experiments data origin/bench-experiments
+          else
+            git worktree add --detach data
+            git -C data checkout --orphan bench-experiments
+            git -C data rm -rf --quiet . || true
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: results-*
+          path: incoming
+
+      - name: Copy run folders into the branch
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for d in incoming/results-*; do
+            side="${d#incoming/results-}"
+            dest="data/${PREFIX}-${side}"
+            mkdir -p "$dest"
+            cp -a "$d"/. "$dest"/
+          done
+
+      - name: A/B report
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          a="data/${PREFIX}-a"; b="data/${PREFIX}-b"
+          if [ -f "$a/records.jsonl" ] && [ -f "$b/records.jsonl" ]; then
+            python3 bench/report.py ab --a "$a" --b "$b" --simpler "$SIMPLER" --out "data/${PREFIX}-ab.md"
+          else
+            echo "both sides need records before an A/B report; run again to finish"
+          fi
+
+      - name: Commit to bench-experiments
+        run: |
+          set -euo pipefail
+          cd data
+          git config user.name "experiments-bot"
+          git config user.email "experiments-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nothing new to commit"
+            exit 0
+          fi
+          git commit -m "experiments: update ${PREFIX}"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:bench-experiments; then
+              exit 0
+            fi
+            git pull --rebase origin bench-experiments || true
+          done
+          echo "push failed after 5 attempts" >&2
+          exit 1
+
+      - name: Collect everything
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          tar --exclude=.git -cf - -C data . | tar -xf - -C out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: experiment-results
+          path: out/
+          if-no-files-found: ignore
