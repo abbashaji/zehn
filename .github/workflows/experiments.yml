@@ -199,6 +199,11 @@ jobs:
     env:
       PREFIX: ${{ needs.plan.outputs.prefix }}
       SIMPLER: ${{ needs.plan.outputs.simpler }}
+      SIDES: ${{ needs.plan.outputs.sides }}
+      TASKS_DIR_ARGS: ${{ needs.plan.outputs.tasks_dir_args }}
+      ONLY: ${{ needs.plan.outputs.only }}
+      REPEATS: ${{ needs.plan.outputs.repeats }}
+      MODEL_SPEC: ${{ needs.plan.outputs.model }}
     steps:
       - uses: actions/checkout@v4
 
@@ -234,15 +239,26 @@ jobs:
             cp -a "$d"/. "$dest"/
           done
 
-      - name: A/B report
+      - name: A/B report (only when both sides are complete)
         continue-on-error: true
         run: |
           set -euo pipefail
           a="data/${PREFIX}-a"; b="data/${PREFIX}-b"
-          if [ -f "$a/records.jsonl" ] && [ -f "$b/records.jsonl" ]; then
+          rm -f "data/${PREFIX}-ab.md"   # never leave a report from an earlier, partial state
+          complete=1
+          for side in a b; do
+            variant=$(python3 -c "import json,os;print([x['variant'] for x in json.loads(os.environ['SIDES']) if x['side']=='$side'][0])")
+            args=(--lang zehn $TASKS_DIR_ARGS --repeats "$REPEATS" --models "$MODEL_SPEC" \
+                  --variant "$variant" --run-id "${PREFIX}-${side}" --out data)
+            if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+            rem=$(python3 bench/run.py status "${args[@]}" | sed -n 's/^remaining: //p')
+            echo "side $side remaining: ${rem:-unknown}"
+            if [ "${rem:-unknown}" != "0" ]; then complete=0; fi
+          done
+          if [ "$complete" = "1" ]; then
             python3 bench/report.py ab --a "$a" --b "$b" --simpler "$SIMPLER" --out "data/${PREFIX}-ab.md"
           else
-            echo "both sides need records before an A/B report; run again to finish"
+            echo "a side is not finished: no A/B report yet (a partial one would be misleading); dispatch again to continue"
           fi
 
       - name: Commit to bench-experiments
