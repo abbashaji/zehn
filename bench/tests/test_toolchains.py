@@ -427,13 +427,15 @@ class RustTests(_AdapterCases, unittest.TestCase):
     def test_other_unknown_name_codes(self) -> None:
         task, _ = load("int_add")
         cases = [("E0433", "fn add(a: i64, b: i64) -> i64 {\n    Foo::bar(a, b)\n}\n"),
-                 ("E0412", "fn add(a: i64, b: Missing) -> i64 {\n    a\n}\n"),
+                 (("E0412", "E0425"), "fn add(a: i64, b: Missing) -> i64 {\n    a\n}\n"),  # newer rustc reports E0425
                  ("E0599", "fn add(a: i64, b: i64) -> i64 {\n    a.nope(b)\n}\n")]
         for code, src in cases:
             with self.subTest(code):
                 chk = self.adapter.tool_check(task, src, self.work)
                 self.assertFalse(chk["ok"])
-                self.assertEqual([d["code"] for d in chk["diagnostics"] if d["unknown_name"]], [code])
+                got = [d["code"] for d in chk["diagnostics"] if d["unknown_name"]]
+                self.assertEqual(len(got), 1)
+                self.assertIn(got[0], code if isinstance(code, tuple) else (code,))
 
     def test_missing_entry_function_is_not_a_hallucination(self) -> None:
         task, _ = load("int_add")
