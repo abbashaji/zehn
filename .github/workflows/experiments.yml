@@ -1,5 +1,5 @@
 # A/B experiments under bench/experiments/<name>/ (experiment.json + RUN.md).
-# One dispatch = one experiment x one model. Side A and side B run as two parallel jobs (run ids
+# One dispatch = one experiment x one model. Side A and side B run one after the other (max-parallel 1) (run ids
 # "<experiment>-<model-slug>-a" and "...-b"); progress lives in the branch bench-experiments, kept apart
 # from the baseline's branch bench-data. Not executed by its author: review before the first run.
 # Dispatch it again with the same inputs to continue an interrupted run (it always resumes).
@@ -119,6 +119,7 @@ jobs:
     timeout-minutes: 355
     strategy:
       fail-fast: false
+      max-parallel: 1   # free-tier limits are per Google project: sides A and B must not share a minute
       matrix:
         side: ${{ fromJSON(needs.plan.outputs.sides) }}
     env:
