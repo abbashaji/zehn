@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -27,6 +28,12 @@ layout, and the program's own `example` lines (in strict mode every function nee
 `example`). If the check fails you receive its JSON diagnostics and reply with a corrected, complete
 program. Hidden tests then call the requested function; your program is judged by them.
 """
+
+
+# SPEC.md documents the dialect effect_examples=mock in its own subsection. The default arm must not see it:
+# a model told about `with console = mock [...]` writes it, and the default parser rejects it (E0201), which
+# measured the leaked documentation instead of the dialect (effect_examples run, side A: 37 of 43 runs).
+_MOCK_SECTION = re.compile(r"### Mocked examples of effectful functions.*?(?=\n## )", re.S)
 
 
 class ZehnAdapter(Adapter):
@@ -55,6 +62,8 @@ class ZehnAdapter(Adapter):
     def system_prompt(self, task: Dict[str, Any]) -> str:
         with open(os.path.join(self.root, "SPEC.md"), encoding="utf-8") as f:
             text = f.read()
+        if ("effect_examples", "mock") not in self.variant:
+            text = _MOCK_SECTION.sub("", text)
         text += _PROTOCOL
         for k, v in self.variant:
             p = os.path.join(VARIANTS_DIR, "%s=%s.md" % (k, v))
