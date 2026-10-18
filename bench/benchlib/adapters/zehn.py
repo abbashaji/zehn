@@ -34,6 +34,10 @@ program. Hidden tests then call the requested function; your program is judged b
 # a model told about `with console = mock [...]` writes it, and the default parser rejects it (E0201), which
 # measured the leaked documentation instead of the dialect (effect_examples run, side A: 37 of 43 runs).
 _MOCK_SECTION = re.compile(r"### Mocked examples of effectful functions.*?(?=\n## )", re.S)
+# Same for the dialect int_ops=explicit: SPEC.md documents int.div_floor / int.div_trunc / int.rem_euclid and the
+# flag. A default-arm model that knows the three functions may use them instead of `/` and `%`, which shrinks
+# the difference the int_division experiment measures. The variant file int_ops=explicit.md repeats the text.
+_INT_DIV_SECTION = re.compile(r"### Explicit Int division.*?(?=\n## )", re.S)
 
 
 class ZehnAdapter(Adapter):
@@ -64,6 +68,8 @@ class ZehnAdapter(Adapter):
             text = f.read()
         if ("effect_examples", "mock") not in self.variant:
             text = _MOCK_SECTION.sub("", text)
+        if ("int_ops", "explicit") not in self.variant:
+            text = _INT_DIV_SECTION.sub("", text)
         text += _PROTOCOL
         for k, v in self.variant:
             p = os.path.join(VARIANTS_DIR, "%s=%s.md" % (k, v))

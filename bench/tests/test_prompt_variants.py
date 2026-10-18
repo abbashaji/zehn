@@ -28,6 +28,19 @@ class PromptVariantTests(unittest.TestCase):
         self.assertIn("### Mocked examples of effectful functions", text)
         self.assertIn("with console = mock", text)
 
+    def test_default_prompt_hides_the_explicit_int_division_section(self) -> None:
+        for variant in ([], [("effect_examples", "mock")]):
+            text = self.prompt(variant)
+            self.assertNotIn("int.div_floor", text)
+            self.assertNotIn("### Explicit Int division", text)
+            self.assertIn("## 9. Diagnostics format", text)  # the cut stops at the next section
+
+    def test_int_ops_variant_documents_the_functions(self) -> None:
+        text = self.prompt([("int_ops", "explicit")])
+        self.assertIn("int.div_floor", text)  # from the variant file
+        self.assertIn("int.rem_euclid", text)
+        self.assertIn("E0312", text)
+
 
 if __name__ == "__main__":
     unittest.main()
