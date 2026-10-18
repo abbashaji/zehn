@@ -286,7 +286,7 @@ class Artifacts(unittest.TestCase):
         self.assertTrue(frag.startswith("Target: SPEC.md section "))
         self.assertIn("action: add", frag.splitlines()[0])
         adr = read(os.path.join(ROOT, "DECISIONS", "ADR-0019-effect-examples.md"))
-        self.assertEqual(adr.splitlines()[1], "Status: unmeasured")
+        self.assertEqual(adr.splitlines()[1], "Status: measured")
 
     def test_new_python_files_parse_as_python_3_9_and_use_lf(self):
         for rel in ("zehnlib/passes/effect_examples.py", "tests/test_effect_examples.py"):
