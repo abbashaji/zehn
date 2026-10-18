@@ -1,5 +1,5 @@
 {
-  "date_utc": "2026-10-17T13:51:31Z",
+  "date_utc": "2026-10-17T23:14:11Z",
   "argv": [
     "run",
     "--lang",
@@ -7,7 +7,7 @@
     "--tasks-dir",
     "bench/tasks",
     "--repeats",
-    "5",
+    "3",
     "--models",
     "gemini:gemma-4-31b-it",
     "--variant",
@@ -78,7 +78,7 @@
   "run_id": "effect_examples-gemini-gemma-4-31b-it-b",
   "variant": "effect_examples=mock",
   "set": "dev",
-  "repeats": 5,
+  "repeats": 3,
   "temperature": 1.0,
   "max_rounds": 5,
   "seed": 1234,
@@ -109,5 +109,17 @@
     "tpm": 16000,
     "rpd": 14400
   },
-  "max_output_tokens": 8192
+  "max_output_tokens": 8192,
+  "sessions": [
+    {
+      "date_utc": "2026-10-17T13:51:31Z",
+      "python": "3.12.15",
+      "tools": {}
+    },
+    {
+      "date_utc": "2026-10-17T23:14:11Z",
+      "python": "3.12.15",
+      "tools": {}
+    }
+  ]
 }
