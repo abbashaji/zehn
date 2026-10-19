@@ -23,41 +23,7 @@
         "ref": "fn#94d3"
       }
     ],
-    "diagnostics": [
-      {
-        "code": "W0101",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "log_line",
-          "line": 2
-        },
-        "message": "function 'log_line' has no example",
-        "phase": "check",
-        "severity": "warning"
-      },
-      {
-        "code": "W0101",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "greet",
-          "line": 8
-        },
-        "message": "function 'greet' has no example",
-        "phase": "check",
-        "severity": "warning"
-      },
-      {
-        "code": "W0101",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "stamp",
-          "line": 14
-        },
-        "message": "function 'stamp' has no example",
-        "phase": "check",
-        "severity": "warning"
-      }
-    ],
+    "diagnostics": [],
     "examples": {
       "failed": 0,
       "passed": 1,
@@ -70,6 +36,7 @@
         }
       ]
     },
-    "ok": true
+    "ok": true,
+    "schema": 1
   }
 }

@@ -35,17 +35,6 @@
     ],
     "diagnostics": [
       {
-        "code": "W0101",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "audit",
-          "line": 3
-        },
-        "message": "function 'audit' has no example",
-        "phase": "check",
-        "severity": "warning"
-      },
-      {
         "code": "E0301",
         "fix_hint": "add the missing case(s) or `case _ =>`",
         "location": {
@@ -161,6 +150,7 @@
       "passed": 0,
       "results": []
     },
-    "ok": false
+    "ok": false,
+    "schema": 1
   }
 }

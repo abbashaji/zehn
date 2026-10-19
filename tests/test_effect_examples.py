@@ -71,14 +71,8 @@ class FlagAndParse(unittest.TestCase):
     def test_default_check_of_effects_example_is_unchanged(self):
         rc, out = cli("check", os.path.join("examples", "effects.zehn"))
         self.assertEqual(rc, 0)
-        self.assertEqual(out, (
-            "WARNING W0101 [log_line, line 2]: function 'log_line' has no example\n"
-            "    hint   : add at least one `example` clause\n"
-            "WARNING W0101 [greet, line 8]: function 'greet' has no example\n"
-            "    hint   : add at least one `example` clause\n"
-            "WARNING W0101 [stamp, line 14]: function 'stamp' has no example\n"
-            "    hint   : add at least one `example` clause\n"
-            "OK: 0 error(s), 1 example(s) passed, 0 failed\n"))
+        # TASK_08 (ADR-0019, option B): effectful functions no longer get W0101 (there were three here)
+        self.assertEqual(out, "OK: 0 error(s), 1 example(s) passed, 0 failed\n")
 
     def test_clause_nodes_are_empty_under_the_default_dialect(self):
         prog = parse("fn f() -> Int\n  example f() == 1\ndo\n  return 1\nend fn\n")
@@ -200,7 +194,8 @@ class PurityAndStrict(unittest.TestCase):
 
     def test_a_mocked_example_satisfies_the_strict_rule_for_an_effectful_function(self):
         no_example = "fn t() -> Int\n  uses [time.now]\ndo\n  return time.now()\nend fn\n"
-        self.assertEqual(codes(no_example), ["E0402"])
+        # TASK_08 (ADR-0019, option B): an effectful function is exempt from the strict rule (was ["E0402"])
+        self.assertEqual(codes(no_example), [])
         self.assertEqual(codes(no_example.replace("do\n", "  example t() == 5 with time.now = mock [5]\ndo\n", 1)), [])
 
     def test_literal_strict_switch(self):
@@ -286,7 +281,8 @@ class Artifacts(unittest.TestCase):
         self.assertTrue(frag.startswith("Target: SPEC.md section "))
         self.assertIn("action: add", frag.splitlines()[0])
         adr = read(os.path.join(ROOT, "DECISIONS", "ADR-0019-effect-examples.md"))
-        self.assertEqual(adr.splitlines()[1], "Status: measured")
+        # TASK_08: the ADR now carries its final status (was "Status: measured")
+        self.assertTrue(adr.splitlines()[1].startswith("Status: decided"))
 
     def test_new_python_files_parse_as_python_3_9_and_use_lf(self):
         for rel in ("zehnlib/passes/effect_examples.py", "tests/test_effect_examples.py"):

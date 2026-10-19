@@ -1,0 +1,58 @@
+{
+  "examples": [
+    {
+      "fn": "floor_quot",
+      "fuel": 33,
+      "line": 9,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_quot",
+      "fuel": 35,
+      "line": 10,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_quot",
+      "fuel": 35,
+      "line": 11,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_quot",
+      "fuel": 35,
+      "line": 12,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_rem",
+      "fuel": 36,
+      "line": 23,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_rem",
+      "fuel": 37,
+      "line": 24,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_rem",
+      "fuel": 38,
+      "line": 25,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_rem",
+      "fuel": 39,
+      "line": 26,
+      "status": "pass"
+    },
+    {
+      "fn": "floor_rem",
+      "fuel": 37,
+      "line": 27,
+      "status": "pass"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zehn v0.3 reference interpreter.
+"""Zehn v0.4 reference interpreter.
 
 Parses Zehn source, runs static checks (names, arity, mutability, effects,
 exhaustiveness), executes programs, and verifies requires / ensures / example.

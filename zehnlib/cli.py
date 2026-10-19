@@ -1,4 +1,4 @@
-"""Zehn v0.3 reference interpreter: command-line front end and the command registry.
+"""Zehn v0.4 reference interpreter: command-line front end and the command registry.
 
 Parses Zehn source, runs static checks (names, arity, mutability, effects,
 exhaustiveness), executes programs, and verifies requires / ensures / example.

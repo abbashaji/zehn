@@ -1,8 +1,19 @@
 # Changelog
 
-## v0.4 (in progress)
+## v0.4
 
-Phase 1 so far: five branches merged on top of v0.3 (TASK_06a to 06e, merged by TASK_06m). The spec header stays v0.3 until TASK_08. Nothing here changes how a v0.3 program behaves in the default dialect.
+Closes Phase 1 (TASK_06a to 06m merged, TASK_08 acceptance). The language header is v0.4. In the default dialect, a v0.3 program behaves the same except that `--strict` no longer asks an effectful function for an example.
+
+### Release notes (TASK_08)
+
+- **Integer division is specified and stays as it is.** The A/B of `int_ops=explicit` (50 tasks, 3 repeats, gemma-4-31b-it) showed no gain (pass_repair 0.947 vs 0.947, CI [-0.053, 0.047]) and a cost (+0.33 repair rounds, +29% tokens), so `int_ops` stays `operators`. SPEC section 3 now defines `/` as floor division, `%` as `a - b * (a / b)` (sign of the divisor), the identity `a == (a / b) * b + a % b`, and `E0505` (blame: caller) for any zero divisor including `0 / 0`. New `examples/int_division.zehn`. ADR-0017 and ADR-0010 closed. Result is labelled underpowered (3 of 5 repeats).
+- **`--strict` asks for an example only from pure functions (option B).** The A/B of `effect_examples=mock` (17 tasks, 3 repeats) showed no correctness gain (pass_repair 0.706 vs 0.740, CI [-0.111, 0.041]), so the default stays `off` and the contradiction between `E0402` and `E0602` is removed the other way: a function with `uses [...]` gets neither `E0402` nor `W0101`. `examples/effects.zehn` is now strict-clean. Explain texts of `E0402` and `W0101` and `docs/ERRORS.md` updated. ADR-0019 closed (underpowered).
+- **SPEC catches up with the code.** Tuples (TASK_07, `E0313` to `E0318`) are merged into the grammar and section 3, the `run` argument rule into section 11; section 12 is rewritten as "v0.4 implementation status" with no open behaviour; the stale "no static recursion check" bullet is gone.
+- **Acceptance** (roadmap section 5) is checked in ADR-0022: baseline published, recursion analysis without false positives on every example, no unspecified behaviour in the known limits, 300+ tests.
+- Benchmark results of both experiments are kept in `bench/results/` (`effect_examples-*`, `int_division-*`), and the workflow `.github/workflows/experiments.yml` plus the adapter fix that stops the SPEC from leaking dialect text into the default arm (`bench/benchlib/adapters/zehn.py`) are part of this release.
+- Tests: `tests/test_v04_acceptance.py` (16 tests); two assertions of `tests/test_effect_examples.py` changed because the strict default changed (reasons in the test comments); goldens regenerated only for `errors/bad_static` and `examples/effects`.
+
+### Phase 1 branches
 
 - **06a, mocked examples of effectful functions** (dialect `effect_examples=mock`, default `off`): `example E with <effect> = mock [..] prints [..]`; errors `E0605` (clauses do not match the effects the example needs, static pass `effect_examples` at order 420), `E0606` (mock list exhausted, run time), `E0607` (mock result of the wrong type); `zehn fmt` sorts the clauses; ADR-0019 (unmeasured), A/B experiment prepared in `bench/experiments/effect_examples/` (not run); 30 tests.
 - **06b, unconditional recursion is a static error** (`E0311`, pass `recursion`, order 400): a call graph of certain calls, every cycle reported once, zero false positives by contract; `errors/bad_termination.zehn` now stops at `E0311`, its run-time twin is `errors/bad_termination_runtime.zehn` (`E0801` / `E0802`); ADR-0020; 42 tests including a 400-program soundness check.

@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "stdout": [
+    {
+      "kind": "fn",
+      "name": "floor_quot",
+      "ref": "fn#bcc8"
+    },
+    {
+      "kind": "fn",
+      "name": "floor_rem",
+      "ref": "fn#97b6"
+    }
+  ]
+}

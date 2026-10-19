@@ -1,4 +1,4 @@
-# Zehn (ذهن) — Language Specification v0.3
+# Zehn (ذهن) — Language Specification v0.4
 
 A language designed for LLMs as the primary authors, and humans as auditors.
 
@@ -50,7 +50,7 @@ fn-decl     = "fn" ident "(" [ param { "," param } ] ")" "->" type NEWLINE
               "end" "fn" NEWLINE ;
 
 param       = ident ":" type ;
-type        = type-ident [ "<" type { "," type } ">" ] | "(" type { "," type } ")" ;
+type        = type-ident [ "<" type { "," type } ">" ] | "(" type "," type { "," type } ")" ;
 effect      = ident { "." ident } ;
 
 stmt        = "let" ident [ ":" type ] "=" expr NEWLINE
@@ -67,6 +67,7 @@ match-stmt  = "match" expr "do" NEWLINE
               "end" "match" NEWLINE ;
 
 pattern     = "_" | ident | int | string | "true" | "false"
+            | "(" pattern "," pattern { "," pattern } ")"
             | type-ident [ "(" pattern { "," pattern } ")" ]
             | ( "ok" | "err" | "some" ) "(" pattern ")" | "none" ;
 
@@ -81,7 +82,8 @@ mul-expr    = unary { ( "*" | "/" | "%" ) unary } ;
 unary       = [ "-" ] postfix ;
 postfix     = primary { "." ident | "(" args ")" | "?" } ;
 primary     = int | string | "true" | "false" | ident | type-ident
-            | "(" expr ")" | "[" [ expr { "," expr } ] "]"
+            | "(" expr ")" | "(" expr "," expr { "," expr } ")"
+            | "[" [ expr { "," expr } ] "]"
             | "{" ident ":" expr { "," ident ":" expr } "}" ;
 call        = postfix ;       (* in a pipeline, left value is inserted as FIRST argument *)
 ```
@@ -104,6 +106,43 @@ Shadowing is forbidden: a name may be bound only once per scope chain (compile e
   - Higher-order stdlib functions accept function types `Fn(A) -> B`, which only exist for named top-level fns (no lambdas, no function-typed parameters).
   - Type errors are `E0306` with `expected` / `found` fields; unknown/duplicate fields and non-record access are `E0308`; un-inferable types are `E0309`.
 
+### Tuples
+
+A tuple keeps two or more values together. Tuples are always on (no dialect flag): they only add programs that were syntax errors before (v0.4).
+
+```
+tuple-expr  = "(" expr "," expr { "," expr } ")" ;
+tuple-pat   = "(" pattern "," pattern { "," pattern } ")" ;
+tuple-type  = "(" type "," type { "," type } ")" ;          (* as before; now needs 2 or more *)
+```
+
+`(x)` stays a parenthesised expression. There is no empty tuple and no one-element tuple: `()`, `(x,)`, a pattern `(p)` and a type `(T)` are `E0318`. A tuple may stand wherever an expression, a pattern or a type may: signatures, `let`/`var` (with or without annotation), `return`, arguments, list elements, constructor fields (`Step((1, 2))`), `ok((a, b))`, nested tuples, and as the subject of `match`.
+
+**One way to take a tuple apart: `match`.** `case (x, y) =>` binds one name per element (`_` and literals are allowed; a name may be bound once per pattern, `E0307`). There is no destructuring `let (a, b) = p` (`E0316`) and no access by position (`p.0`, `E0317`); the fix hint of both names the `match` form. `match (a, b) do ... end match` matches two values at once.
+
+**Values.** A tuple is immutable. `==` and `!=` compare structurally, element by element, with the usual rule that `true` is not `1`; a tuple never equals a list. `show` (and `zehn run` output) prints `(1, "a")`, nested `(1, (true, 2))`. Ordering operators stay Int-only.
+
+**Types.** The type of `(a, b)` is `(A, B)`. When the expected type is a tuple of the same size, each element is checked against its own element type, so a wrong element is an `E0306` on that element (`type mismatch in tuple element 2`). A tuple type of a different size than the one expected, at any place where two tuple types meet (a literal, a variable, an argument, a return), is `E0314`; a tuple pattern with a different number of elements than the matched tuple is `E0313`; a tuple pattern on a value that is not a tuple is `E0315`. Messages and the `expected` / `found` fields write tuple types as in the source, `(Int, Text)`.
+
+**Exhaustiveness.** A `match` with tuple patterns is checked on the whole pattern tree: a case list is complete when every combination of the elements is covered. Constructors of a sum type, `ok`/`err`, `some`/`none` and `true`/`false` are enumerated; Int and Text literals never cover everything, so a `_` or a name is needed. A gap is `E0301` and the message shows one uncovered value, for example `missing (Red, false)` or `missing (none, some(_))`. A name, `_`, or a tuple of those is irrefutable, also inside a constructor (`some((a, b))` covers `some`).
+
+**Fuel (section 13).** One step for the tuple node plus the steps of its element expressions, exactly like a list literal; building `(a, 1, a + 1)` costs 1 + 1 + 1 + 3 = 6. Matching a tuple pattern costs nothing beyond the steps of the `match` statement and its subject.
+
+**`zehn run` (section 11).** A tuple argument is a JSON list of exactly its elements, read as a tuple only where the declared parameter type says so (also inside `List<(A, B)>`, `Option<(A, B)>`, records and constructor arguments): `zehn run f.zehn swap '[[1, "x"]]'`. Nested tuples nest lists: `'[[[0, 0], [3, 4]]]'`. A list of the wrong length, or a non-list, is `E0306` blamed on the caller. The result of `run` is printed with `show`, as for every other value, so a tuple result is `(2, 5)` text, not JSON.
+
+New error codes: `E0313` (tuple pattern size), `E0314` (tuple size mismatch), `E0315` (tuple pattern on a non-tuple), `E0316` (destructuring `let`), `E0317` (positional access), `E0318` (empty or one-element tuple). `E0316` to `E0318` are parse errors; the others are reported by the checker.
+
+Known limit: the unconditional-recursion check (`E0311`, section 5) does not look through the elements of a tuple, so `return (f(n), 1)` inside `f` is not reported statically; the fuel and depth limits still catch it.
+
+### Int division and remainder
+
+`Int` has arbitrary precision, so `+`, `-`, `*` never overflow. `/` and `%` are defined for every pair of Ints except a zero divisor:
+
+- `a / b` is the exact quotient rounded **down toward negative infinity** (floor), and `a % b` is `a - b * (a / b)`. So `a == (a / b) * b + a % b` always holds, and `a % b` is zero or has the **sign of the divisor** `b`: `0 <= a % b < b` for `b > 0`, `b < a % b <= 0` for `b < 0`.
+- Negative operands: `7 / 2 == 3`, `-7 / 2 == -4`, `7 / -2 == -4`, `-7 / -2 == 3`; `7 % 2 == 1`, `-7 % 2 == 1`, `7 % -2 == -1`, `-7 % -2 == -1`. `/` does not truncate toward zero.
+- A zero divisor, including `0 / 0` and `0 % 0`, is the run-time error `E0505` with blame on the caller. There is no other failing case.
+- The decision is ADR-0017 (A/B with the `int_ops=explicit` dialect: no measurable gain, status quo kept); the executable statement is `examples/int_division.zehn`.
+
 ## 4. Mutability
 
 - `let` is immutable, `var` is mutable and **local only** (a `var` cannot be captured, returned by reference, or passed as mutable).
@@ -117,7 +156,7 @@ Shadowing is forbidden: a name may be bound only once per scope chain (compile e
 - `expr?` unwraps `ok(v)` to `v`, or returns `err(e)` from the enclosing function (the function's error type must match exactly; checked statically, `E0306`). Use `result.map_err` to convert error types. `?` on an `Option` needs an `Option`-returning function.
 - `match` must be exhaustive; non-exhaustive match is compile error `E0301`.
 - **Every path must return.** A body is accepted only if control can never reach its end: it must contain a `return`, or an `if` whose `then` *and* `else` both always return, or a `match` whose every case always returns. An `if` without `else` never counts. `?` can return early, but it never guarantees a return, so it does not count either. Violations are `E0310`, which lists *every* falling-through path in `falls_through` (`line` + `where`). A statement that follows a point that always returns can never run and is warning `W0102`. Zehn has no loops, so this analysis is exact, not conservative.
-- Out-of-range `list.get` returns `none`. The operators `/` and `%` are partial: dividing by zero raises the defined diagnostic `E0505` (blame: caller), never undefined behavior. Guard with `requires b != 0`.
+- Out-of-range `list.get` returns `none`. The operators `/` and `%` are partial: a zero divisor raises the defined diagnostic `E0505` (blame: caller), never undefined behavior (semantics for negative operands: section 3). Guard with `requires b != 0`.
 - **Unconditional recursion is rejected statically (`E0311`).** The static pass `recursion` (order 400) builds a call graph with an edge `f -> g` only when a call to the top-level function `g` is *certainly executed* whenever `f` runs up to that statement, and reports every cycle of that graph once (a function calling itself is a cycle of length 1). The diagnostic has `phase` `check`, `location {fn, line}` (the first function of the cycle and the line of its call), `cycle: [{"fn", "line"}, ...]` (the functions of the cycle in call order, each with the line of the call that leads to the next) and a `fix_hint`. Because `run` uses the same passes as `check`, a program with `E0311` never reaches its examples.
 - **What counts as certain.** A call in a straight-line statement of the body (`let`, `var`, `:=`, expression statement, `return`); a call inside an argument of such a call or inside an operand of an arithmetic, comparison or `==` / `!=` / `not` / unary-minus expression; a call in the condition of an `if` or the subject of a `match`. It counts only while nothing earlier can leave the body: no `return` and no `?` before it in the same expression (arguments are evaluated left to right, then the callee) or in an earlier statement (an `if` or `match` that contains a `return` or a `?` anywhere ends the certain part).
 - **What does not count.** Anything inside an `if` branch or a `match` case; the right operand of `and`, `or`, `implies`; anything after a `?` or a `return`; `requires`, `ensures` and `example` clauses; a function name used as a value (`list.map(xs, g)` is not a call); a call with the wrong number of arguments; a name hidden by a parameter, `let`, `var` or pattern binding of the same function. When unsure whether a call is certain, it is not counted.
@@ -141,14 +180,14 @@ Shadowing is forbidden: a name may be bound only once per scope chain (compile e
 
 - `requires P`: precondition. Evaluated on entry; failure → runtime error `E0501` blaming the **caller**.
 - `ensures P`: postcondition. Evaluated on exit; failure → `E0502` blaming the **callee**. `out` names the return value.
-- `example E`: executable test with `E : Bool`. Convention: computed call on the left, expected value on the right (`f(x) == expected`), so diagnostics can label `left` as actual. A failing example is `E0401`. A function with zero examples is warning `W0101`, or error `E0402` with `--strict`.
+- `example E`: executable test with `E : Bool`. Convention: computed call on the left, expected value on the right (`f(x) == expected`), so diagnostics can label `left` as actual. A failing example is `E0401`. A *pure* function with zero examples is warning `W0101`, or error `E0402` with `--strict`. A function that declares effects (`uses [...]`) is exempt from both, because an example may not call it (`E0602`); an effect-free function is therefore the only kind that needs an example (ADR-0019).
 - Contracts and examples must be pure (`E0602` otherwise).
 - `P implies Q` is `not P or Q`.
 - `intent` is documentation, but its hash is stored with the contract set. `zehn lock <file>` writes `<file>.lock` with, per function, a fingerprint of the intent and a fingerprint of everything else (canonical text without comments or intent). If, relative to the lock, body/contracts/examples changed while `intent` is untouched, `zehn check` emits `W0201` (intent drift). Re-read the intent, then change it or run `zehn lock` again to confirm. Functions not in the lock are never reported.
 
-### Mocked examples of effectful functions (dialect `effect_examples=mock`, unmeasured)
+### Mocked examples of effectful functions (dialect `effect_examples=mock`, default `off`)
 
-In v0.3 an effectful function cannot have an example (`E0602`) while `--strict` demands one (`E0402`). Under the dialect flag `effect_examples=mock` (default `off`) an example may carry a mock handler after its expression:
+In the default dialect an effectful function cannot have an example (`E0602`), and for that reason `--strict` does not demand one of it. Under the dialect flag `effect_examples=mock` (default `off`) an example may carry a mock handler after its expression:
 
 ```
 example-clause = "example" expr { "with" effect "=" "mock" list } [ "prints" list ] ;
@@ -174,7 +213,7 @@ New errors (all under the flag):
 | `E0606` | a function made more calls to an effect than its mock list has results (blame: caller) | runtime |
 | `E0607` | a mock result does not have the result type of the effect's function (`time.now`: `Int`), or the list of a `Unit` effect is not empty | check |
 
-Strict mode: a mocked example counts as an example like any other, so an effectful function now *can* satisfy `E0402`. Whether `--strict` should demand a mocked example for effectful functions is a build-time switch (`STRICT_NEEDS_MOCKED_EXAMPLE` in `zehnlib/passes/effect_examples.py`, default off); the literal rule makes the benchmark's reference solutions of category `effect` fail `--strict` (ADR-0019).
+Strict mode: a mocked example counts as an example like any other, so an effectful function *can* have one under the flag, but `--strict` never demands it (option B of ADR-0019). The A/B experiment found no correctness gain from `mock` (it was run with 3 repeats on 17 tasks, so underpowered), hence the default stays `off`.
 
 Limits: only user functions are mocked (an example that calls `console.print` or `time.now` directly is still `E0602`); the mock types come from the stdlib registry, so effects without stdlib functions (`fs`, `net`, `db`, `rand`, `clock`) accept only `[]`. Unused mock results are not an error.
 
@@ -220,12 +259,12 @@ like `/` and `%`. Fuel is the same as for the operators: the one step of the cal
 and before the zero-divisor check. The floor remainder (`%` today) has no explicit name; there are no other
 division functions.
 
-The operators `/` and `%` keep their v0.3 meaning (floor semantics, ADR-0010) in the default dialect.
+The operators `/` and `%` keep floor semantics (section 3, ADR-0010) in the default dialect.
 
 **Dialect `int_ops`** (`--dialect int_ops=operators|explicit`, default `operators`): under `explicit`
 every `/` or `%` expression (in bodies, contracts and examples) is the error `E0312`; its `fix_hint` names the
 three functions above. Under `operators` nothing changes. The flag exists to run an A/B experiment
-(`bench/experiments/int_division/`); the decision between the options is ADR-0017 (status unmeasured).
+(`bench/experiments/int_division/`); its outcome is ADR-0017: `explicit` showed no gain, so the default stays `operators`.
 
 New error code: `E0312` (operator `/` or `%` on Int under `int_ops=explicit`).
 
@@ -244,7 +283,7 @@ New error code: `E0312` (operator `/` or `%` on Int under `int_ops=explicit`).
 }
 ```
 
-Error code ranges: `E01xx` lexing, `E02xx` parsing (`E0203` non-canonical layout under `--strict`), `E03xx` names, types, exhaustiveness and return paths (`E0306` mismatch, `E0308` record/field, `E0309` cannot infer, `E0310` path without `return`, `E0311` unconditional recursion, `E0312` `/` or `%` under `int_ops=explicit`), `E04xx` examples (`E0401` failed, `E0402` missing in strict), `E05xx` contracts at runtime, `E06xx` effects (`E0601` static, `E0602` impure contract, `E0603` undeclared at runtime, `E0604` not granted by host, `E0605` to `E0607` mocked examples under `effect_examples=mock`), `E07xx` patching, `E08xx` resource limits (`E0801` fuel, `E0802` call depth). `E0204` is "source nested too deeply to analyze"; `E0001` is a bad command-line option value. Warnings: `W0101` no example, `W0102` unreachable statement, `W0201` intent drift, `W0301` non-canonical layout.
+Error code ranges: `E01xx` lexing, `E02xx` parsing (`E0203` non-canonical layout under `--strict`), `E03xx` names, types, exhaustiveness and return paths (`E0306` mismatch, `E0308` record/field, `E0309` cannot infer, `E0310` path without `return`, `E0311` unconditional recursion, `E0312` `/` or `%` under `int_ops=explicit`, `E0313` to `E0318` tuples), `E04xx` examples (`E0401` failed, `E0402` missing in strict), `E05xx` contracts at runtime, `E06xx` effects (`E0601` static, `E0602` impure contract, `E0603` undeclared at runtime, `E0604` not granted by host, `E0605` to `E0607` mocked examples under `effect_examples=mock`), `E07xx` patching, `E08xx` resource limits (`E0801` fuel, `E0802` call depth). `E0204` is "source nested too deeply to analyze"; `E0001` is a bad command-line option value. Warnings: `W0101` no example, `W0102` unreachable statement, `W0201` intent drift, `W0301` non-canonical layout.
 
 ### Stable diagnostics (schema 1)
 
@@ -290,19 +329,17 @@ zehn lock   <file>                        confirm intents (section 7)
 zehn explain <code>                       long explanation of a diagnostic code
 ```
 
-`run` arguments are JSON: numbers, strings, booleans, lists, and objects (records). Sum-type values, `ok/err/some/none` are written `{"$": "Rect", "args": [3, 4]}`.
+`run` arguments are JSON: numbers, strings, booleans, lists, and objects (records). Sum-type values, `ok/err/some/none` are written `{"$": "Rect", "args": [3, 4]}`. A tuple is a JSON list of exactly its elements, read as a tuple where the declared parameter type says so (`'[[1, "x"]]'` for one `(Int, Text)` argument); a list of the wrong length is `E0306` blamed on the caller, and a tuple result is printed with `show`, e.g. `(2, 5)`.
 
 Exit codes: 0 ok, 1 diagnostics with errors, 2 internal failure / usage.
 
-## 12. v0.3 implementation status
+## 12. v0.4 implementation status
 
-- Implemented: lexer, parser, static checks (names, arity, `var`/`let`, no shadowing, effects incl. fn-as-value, exhaustiveness, `?` placement), static type checker, **static return-path analysis (`E0310`, `W0102`)**, evaluator, contracts, examples, JSON diagnostics, canonical formatter, content hashes and `patch`, intent-drift lock, runtime capability enforcement, **deterministic fuel and call-depth limits (`E0801`, `E0802`)**, `map.*`, `option.map`, `result.map_err`, `console.print`, `time.now`.
-- Not implemented / known limits:
-  - Tuple types parse but have no expressions; `Tuple` is only a type constructor.
-  - `Int` division is floor division (Python semantics) and `%` has the sign of the divisor; this is deterministic but should be pinned down before v1.
-  - `fs.*`, `net.http`, `db.*`, `rand`, `clock` effects have no stdlib functions yet.
+- Implemented: lexer, parser, static checks (names, arity, `var`/`let`, no shadowing, effects incl. fn-as-value, exhaustiveness, `?` placement), static type checker, static return-path analysis (`E0310`, `W0102`), **static unconditional-recursion analysis (`E0311`)**, evaluator, contracts, examples, JSON diagnostics, canonical formatter, content hashes and `patch`, intent-drift lock, runtime capability enforcement, deterministic fuel and call-depth limits (`E0801`, `E0802`), **tuples (`E0313` to `E0318`)**, **floor `/` and `%` with a pinned meaning for negative operands and zero divisors**, `map.*`, `option.map`, `result.map_err`, `console.print`, `time.now`, dialect flags `int_ops` and `effect_examples`.
+- Known limits (each is a stated, deterministic behaviour, not an open question):
+  - `fs.*`, `net.http`, `db.*`, `rand`, `clock` effects have no stdlib functions; they can be declared in `uses` but nothing can call them.
   - Generic user types (`type Pair<A, B> = ...`) do not exist.
-  - Non-termination is caught only *at run time*, by the budgets of section 13: a program whose examples pass can still exhaust fuel on other inputs. There is no static termination or unconditional-recursion check yet.
+  - Non-termination that is *guarded by a condition* is caught only at run time, by the budgets of section 13: a program whose examples pass can still exhaust fuel on other inputs. Unconditional recursion is rejected statically (section 5); the static check does not look through the elements of a tuple.
   - No tail-call optimization: recursion depth is bounded by `--max-depth` (default 10000).
 
 ## 13. Resource limits (fuel and call depth)
