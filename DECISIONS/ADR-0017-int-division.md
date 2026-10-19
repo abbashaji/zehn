@@ -1,5 +1,5 @@
 # ADR-0017 Integer division: operators or explicit functions (prepared, not decided)
-Status: unmeasured
+Status: measured
 
 ## Problem
 ADR-0010 left the rounding of `/` and `%` on Int open: the code is Python's floor division, which is not a
@@ -20,21 +20,23 @@ choice (roadmap section 5, item 3); TASK_08 takes it.
    in the repository). Listed because the roadmap lists it, not evaluated.
 
 ## Experiment run (or why none)
-None yet. The pack is ready in `bench/experiments/int_division/` (`experiment.json`, `RUN.md`, 20 `numneg`
-tasks, prompt addendum `bench/variants/int_ops=explicit.md`). Only the reference solutions were checked:
-the 20 Zehn refs (in the explicit form, valid in both dialects) and 20 Python refs pass their hidden tests,
-and swapping the rounding function in a Zehn ref makes the tests fail for every task except `numneg_018`
-(equivalent mutant: its division is exact). No model has run. Planned: A = default, B = `int_ops=explicit`,
-50 tasks x 5 repeats, one model per run pair.
+Run on 2026-10-18/19 with the workflow `.github/workflows/experiments.yml` (`bench/experiments/int_division/`): model `gemini:gemma-4-31b-it` (free tier), 50 tasks (30 dev control tasks plus the 20 `numneg` tasks), A = `default`, B = `int_ops=explicit`, `simpler` = `a`. The planned 5 repeats were cut to 3 (150 runs per side); 297 of the 300 runs completed. Three runs (A: `numneg_013` repeat 3 and `effect_001` repeat 1; B: `numneg_018` repeat 2) kept failing with Google server errors (HTTP 500/503) after every retry and are left out; they are 1% of the runs and do not change the picture. Before the valid run the adapter was fixed so that the default arm's prompt no longer documents `int.div_floor`, `int.div_trunc` and `int.rem_euclid` (SPEC.md is the base prompt of every arm; a default-arm model that knew the functions could use them instead of `/` and `%`). The variant file `int_ops=explicit.md` still documents them for B. Before that, the checks of the pack stood as written: the 20 Zehn refs and 20 Python refs pass their hidden tests, and swapping the rounding function in a Zehn ref makes the tests fail for every task except `numneg_018` (equivalent mutant: its division is exact).
 
 ## Numeric result
-None.
+Paired over the 50 tasks, difference = A - B, 95% CI from 10,000 resamples (`report.py ab`, computed on the 297 completed runs):
+
+| metric | A (operators) | B (explicit) | A - B | 95% CI |
+|---|---|---|---|---|
+| pass@1 | 0.707 | 0.713 | -0.007 | [-0.093, 0.073] |
+| pass_repair | 0.947 | 0.947 | 0.000 | [-0.053, 0.047] |
+| repair rounds | 0.660 | 0.987 | -0.327 | [-0.520, -0.127] |
+| silent-bug rate | 0.027 | 0.007 | +0.020 | [-0.013, 0.067] |
+| total tokens | 18,178 | 23,387 | -5,209 | [-7,372, -3,075] |
+
+`report.py` says `DECISION: keep a` (the pass_repair CI includes 0). On the 20 `numneg` tasks both sides solve 91.5% on the first try and 100% after repair, so the rounding stated in the description is followed either way and there is no room for B to gain. In 41 of B's 149 runs (32 in the first attempt) the model wrote `/` or `%` and got `E0312`, which costs about 0.33 extra repair rounds per run and about 29% more tokens. Limits: one model, 3 repeats, so the CIs are wide; 6 of the 30 control tasks have refs that use `/` or `%`, so B is penalised there by design (see RUN.md); whether a model picks the right function name is a separate effect from whether it knows the semantics, and the A/B cannot separate them.
 
 ## Decision
-Default unchanged until the experiment is run: option 1 behaviour, flag `int_ops=operators`. The three
-functions are added permanently (they are additive and cost the same fuel as the operators). The choice
-between options 1 and 2 is taken in TASK_08 from `report.py ab`; `simpler` is `a` (keep the operators), so
-the operators stay unless the CI of the pass_repair difference excludes 0 in favour of B.
+Default unchanged: option 1 behaviour, flag `int_ops=operators`. The three functions are added permanently (they are additive and cost the same fuel as the operators). By the rule above the operators stay, since the CI of the pass_repair difference includes 0 and B costs repair rounds and tokens; the formal choice between options 1 and 2 is still taken in TASK_08.
 
 ## Revisit condition
 After the A/B of TASK_08. Also revisit if a non-negative integer type is ever added (option 3) or if a model
