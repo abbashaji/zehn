@@ -13,7 +13,7 @@ python3 zehn.py check errors/bad_termination_runtime.zehn  # guarded runaway rec
 python3 zehn.py run   examples/recursion.zehn sum_to '[500]' --fuel 300 --max-depth 100
 python3 zehn.py check dialects/int_ops=explicit/examples/explicit_div.zehn --dialect int_ops=explicit   # a dialect flag (repeatable)
 python3 zehn.py --help                                  # the seven commands; check/run/fmt take --dialect name=value (repeatable)
-python3 -m unittest discover -s tests                  # 251 tests
+python3 -m unittest discover -s tests                  # 337 tests
 sh ci/run_ci.sh                                         # CI: compile, both test suites, fmt --check, offline light benchmark
 ```
 

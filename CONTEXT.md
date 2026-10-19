@@ -4,7 +4,7 @@ Goal: Zehn is a language for LLMs as authors and humans as auditors (SPEC.md).
 This repo is its single-file Python reference implementation (zehn.py, Python 3.9+, no dependencies).
 
 ## Status
-Phase 1 in progress: branches merged; mock-example, int_ops experiments pending. Phase 0 leftovers: hidden set pending; baseline gate pending (ADR-0016 proposed, the builder has not decided; v0.3 baseline gemma-4-31b-it covers the first 30 tasks only).
+Phase 1 closed (v0.4, ADR-0022); next: Phase 2 planning. Phase 0 leftovers: hidden set pending; baseline gate pending (ADR-0016 proposed, the builder has not decided; v0.3 baseline gemma-4-31b-it covers the first 30 tasks only).
 Gate: H5 -0.013, CI [-0.040, 0.013]: the rule says "stop Phase 1, apply section 14" (ADR-0016, proposed; the builder decides).
 Implementation lives in `zehnlib/`; `zehn.py` is a facade.
 Build: `python3 -m compileall -q zehn.py zehnlib bench`. Test: `sh ci/run_ci.sh` (unit tests are `python3 -m unittest discover -s tests`).
@@ -17,7 +17,7 @@ Build: `python3 -m compileall -q zehn.py zehnlib bench`. Test: `sh ci/run_ci.sh`
 
 ## Session start
 1. Read this file, then `_ops/STATE.md` (version, build, test, hazards).
-2. Run the tests; the baseline is 251 green.
+2. Run the tests; the baseline is 337 green.
 3. Read the part of SPEC.md the task touches and the ADRs about it.
 
 ## Session end

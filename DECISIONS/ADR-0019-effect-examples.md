@@ -1,5 +1,5 @@
 # ADR-0019 Examples of effectful functions get an in-language mock handler (option A)
-Status: measured
+Status: decided (underpowered: 3 repeats instead of 5, 17 tasks instead of 50; option B adopted, mock stays behind the flag)
 
 ## Problem
 In v0.3 an effectful function cannot have an example: a call to it from an example is `E0602`. `--strict` requires every function to have an example (`E0402`). So under `--strict` an effectful function can only be "covered" by examples of its pure helpers, and its own behaviour is never exercised. The reference solutions of the benchmark category `effect` do exactly that.
@@ -32,7 +32,7 @@ Earlier facts, measured while building: all 101 reference solutions give identic
 ## Decision
 Build A first because it is the only option that changes what a model can say: B and C remove a requirement, A lets the requirement be met by a test of the effectful behaviour itself, and it keeps the language's claim that every function has an executable example. Whether that is worth the extra syntax, the three error codes and the longer prompt was measured once (see Numeric result): no clear gain in correctness, a clear gain in repair rounds and tokens.
 
-Outcome of the A/B: the revisit condition below is not met, so the mock dialect is not promoted; the flag `effect_examples` stays `off` by default. The experiment did not test options B and C of this ADR, so the choice between them (or keeping A behind the flag) is still open.
+Outcome of the A/B (TASK_08): the rule says `keep a` (pass_repair difference -0.034, CI [-0.111, 0.041] includes 0), so `mock` is not promoted and `effect_examples` stays `off` by default. The result is **underpowered** (17 tasks, 3 repeats); a tie keeps the status quo anyway. **Option B is implemented**: `--strict` (`E0402`) and `W0101` ask for an example only from a *pure* function; a function with `uses [...]` is exempt, since an example may not call it (`E0602`). The contradiction between `E0602` and `E0402` is gone in both dialects. `STRICT_NEEDS_MOCKED_EXAMPLE` stays off and has no effect on the default rule. Consequence: `examples/effects.zehn` and the 17 `effect` reference solutions are now strict-clean. The mock dialect remains available behind the flag (option A as an opt-in), option C is not chosen. Tests whose assertions changed because of this default: `tests/test_effect_examples.py` (two assertions, reasons in the test comments) and the goldens `errors/bad_static` and `examples/effects` (check, check_strict).
 
 Choices made while building, all revisable:
 - Unit has no literal, so `console` mock lists are `[]` and Unit effects never use up results; an example with mock clauses may have type `Unit` (a bare call), otherwise a `-> Unit` function could not have an example at all.

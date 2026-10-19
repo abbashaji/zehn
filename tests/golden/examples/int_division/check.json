@@ -1,0 +1,80 @@
+{
+  "exit": 0,
+  "stdout": {
+    "definitions": [
+      {
+        "kind": "fn",
+        "name": "floor_quot",
+        "ref": "fn#bcc8"
+      },
+      {
+        "kind": "fn",
+        "name": "floor_rem",
+        "ref": "fn#97b6"
+      }
+    ],
+    "diagnostics": [],
+    "examples": {
+      "failed": 0,
+      "passed": 9,
+      "results": [
+        {
+          "example": "floor_quot(7, 2) == 3",
+          "fn": "floor_quot",
+          "line": 9,
+          "status": "pass"
+        },
+        {
+          "example": "floor_quot(-7, 2) == -4",
+          "fn": "floor_quot",
+          "line": 10,
+          "status": "pass"
+        },
+        {
+          "example": "floor_quot(7, -2) == -4",
+          "fn": "floor_quot",
+          "line": 11,
+          "status": "pass"
+        },
+        {
+          "example": "floor_quot(-7, -2) == 3",
+          "fn": "floor_quot",
+          "line": 12,
+          "status": "pass"
+        },
+        {
+          "example": "floor_rem(7, 2) == 1",
+          "fn": "floor_rem",
+          "line": 23,
+          "status": "pass"
+        },
+        {
+          "example": "floor_rem(-7, 2) == 1",
+          "fn": "floor_rem",
+          "line": 24,
+          "status": "pass"
+        },
+        {
+          "example": "floor_rem(7, -2) == -1",
+          "fn": "floor_rem",
+          "line": 25,
+          "status": "pass"
+        },
+        {
+          "example": "floor_rem(-7, -2) == -1",
+          "fn": "floor_rem",
+          "line": 26,
+          "status": "pass"
+        },
+        {
+          "example": "floor_rem(-6, 3) == 0",
+          "fn": "floor_rem",
+          "line": 27,
+          "status": "pass"
+        }
+      ]
+    },
+    "ok": true,
+    "schema": 1
+  }
+}

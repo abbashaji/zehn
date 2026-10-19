@@ -1,11 +1,11 @@
-# ADR-0017 Integer division: operators or explicit functions (prepared, not decided)
-Status: measured
+# ADR-0017 Integer division: operators or explicit functions (decided in TASK_08: keep operators)
+Status: decided (underpowered: 3 repeats instead of 5; 50 tasks, one model)
 
 ## Problem
 ADR-0010 left the rounding of `/` and `%` on Int open: the code is Python's floor division, which is not a
 deliberate choice, and a model that expects truncation (C, Rust, TypeScript, Java) gets `-7 / 2 == -4`
-instead of -3, silently. SPEC invariant 7 wants determinism and no hidden behaviour. This ADR prepares the
-choice (roadmap section 5, item 3); TASK_08 takes it.
+instead of -3, silently. SPEC invariant 7 wants determinism and no hidden behaviour. This ADR prepared the
+choice (roadmap section 5, item 3); TASK_08 took it.
 
 ## Options
 1. **Keep the operators** (`/` and `%` with floor semantics, the v0.3 default). Shortest to write; the rounding
@@ -36,8 +36,8 @@ Paired over the 50 tasks, difference = A - B, 95% CI from 10,000 resamples (`rep
 `report.py` says `DECISION: keep a` (the pass_repair CI includes 0). On the 20 `numneg` tasks both sides solve 91.5% on the first try and 100% after repair, so the rounding stated in the description is followed either way and there is no room for B to gain. In 41 of B's 149 runs (32 in the first attempt) the model wrote `/` or `%` and got `E0312`, which costs about 0.33 extra repair rounds per run and about 29% more tokens. Limits: one model, 3 repeats, so the CIs are wide; 6 of the 30 control tasks have refs that use `/` or `%`, so B is penalised there by design (see RUN.md); whether a model picks the right function name is a separate effect from whether it knows the semantics, and the A/B cannot separate them.
 
 ## Decision
-Default unchanged: option 1 behaviour, flag `int_ops=operators`. The three functions are added permanently (they are additive and cost the same fuel as the operators). By the rule above the operators stay, since the CI of the pass_repair difference includes 0 and B costs repair rounds and tokens; the formal choice between options 1 and 2 is still taken in TASK_08.
+**Taken in TASK_08: option 1, the operators stay; `int_ops` default `operators`.** The three functions are kept (they are additive and cost the same fuel as the operators). The roadmap A/B rule (`python3 bench/report.py ab --a ... --b ... --simpler a`) gives `keep a`: the pass_repair difference is 0.000 with CI [-0.053, 0.047], which includes 0, and B costs 0.33 repair rounds and 29% more tokens. The result is labelled **underpowered** (3 repeats, fewer than the 5 the rule asks for; one model); a tie keeps the status quo, so the label does not change the outcome. SPEC section 3 now states the floor semantics precisely (negative operands, zero divisors, the identity `a == (a / b) * b + a % b`) and the `unspecified` wording is gone from section 12. `examples/int_division.zehn` states it in executable form and `tests/test_v04_acceptance.py` pins it against an independent exact-rational floor.
 
 ## Revisit condition
-After the A/B of TASK_08. Also revisit if a non-negative integer type is ever added (option 3) or if a model
+Revisit if a run with 5 repeats and more than one model shows B ahead on pass_repair, if a non-negative integer type is ever added (option 3) or if a model
 run shows `int.rem_euclid` being used where a floor remainder was meant.

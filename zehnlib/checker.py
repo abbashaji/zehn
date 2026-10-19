@@ -76,7 +76,11 @@ class Checker:
                        % (full, eff, f.name), line,
                        fix_hint="add %s to the `uses [...]` of %s" % (eff, f.name))
         if not f.examples:
-            if self.strict:
+            if f.uses:
+                # ADR-0019 (outcome of the A/B, option B): an effectful function cannot be called from an
+                # example (E0602), so neither `--strict` (E0402) nor W0101 asks one of it.
+                pass
+            elif self.strict:
                 self.d("E0402", "function %r has no example (strict mode)" % f.name, f.line,
                        fix_hint="add at least one `example` clause")
             else:

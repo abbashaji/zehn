@@ -1,0 +1,30 @@
+-- Int `/` and `%` round toward negative infinity (SPEC section 3, ADR-0010 and ADR-0017):
+-- a / b is the floor of the exact quotient and a % b is a - b * (a / b), so `%` takes the sign of b.
+-- A zero divisor is E0505 (blame: the caller), also for 0 / 0; Int has no overflow, so there is no other case.
+fn floor_quot(a: Int, b: Int) -> Int
+  intent "the quotient of a by b, rounded down toward negative infinity"
+  requires b != 0
+  ensures b > 0 implies (out * b <= a and a < (out + 1) * b)
+  ensures b < 0 implies (out * b >= a and a > (out + 1) * b)
+  example floor_quot(7, 2) == 3
+  example floor_quot(-7, 2) == -4
+  example floor_quot(7, -2) == -4
+  example floor_quot(-7, -2) == 3
+do
+  return a / b
+end fn
+
+fn floor_rem(a: Int, b: Int) -> Int
+  intent "the remainder of a by b; it is zero or has the sign of b"
+  requires b != 0
+  ensures out == a - b * (a / b)
+  ensures b > 0 implies (out >= 0 and out < b)
+  ensures b < 0 implies (out <= 0 and out > b)
+  example floor_rem(7, 2) == 1
+  example floor_rem(-7, 2) == 1
+  example floor_rem(7, -2) == -1
+  example floor_rem(-7, -2) == -1
+  example floor_rem(-6, 3) == 0
+do
+  return a % b
+end fn

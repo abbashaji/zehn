@@ -856,7 +856,7 @@ end fn
 
 **Severity:** error · **Phase:** check
 
-Strict mode: a function has no example. Add at least one, written `example f(x) == expected`.
+Strict mode: a pure function has no example. Add at least one, written `example f(x) == expected`. A function that declares effects (`uses [...]`) is exempt: an example may not call it (E0602).
 
 *under --strict every function needs an example*
 
@@ -1570,7 +1570,7 @@ end fn
 
 **Severity:** warning · **Phase:** check
 
-A function has no example. Add at least one.
+A pure function has no example. Add at least one. A function that declares effects (`uses [...]`) is exempt: an example may not call it (E0602).
 
 *the function has no example (an error under --strict)*
 

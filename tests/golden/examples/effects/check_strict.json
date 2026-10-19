@@ -1,5 +1,5 @@
 {
-  "exit": 1,
+  "exit": 0,
   "stdout": {
     "definitions": [
       {
@@ -23,46 +23,20 @@
         "ref": "fn#94d3"
       }
     ],
-    "diagnostics": [
-      {
-        "code": "E0402",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "log_line",
-          "line": 2
-        },
-        "message": "function 'log_line' has no example (strict mode)",
-        "phase": "check",
-        "severity": "error"
-      },
-      {
-        "code": "E0402",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "greet",
-          "line": 8
-        },
-        "message": "function 'greet' has no example (strict mode)",
-        "phase": "check",
-        "severity": "error"
-      },
-      {
-        "code": "E0402",
-        "fix_hint": "add at least one `example` clause",
-        "location": {
-          "fn": "stamp",
-          "line": 14
-        },
-        "message": "function 'stamp' has no example (strict mode)",
-        "phase": "check",
-        "severity": "error"
-      }
-    ],
+    "diagnostics": [],
     "examples": {
       "failed": 0,
-      "passed": 0,
-      "results": []
+      "passed": 1,
+      "results": [
+        {
+          "example": "pure_len(\"abc\") == 3",
+          "fn": "pure_len",
+          "line": 21,
+          "status": "pass"
+        }
+      ]
     },
-    "ok": false
+    "ok": true,
+    "schema": 1
   }
 }

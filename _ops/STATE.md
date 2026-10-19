@@ -1,6 +1,6 @@
 # STATE
 Name: Zehn
-Version: 10
+Version: 12
 Return: full
 Build: python3 -m compileall -q zehn.py zehnlib bench
 Test: sh ci/run_ci.sh
@@ -9,7 +9,7 @@ Baseline: v010 sandbox has no rustc/tsc/mypy/ruff: `sh ci/run_ci.sh` exit 0 = 25
 
 ## Requirements
 - Reference implementation of the Zehn language (Python 3.9+, no dependencies)
-- 251 tests in tests/ stay green (135 + 116 new in 06a to 06d: effect examples 30, recursion 42, int ops 26, catalog 18); bench/tests 235
+- 337 tests in tests/ stay green (251 baseline of v010, 70 tuples, 16 acceptance) (135 + 116 new in 06a to 06d: effect examples 30, recursion 42, int ops 26, catalog 18); bench/tests 235
 - Roadmap: Zehn - Build Spec and Roadmap from v0.3 to v1.0
 
 ## Roadmap (optional; [ ] todo, [x] done)
@@ -17,7 +17,7 @@ Baseline: v010 sandbox has no rustc/tsc/mypy/ruff: `sh ci/run_ci.sh` exit 0 = 25
 
 ## Decisions and why
 - 20 ADRs in DECISIONS/ (ADR-0016 proposed, ADR-0020 measured, the rest unmeasured); CONTEXT.md is the session memory (<=2800 chars, unverified as 800 tokens)
-- ADR-0010 (Int / and % use floor semantics) must be resolved in v0.4; ADR-0017 prepares it (dialect int_ops, experiment bench/experiments/int_division, not run)
+- v0.4 decisions (ADR-0022): ADR-0010/0017 floor `/` `%` kept and specified (int_ops stays operators); ADR-0019 option B (strict asks examples only of pure functions), effect_examples stays off; both A/Bs underpowered (3 repeats)
 - Merge v010 decisions: E0605 is a real static pass (420 effect_examples); ADRs of branches renumbered 0015->0019 (effect examples) and 0016->0020 (recursion); catalog E0802 broken.zehn is a guarded recursion (an unconditional one is now E0311); STRICT_NEEDS_MOCKED_EXAMPLE stays False (06a deviation 2, the builder may still choose); passes run 100 names, 200 types, 300 returns, 400 recursion, 410 int_ops, 420 effect_examples
 
 ## Known hazards / open issues
@@ -48,6 +48,7 @@ Baseline: v010 sandbox has no rustc/tsc/mypy/ruff: `sh ci/run_ci.sh` exit 0 = 25
 - Toolchains (mypy, ruff, tsc, rust, clippy, rustfmt) were all installable in the branches and in the merge; none missing
 
 ## History (newest first, last 8, one line each)
+- v012 (task 08): v0.4 acceptance: both A/B decisions (keep operators, keep mock off + strict option B in checker.py), SPEC v0.4 (tuples merged, division semantics, section 12 rewritten), examples/int_division.zehn, ADR-0022, ADR-0010/0017/0019 final, CHANGELOG v0.4, results of both experiments in bench/results; 337 tests
 - v011 (task 07, branch on v010, not merged): tuples: `(a, b)` expressions and `case (x, y)` patterns, `Tup` value, E0313-E0318, tuple-aware exhaustiveness (E0301 with a witness), `run` JSON list per declared tuple type, ADR-0021 (the plan's 0019 was taken), spec fragment 07_tuples.md; 70 new tests (321 in tests/), golden: 60 files unchanged + 10 added for the two new programs; tests/test_walk.py SPEC_KINDS gained tuple/ptuple
 - v010: merged 06a-e: effect_examples=mock dialect (E0605-E0607, pass 420), recursion analysis (E0311, pass 400), int division functions + int_ops dialect (E0312, pass 410) + int_division experiment pack, diagnostics catalog + schema 1 + ERRORS.md, CI (ci/run_ci.sh); spec fragments applied to SPEC.md; bench adapter passes --dialect; 251 tests
 - v009: TASK_05 registries: stdlib (zehnlib/stdlib/, one module per namespace), static passes (100/200/300), explain/hint registry, commands (zehnlib/commands/), discover(), dialect flags (--dialect, no flag registered yet), nodes.walk; no behaviour change (golden + fuel unchanged); 55 tests
