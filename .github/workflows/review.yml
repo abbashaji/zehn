@@ -67,8 +67,23 @@ jobs:
           OPENAI_COMPAT_API_KEYS: ${{ secrets.OPENAI_COMPAT_API_KEYS }}
           OPENAI_COMPAT_BASE_URL: ${{ vars.OPENAI_COMPAT_BASE_URL }}
         run: |
-          python3 bench/review.py run --items bench/experiments/review/items.json --model "$MODEL_SPEC" \
-            --repeats "$REPEATS" --run-id "${{ steps.plan.outputs.run_id }}" --yes --time-budget-minutes 320
+          # Gemini answers 500/503 in bursts. A call that failed after every retry is recorded as failed
+          # (not fatal); each pass moves failed records aside and runs them again, until none are left
+          # or the time budget (in minutes, counted from the start of this step) is used up.
+          set -uo pipefail
+          run_id="${{ steps.plan.outputs.run_id }}"
+          for pass in 1 2 3 4 5 6; do
+            left=$(( 325 - SECONDS / 60 ))
+            if [ "$left" -lt 3 ]; then echo "time budget used up"; break; fi
+            python3 bench/review.py run --items bench/experiments/review/items.json --model "$MODEL_SPEC" \
+              --repeats "$REPEATS" --run-id "$run_id" --yes --time-budget-minutes "$left" | tee pass.txt
+            rc=${PIPESTATUS[0]}
+            if [ "$rc" -ne 0 ]; then echo "pass $pass ended with exit code $rc"; break; fi
+            if grep -q "remaining 0; failed_calls=0" pass.txt; then echo "all items done"; break; fi
+            echo "pass $pass done; waiting 120 s before the next pass"
+            sleep 120
+          done
+          exit 0
 
       - name: Report
         if: always()

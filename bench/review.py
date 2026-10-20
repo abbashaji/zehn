@@ -41,6 +41,27 @@ def _tasks_by_id(args) -> Dict[str, Any]:
     return {t["id"]: t for t in tasks}
 
 
+def prune_errors(path: str) -> int:
+    """Move records of failed API calls out of records.jsonl so that a resume redoes them (as run.py does)."""
+    if not os.path.exists(path):
+        return 0
+    keep, bad = [], []
+    with open(path, encoding="utf-8") as f:
+        for ln in f:
+            if not ln.strip():
+                continue
+            try:
+                (bad if json.loads(ln).get("error") else keep).append(ln if ln.endswith("\n") else ln + "\n")
+            except ValueError:
+                pass                      # a torn last line from a killed run
+    if bad:
+        with open(path[:-len(".jsonl")] + ".errors.jsonl", "a", encoding="utf-8", newline="\n") as f:
+            f.writelines(bad)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.writelines(keep)
+    return len(bad)
+
+
 def _done(path: str) -> set:
     out = set()
     if os.path.exists(path):
@@ -64,6 +85,9 @@ def cmd_run(args, client=None) -> int:
     run_dir = os.path.join(args.out, args.run_id)
     os.makedirs(run_dir, exist_ok=True)
     rec_path = os.path.join(run_dir, "records.jsonl")
+    pruned = prune_errors(rec_path)
+    if pruned:
+        print("moved %d failed call(s) to records.errors.jsonl; they run again" % pruned)
     done = _done(rec_path)
     work = [(i, r) for r in range(1, args.repeats + 1) for i in items if (i["item_id"], r) not in done]
     if client is None and models.is_api_model(args.model) and not args.yes:
@@ -86,14 +110,20 @@ def cmd_run(args, client=None) -> int:
     def execute(item, worker):
         it, rep = item
         task = tasks[it["task_id"]]
-        reply = worker.complete(review.system_for(it["arm"]),
-                                [{"role": "user", "content": review.user_message(task, it["code"])}],
-                                args.temperature, {"task": task, "lang": it["arm"], "ext": "", "round": 1,
-                                                   "ref_code": ""})
+        base = {"item_id": it["item_id"], "task_id": it["task_id"], "category": it["category"],
+                "arm": it["arm"], "kind": it["kind"], "repeat": rep, "model": args.model}
+        try:
+            reply = worker.complete(review.system_for(it["arm"]),
+                                    [{"role": "user", "content": review.user_message(task, it["code"])}],
+                                    args.temperature, {"task": task, "lang": it["arm"], "ext": "", "round": 1,
+                                                       "ref_code": ""})
+        except models.RunAborted:
+            raise          # quota or a bad key: the pool requeues the item (as in loop.py)
+        except Exception as ex:  # noqa: BLE001 - a call that failed after every retry is recorded, not fatal
+            return dict(base, verdict=None, line=None, why="", in_tokens=0, out_tokens=0, correct=False,
+                        located=False, answered=False, error="%s: %s" % (type(ex).__name__, ex))
         parsed = review.parse_reply(reply["text"])
-        rec = {"item_id": it["item_id"], "task_id": it["task_id"], "category": it["category"],
-               "arm": it["arm"], "kind": it["kind"], "repeat": rep, "model": args.model,
-               "verdict": parsed["verdict"], "line": parsed["line"], "why": parsed["why"],
+        rec = {**base, "verdict": parsed["verdict"], "line": parsed["line"], "why": parsed["why"],
                "in_tokens": reply.get("in_tokens", 0), "out_tokens": reply.get("out_tokens", 0),
                "error": None}
         rec.update(review.score(it, parsed))
@@ -105,7 +135,11 @@ def cmd_run(args, client=None) -> int:
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     res = scheduler.run_pool(work, workers, execute, on_record, clock, args.time_budget_minutes, print)
-    print("wrote %d record(s) to %s; remaining %d" % (res.done, rec_path, len(res.remaining)))
+    failed = 0
+    if os.path.exists(rec_path):
+        with open(rec_path, encoding="utf-8") as f:
+            failed = sum(1 for ln in f if ln.strip() and '"error": null' not in ln)
+    print("wrote %d record(s) to %s; remaining %d; failed_calls=%d" % (res.done, rec_path, len(res.remaining), failed))
     if res.fatal:
         print("FATAL: %s" % res.fatal, file=sys.stderr)
         return 2
