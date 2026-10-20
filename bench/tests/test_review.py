@@ -128,6 +128,45 @@ class RunReport(unittest.TestCase):
             self.assertAlmostEqual(p["diff"], 0.0)
 
 
+class Flaky:
+    """The first call of every second item fails the way a Gemini 503 does after all retries."""
+    def __init__(self):
+        self.n = 0
+
+    def complete(self, system, messages, temperature, ctx):
+        self.n += 1
+        if self.n % 2 == 0:
+            from benchlib.models import ModelError
+            raise ModelError("giving up after 6 attempts (HTTP 503)")
+        return {"text": '{"verdict": "correct", "line": null, "why": ""}', "in_tokens": 1, "out_tokens": 1}
+
+
+class Transient(unittest.TestCase):
+    def test_failed_calls_are_recorded_then_redone(self):
+        tasks = schema.load_tasks([os.path.join(HERE, "tasks")], ["pure_001", "effect_001"])
+        items = review.build_items(tasks, workers=2)
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "items.json")
+            json.dump({"items": items}, open(p, "w"))
+            argv = ["run", "--items", p, "--model", "stub:x", "--repeats", "1", "--out", d, "--run-id", "r",
+                    "--tasks-dir", os.path.join(HERE, "tasks")]
+            args = review_cli.build_parser().parse_args(argv)
+            flaky = Flaky()
+            self.assertEqual(review_cli.cmd_run(args, client=flaky), 0)      # no fatal error
+            recs = review_cli.load_records(os.path.join(d, "r"))
+            self.assertEqual(len(recs), len(items))
+            self.assertTrue(any(r["error"] for r in recs))
+            flaky.n = 1                                                       # next call ok, then 1 in 2 fails
+            for _ in range(10):
+                review_cli.cmd_run(args, client=flaky)
+                if not any(r["error"] for r in review_cli.load_records(os.path.join(d, "r"))):
+                    break
+            final = review_cli.load_records(os.path.join(d, "r"))
+            self.assertEqual(len(final), len(items))
+            self.assertFalse(any(r["error"] for r in final))
+            self.assertTrue(os.path.exists(os.path.join(d, "r", "records.errors.jsonl")))
+
+
 class Committed(unittest.TestCase):
     def test_committed_items_are_consistent(self):
         path = os.path.join(HERE, "experiments", "review", "items.json")
