@@ -1,0 +1,102 @@
+# Bet 1 (docs/WINNING_ANGLES.md): can a reviewer find a planted defect? One dispatch = one model.
+# Items are fixed in bench/experiments/review/items.json (built by `bench/review.py make`).
+# Progress lives in the branch bench-experiments (run id review-<model-slug>); dispatch again to continue.
+name: review
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "One model spec, e.g. gemini:gemma-4-31b-it (empty = repository variable EXPERIMENT_MODEL)"
+        required: false
+        default: ""
+      repeats:
+        description: "Repeats per item"
+        required: false
+        default: "5"
+
+concurrency:
+  group: review
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    env:
+      MODEL_SPEC: ${{ inputs.model || vars.EXPERIMENT_MODEL }}
+      REPEATS: ${{ inputs.repeats }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Plan
+        id: plan
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          model = os.environ["MODEL_SPEC"].strip()
+          if not re.match(r"^(gemini|openai):[A-Za-z0-9._/-]+$", model):
+              sys.exit("bad or missing model spec %r" % model)
+          if not os.environ["REPEATS"].isdigit() or int(os.environ["REPEATS"]) < 1:
+              sys.exit("bad repeats")
+          slug = re.sub(r"[^a-z0-9]+", "-", model.lower()).strip("-")
+          open(os.environ["GITHUB_OUTPUT"], "a").write("run_id=review-%s\n" % slug)
+          PY
+
+      - name: Attach branch bench-experiments as bench/results
+        run: |
+          set -euo pipefail
+          rm -rf bench/results
+          if git ls-remote --exit-code --heads origin bench-experiments >/dev/null 2>&1; then
+            git fetch --no-tags origin bench-experiments:refs/remotes/origin/bench-experiments
+            git worktree add -B bench-experiments bench/results origin/bench-experiments
+          else
+            mkdir -p bench/results
+          fi
+
+      - name: Run
+        env:
+          GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
+          OPENAI_COMPAT_API_KEYS: ${{ secrets.OPENAI_COMPAT_API_KEYS }}
+          OPENAI_COMPAT_BASE_URL: ${{ vars.OPENAI_COMPAT_BASE_URL }}
+        run: |
+          python3 bench/review.py run --items bench/experiments/review/items.json --model "$MODEL_SPEC" \
+            --repeats "$REPEATS" --run-id "${{ steps.plan.outputs.run_id }}" --yes --time-budget-minutes 320
+
+      - name: Report
+        if: always()
+        run: |
+          d="bench/results/${{ steps.plan.outputs.run_id }}"
+          if [ -s "$d/records.jsonl" ]; then
+            python3 bench/review.py report --run "$d" --out "$d/report.md" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Commit to bench-experiments
+        if: always()
+        run: |
+          set -euo pipefail
+          cd bench/results
+          git config user.name "experiments-bot"
+          git config user.email "experiments-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git commit -m "review: update ${{ steps.plan.outputs.run_id }}"
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:bench-experiments; then exit 0; fi
+            git pull --rebase origin bench-experiments || true
+          done
+          exit 1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-results
+          path: bench/results/${{ steps.plan.outputs.run_id }}/
+          if-no-files-found: ignore
